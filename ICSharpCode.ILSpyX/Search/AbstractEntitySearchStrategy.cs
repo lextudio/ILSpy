@@ -65,7 +65,8 @@ namespace ICSharpCode.ILSpyX.Search
 
 		protected bool IsInNamespaceOrAssembly(IEntity entity)
 		{
-			if (searchRequest.InAssembly != null)
+			// If InAssembly or InNamespace are null or empty, treat them as "no filter".
+			if (!string.IsNullOrEmpty(searchRequest.InAssembly))
 			{
 				if (entity.ParentModule?.MetadataFile == null ||
 					!(Path.GetFileName(entity.ParentModule.MetadataFile.FileName).Contains(searchRequest.InAssembly, StringComparison.OrdinalIgnoreCase)
@@ -75,13 +76,9 @@ namespace ICSharpCode.ILSpyX.Search
 				}
 			}
 
-			if (searchRequest.InNamespace != null)
+			if (!string.IsNullOrEmpty(searchRequest.InNamespace))
 			{
-				if (searchRequest.InNamespace.Length == 0)
-				{
-					return entity.Namespace.Length == 0;
-				}
-				else if (!entity.Namespace.Contains(searchRequest.InNamespace, StringComparison.OrdinalIgnoreCase))
+				if (!entity.Namespace.Contains(searchRequest.InNamespace, StringComparison.OrdinalIgnoreCase))
 				{
 					return false;
 				}
@@ -92,7 +89,24 @@ namespace ICSharpCode.ILSpyX.Search
 
 		protected void OnFoundResult(IEntity entity)
 		{
-			OnFoundResult(searchRequest.SearchResultFactory.Create(entity));
+			if (entity == null)
+				return;
+			try
+			{
+				Console.WriteLine($"[AbstractEntitySearchStrategy] OnFoundResult IEntity: {entity.FullName} ({entity.GetType().Name})");
+				var sr = searchRequest.SearchResultFactory.Create(entity);
+				if (sr == null)
+				{
+					Console.WriteLine("[AbstractEntitySearchStrategy] SearchResultFactory returned null");
+					return;
+				}
+				Console.WriteLine($"[AbstractEntitySearchStrategy] Created SearchResult: {sr.Name} ({sr.GetType().Name})");
+				OnFoundResult(sr);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"[AbstractEntitySearchStrategy] Failed to create/search result: {ex}");
+			}
 		}
 	}
 }

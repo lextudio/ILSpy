@@ -16,9 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+
 using System;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Windows.Navigation;
 
 using ICSharpCode.ILSpy.TextView;
@@ -27,6 +27,7 @@ using ICSharpCode.ILSpy.ViewModels;
 using TomsToolbox.Essentials;
 
 #nullable enable
+
 
 namespace ICSharpCode.ILSpy.Util
 {
@@ -59,25 +60,8 @@ namespace ICSharpCode.ILSpy.Util
 		}
 	}
 
-	public abstract class WrappedEventArgs<T> : EventArgs
-	{
-		private readonly T inner;
-
-		protected WrappedEventArgs(T inner)
-		{
-			this.inner = inner;
-		}
-
-		public static implicit operator T(WrappedEventArgs<T> outer)
-		{
-			return outer.inner;
-		}
-	}
-
 	public class CurrentAssemblyListChangedEventArgs(NotifyCollectionChangedEventArgs e) : WrappedEventArgs<NotifyCollectionChangedEventArgs>(e);
 	public class TabPagesCollectionChangedEventArgs(NotifyCollectionChangedEventArgs e) : WrappedEventArgs<NotifyCollectionChangedEventArgs>(e);
-
-	public class SettingsChangedEventArgs(PropertyChangedEventArgs e) : WrappedEventArgs<PropertyChangedEventArgs>(e);
 
 	public class NavigateToReferenceEventArgs(object reference, object? source = null, bool inNewTabPage = false) : EventArgs
 	{

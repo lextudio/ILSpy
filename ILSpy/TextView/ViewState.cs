@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Siegfried Pammer
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,27 +16,41 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Composition;
+#nullable enable
 
-using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpyX;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
-using TomsToolbox.Wpf;
+using ICSharpCode.ILSpy.TreeNodes;
 
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
-	[Export]
-	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, ICSharpCode.ILSpy.IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
+	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+	public class ViewState : IEquatable<ViewState>
 	{
-		public ICSharpCode.ILSpy.IDockWorkspace Workspace { get; } = dockWorkspace;
+		public HashSet<ILSpyTreeNode>? DecompiledNodes;
+		public Uri? ViewedUri;
 
-		public SessionSettings SessionSettings => settingsService.SessionSettings;
+		public virtual bool Equals(ViewState? other)
+		{
+			return other != null
+				&& ViewedUri == other.ViewedUri
+				&& NullSafeSetEquals(DecompiledNodes, other.DecompiledNodes);
 
-		public LanguageService LanguageService => languageService;
+			static bool NullSafeSetEquals(HashSet<ILSpyTreeNode>? a, HashSet<ILSpyTreeNode>? b)
+			{
+				if (a == b)
+					return true;
+				if (a == null || b == null)
+					return false;
+				return a.SetEquals(b);
+			}
+		}
 
-		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
-
-		public IPlatformService PlatformService { get; } = platformService;
+		protected virtual string GetDebuggerDisplay()
+		{
+			return $"Nodes = {DecompiledNodes?.Count.ToString() ?? "<null>"}, ViewedUri = {ViewedUri?.ToString() ?? "<null>"}";
+		}
 	}
 }

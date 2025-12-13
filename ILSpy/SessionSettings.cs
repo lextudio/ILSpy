@@ -28,7 +28,6 @@ using System.Windows;
 using System.Xml.Linq;
 
 using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpy.Themes;
 using ICSharpCode.ILSpyX.Search;
 using ICSharpCode.ILSpyX.Settings;
 
@@ -38,7 +37,7 @@ namespace ICSharpCode.ILSpy
 	/// Per-session setting:
 	/// Loaded at startup; saved at exit.
 	/// </summary>
-	public sealed class SessionSettings : ISettingsSection
+	public sealed partial class SessionSettings : ISettingsSection
 	{
 		public XName SectionName => "SessionSettings";
 
@@ -48,14 +47,12 @@ namespace ICSharpCode.ILSpy
 
 			LanguageSettings = new(filterSettings, this);
 			LanguageSettings.PropertyChanged += (sender, e) => PropertyChanged?.Invoke(sender, e);
-
+			LoadTheme(section);
 			ActiveAssemblyList = (string)section.Element("ActiveAssemblyList");
 			ActiveTreeViewPath = section.Element("ActiveTreeViewPath")?.Elements().Select(e => Unescape((string)e)).ToArray();
-			ActiveAutoLoadedAssembly = (string)section.Element("ActiveAutoLoadedAssembly");
-			WindowState = FromString((string)section.Element("WindowState"), WindowState.Normal);
+			ActiveAutoLoadedAssembly = (string)section.Element("ActiveAutoLoadedAssembly");			
 			WindowBounds = FromString((string)section.Element("WindowBounds"), DefaultWindowBounds);
 			SelectedSearchMode = FromString((string)section.Element("SelectedSearchMode"), SearchMode.TypeAndMember);
-			Theme = FromString((string)section.Element(nameof(Theme)), ThemeManager.Current.DefaultTheme);
 			var culture = (string)section.Element(nameof(CurrentCulture));
 			CurrentCulture = string.IsNullOrEmpty(culture) ? null : culture;
 			DockLayout = new(section.Element("DockLayout"));
@@ -97,10 +94,6 @@ namespace ICSharpCode.ILSpy
 				}
 			}
 		}
-
-		public WindowState WindowState;
-		public Rect WindowBounds;
-		internal static Rect DefaultWindowBounds = new(10, 10, 750, 550);
 
 		public DockLayoutSettings DockLayout { get; set; }
 

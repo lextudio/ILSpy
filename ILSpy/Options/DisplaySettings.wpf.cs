@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Siegfried Pammer
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,27 +16,33 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Composition;
+using System.Windows.Media;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
-using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpyX;
+using ICSharpCode.ILSpyX.Settings;
 
 using TomsToolbox.Wpf;
 
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.Options
 {
-	[Export]
-	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, ICSharpCode.ILSpy.IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
+	public partial class DisplaySettings
 	{
-		public ICSharpCode.ILSpy.IDockWorkspace Workspace { get; } = dockWorkspace;
+		FontFamily selectedFont;
+		public FontFamily SelectedFont {
+			get => selectedFont;
+			set => SetProperty(ref selectedFont, value);
+		}
 
-		public SessionSettings SessionSettings => settingsService.SessionSettings;
+		private void LoadSelectedFont(XElement section)
+		{
+			SelectedFont = new FontFamily((string)section.Attribute("Font") ?? "Consolas");
+		}
 
-		public LanguageService LanguageService => languageService;
-
-		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
-
-		public IPlatformService PlatformService { get; } = platformService;
-	}
+		private void SaveSelectedFont(XElement section)
+		{
+			section.SetAttributeValue("Font", SelectedFont.Source);
+		}
+   	}
 }

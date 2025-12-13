@@ -161,7 +161,15 @@ namespace ICSharpCode.ILSpyX.Search
 
 		protected void OnFoundResult(SearchResult result)
 		{
-			resultQueue.TryAdd(result);
+			try
+			{
+				var added = resultQueue.TryAdd(result);
+				Console.WriteLine($"[AbstractSearchStrategy] TryAdd result: {result?.Name} ({result?.GetType().Name}) -> {added}, QueueType={resultQueue.GetType().FullName}");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"[AbstractSearchStrategy] Failed to add result to queue: {ex}");
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Siegfried Pammer
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,27 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Composition;
+using ICSharpCode.AvalonEdit.Document;
 
-using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpyX;
-
-using TomsToolbox.Wpf;
-
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
-	[Export]
-	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, ICSharpCode.ILSpy.IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
+	/// <summary>
+	/// Allows language specific search for matching brackets.
+	/// </summary>
+	public interface IBracketSearcher
 	{
-		public ICSharpCode.ILSpy.IDockWorkspace Workspace { get; } = dockWorkspace;
-
-		public SessionSettings SessionSettings => settingsService.SessionSettings;
-
-		public LanguageService LanguageService => languageService;
-
-		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
-
-		public IPlatformService PlatformService { get; } = platformService;
+		/// <summary>
+		/// Searches for a matching bracket from the given offset to the start of the document.
+		/// </summary>
+		/// <returns>A BracketSearchResult that contains the positions and lengths of the brackets. Return null if there is nothing to highlight.</returns>
+		BracketSearchResult SearchBracket(IDocument document, int offset);
 	}
 }

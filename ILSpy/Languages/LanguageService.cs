@@ -35,10 +35,10 @@ namespace ICSharpCode.ILSpy
 	[Shared]
 	public class LanguageService : ObservableObjectBase
 	{
-		private readonly SettingsService settingsService;
+		private readonly Util.SettingsService settingsService;
 		private readonly LanguageSettings languageSettings;
 
-		public LanguageService(IEnumerable<Language> languages, SettingsService settingsService, DockWorkspace dockWorkspace)
+		public LanguageService(IEnumerable<Language> languages, Util.SettingsService settingsService, IDockWorkspace dockWorkspace)
 		{
 			this.settingsService = settingsService;
 			languageSettings = settingsService.SessionSettings.LanguageSettings;

@@ -23,7 +23,6 @@ using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using System.Text;
 
-using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.Solution;
@@ -42,9 +41,9 @@ namespace ICSharpCode.ILSpy
 	/// <remarks>
 	/// Implementations of this class must be thread-safe.
 	/// </remarks>
-	public abstract class Language : ILanguage
+	public abstract partial class Language : ILanguage
 	{
-		protected static SettingsService SettingsService { get; } = App.ExportProvider.GetExportedValue<SettingsService>();
+		protected static Util.SettingsService SettingsService { get; } = App.ExportProvider.GetExportedValue<Util.SettingsService>();
 
 		protected static AssemblyTreeModel AssemblyTreeModel { get; } = App.ExportProvider.GetExportedValue<AssemblyTreeModel>();
 
@@ -69,21 +68,6 @@ namespace ICSharpCode.ILSpy
 		}
 
 		public bool HasLanguageVersions => LanguageVersions.Count > 0;
-
-		/// <summary>
-		/// Gets the syntax highlighting used for this language.
-		/// </summary>
-		public virtual IHighlightingDefinition SyntaxHighlighting {
-			get {
-				return HighlightingManager.Instance.GetDefinitionByExtension(FileExtension);
-			}
-		}
-
-		public virtual TextView.IBracketSearcher BracketSearcher {
-			get {
-				return TextView.DefaultBracketSearcher.DefaultInstance;
-			}
-		}
 
 		public virtual void DecompileMethod(IMethod method, ITextOutput output, DecompilationOptions options)
 		{
@@ -366,15 +350,6 @@ namespace ICSharpCode.ILSpy
 		public virtual string GetTooltip(IEntity entity)
 		{
 			return GetDisplayName(entity, true, true, true);
-		}
-
-		/// <summary>
-		/// Converts a member signature to a string.
-		/// This is used for displaying the tooltip on a member reference.
-		/// </summary>
-		public virtual RichText GetRichTextTooltip(IEntity entity)
-		{
-			return GetTooltip(entity);
 		}
 
 		public virtual string FieldToString(IField field, bool includeDeclaringTypeName, bool includeNamespace, bool includeNamespaceOfDeclaringTypeName)

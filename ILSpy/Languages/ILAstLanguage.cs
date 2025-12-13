@@ -58,7 +58,7 @@ namespace ICSharpCode.ILSpy
 
 		public override string Name { get { return name; } }
 
-		internal static IEnumerable<ILAstLanguage> GetDebugLanguages(DockWorkspace dockWorkspace)
+		internal static IEnumerable<ILAstLanguage> GetDebugLanguages(IDockWorkspace dockWorkspace)
 		{
 			yield return new TypedIL();
 			yield return new BlockIL(CSharpDecompiler.GetILTransforms(), dockWorkspace);
@@ -95,7 +95,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		class BlockIL(IReadOnlyList<IILTransform> transforms, DockWorkspace dockWorkspace) : ILAstLanguage("ILAst")
+		class BlockIL(IReadOnlyList<IILTransform> transforms, IDockWorkspace dockWorkspace) : ILAstLanguage("ILAst")
 		{
 			public override void DecompileMethod(IMethod method, ITextOutput output, DecompilationOptions options)
 			{

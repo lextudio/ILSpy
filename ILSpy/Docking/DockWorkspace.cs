@@ -46,7 +46,7 @@ namespace ICSharpCode.ILSpy.Docking
 {
 	[Export]
 	[Shared]
-	public class DockWorkspace : ObservableObject, ILayoutUpdateStrategy
+	public class DockWorkspace : ObservableObject, ILayoutUpdateStrategy, ICSharpCode.ILSpy.Docking.IDockWorkspace
 	{
 		private readonly IExportProvider exportProvider;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Siegfried Pammer
+// Copyright (c) 2024 Tom Englert for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,27 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Composition;
+using System.ComponentModel;
 
-using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpyX;
+#nullable enable
 
-using TomsToolbox.Wpf;
-
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.Util
 {
-	[Export]
-	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, ICSharpCode.ILSpy.IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
-	{
-		public ICSharpCode.ILSpy.IDockWorkspace Workspace { get; } = dockWorkspace;
-
-		public SessionSettings SessionSettings => settingsService.SessionSettings;
-
-		public LanguageService LanguageService => languageService;
-
-		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
-
-		public IPlatformService PlatformService { get; } = platformService;
-	}
+	public class SettingsChangedEventArgs(PropertyChangedEventArgs e) : WrappedEventArgs<PropertyChangedEventArgs>(e);
 }

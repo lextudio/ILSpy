@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Siegfried Pammer
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,27 +16,28 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Composition;
-
-using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpyX;
-
-using TomsToolbox.Wpf;
-
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
-	[Export]
-	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, ICSharpCode.ILSpy.IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
+	/// <summary>
+	/// Describes a pair of matching brackets found by <see cref="IBracketSearcher"/>.
+	/// </summary>
+	public class BracketSearchResult
 	{
-		public ICSharpCode.ILSpy.IDockWorkspace Workspace { get; } = dockWorkspace;
+		public int OpeningBracketOffset { get; private set; }
 
-		public SessionSettings SessionSettings => settingsService.SessionSettings;
+		public int OpeningBracketLength { get; private set; }
 
-		public LanguageService LanguageService => languageService;
+		public int ClosingBracketOffset { get; private set; }
 
-		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
+		public int ClosingBracketLength { get; private set; }
 
-		public IPlatformService PlatformService { get; } = platformService;
+		public BracketSearchResult(int openingBracketOffset, int openingBracketLength,
+								   int closingBracketOffset, int closingBracketLength)
+		{
+			this.OpeningBracketOffset = openingBracketOffset;
+			this.OpeningBracketLength = openingBracketLength;
+			this.ClosingBracketOffset = closingBracketOffset;
+			this.ClosingBracketLength = closingBracketLength;
+		}
 	}
 }

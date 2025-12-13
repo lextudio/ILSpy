@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Siegfried Pammer
+// Copyright (c) 2024 Tom Englert for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,27 +16,26 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Composition;
 
-using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpyX;
+using System;
 
-using TomsToolbox.Wpf;
+#nullable enable
 
-namespace ICSharpCode.ILSpy
+
+namespace ICSharpCode.ILSpy.Util
 {
-	[Export]
-	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, ICSharpCode.ILSpy.IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
+	public abstract class WrappedEventArgs<T> : EventArgs
 	{
-		public ICSharpCode.ILSpy.IDockWorkspace Workspace { get; } = dockWorkspace;
+		private readonly T inner;
 
-		public SessionSettings SessionSettings => settingsService.SessionSettings;
+		protected WrappedEventArgs(T inner)
+		{
+			this.inner = inner;
+		}
 
-		public LanguageService LanguageService => languageService;
-
-		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
-
-		public IPlatformService PlatformService { get; } = platformService;
+		public static implicit operator T(WrappedEventArgs<T> outer)
+		{
+			return outer.inner;
+		}
 	}
 }

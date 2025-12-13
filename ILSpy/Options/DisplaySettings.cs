@@ -16,8 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Windows.Media;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 using ICSharpCode.ILSpyX.Settings;
 
@@ -28,13 +29,8 @@ namespace ICSharpCode.ILSpy.Options
 	/// <summary>
 	/// Description of DisplaySettings.
 	/// </summary>
-	public class DisplaySettings : ObservableObject, ISettingsSection
+	public partial class DisplaySettings : ObservableObject, ISettingsSection
 	{
-		FontFamily selectedFont;
-		public FontFamily SelectedFont {
-			get => selectedFont;
-			set => SetProperty(ref selectedFont, value);
-		}
 
 		double selectedFontSize;
 		public double SelectedFontSize {
@@ -166,7 +162,7 @@ namespace ICSharpCode.ILSpy.Options
 
 		public void LoadFromXml(XElement section)
 		{
-			SelectedFont = new FontFamily((string)section.Attribute("Font") ?? "Consolas");
+			LoadSelectedFont(section);
 			SelectedFontSize = (double?)section.Attribute("FontSize") ?? 10.0 * 4 / 3;
 			ShowLineNumbers = (bool?)section.Attribute("ShowLineNumbers") ?? false;
 			ShowMetadataTokens = (bool?)section.Attribute("ShowMetadataTokens") ?? false;
@@ -194,7 +190,7 @@ namespace ICSharpCode.ILSpy.Options
 		{
 			var section = new XElement(SectionName);
 
-			section.SetAttributeValue("Font", SelectedFont.Source);
+			SaveSelectedFont(section);
 			section.SetAttributeValue("FontSize", SelectedFontSize);
 			section.SetAttributeValue("ShowLineNumbers", ShowLineNumbers);
 			section.SetAttributeValue("ShowMetadataTokens", ShowMetadataTokens);

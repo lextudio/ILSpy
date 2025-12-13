@@ -22,12 +22,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
-using System.Windows.Threading;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Docking;
+using ICSharpCode.ILSpy.Util;
 using ICSharpCode.ILSpyX.Abstractions;
 using ICSharpCode.ILSpyX.TreeView;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
@@ -37,11 +37,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Base class of all ILSpy tree nodes.
 	/// </summary>
-	public abstract class ILSpyTreeNode : SharpTreeNode, ITreeNode
+	public abstract partial class ILSpyTreeNode : SharpTreeNode, ITreeNode
 	{
 		protected ILSpyTreeNode()
 		{
-			MessageBus<SettingsChangedEventArgs>.Subscribers += (sender, e) => Settings_Changed(sender, e);
+			MessageBus<Util.SettingsChangedEventArgs>.Subscribers += (sender, e) => Settings_Changed(sender, e);
 		}
 
 		LanguageSettings LanguageSettings => SettingsService.SessionSettings.LanguageSettings;
@@ -52,11 +52,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
 		protected static ICollection<IResourceNodeFactory> ResourceNodeFactories { get; } = App.ExportProvider.GetExportedValues<IResourceNodeFactory>().ToArray();
 
-		protected static SettingsService SettingsService { get; } = App.ExportProvider.GetExportedValue<SettingsService>();
+		protected static Util.SettingsService SettingsService { get; } = App.ExportProvider.GetExportedValue<Util.SettingsService>();
 
 		protected static LanguageService LanguageService { get; } = App.ExportProvider.GetExportedValue<LanguageService>();
 
-		protected static DockWorkspace DockWorkspace { get; } = App.ExportProvider.GetExportedValue<DockWorkspace>();
+		protected static IDockWorkspace DockWorkspace { get; } = App.ExportProvider.GetExportedValue<IDockWorkspace>();
 
 		public virtual FilterResult Filter(LanguageSettings settings)
 		{
@@ -76,15 +76,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		public virtual bool View(ViewModels.TabPageModel tabPage)
 		{
 			return false;
-		}
-
-		public override void ActivateItemSecondary(IPlatformRoutedEventArgs e)
-		{
-			var assemblyTreeModel = AssemblyTreeModel;
-
-			assemblyTreeModel.SelectNode(this, inNewTabPage: true);
-
-			App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, assemblyTreeModel.RefreshDecompiledView);
 		}
 
 		/// <summary>
