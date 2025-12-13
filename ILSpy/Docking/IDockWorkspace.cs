@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.ViewModels;
+
 namespace ICSharpCode.ILSpy.Docking
 {
     /// <summary>
@@ -11,17 +14,17 @@ namespace ICSharpCode.ILSpy.Docking
     /// </summary>
     public interface IDockWorkspace
     {
-        IReadOnlyList<object> TabPages { get; }
+        IList<TabPageModel> TabPages { get; }
 
-        IReadOnlyList<object> ToolPanes { get; }
+        IReadOnlyList<ToolPaneModel> ToolPanes { get; }
 
-        object? ActiveTabPage { get; set; }
+        TabPageModel? ActiveTabPage { get; set; }
 
-        object AddTabPage(object? tabPage = null);
+        TabPageModel AddTabPage(TabPageModel? tabPage = null);
 
         bool ShowToolPane(string contentId);
 
-        void Remove(object model);
+        void Remove(PaneModel model);
 
         void InitializeLayout();
 
@@ -31,6 +34,6 @@ namespace ICSharpCode.ILSpy.Docking
 
         Task<T> RunWithCancellation<T>(Func<CancellationToken, Task<T>> taskCreation);
 
-        void ShowText(object textOutput);
+        void ShowText(AvalonEditTextOutput textOutput);
     }
 }

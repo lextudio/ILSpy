@@ -22,14 +22,6 @@ namespace ICSharpCode.ILSpy.ViewModels
 {
 	public abstract partial class ToolPaneModel : PaneModel
 	{
-		public virtual void Show()
-		{
-			this.IsActive = true;
-			this.IsVisible = true;
-		}
-
-		public string Icon { get; protected set; }
-
-		public ICommand AssociatedCommand { get; set; }
+		public KeyGesture ShortcutKey { get; protected set; }
 	}
 }

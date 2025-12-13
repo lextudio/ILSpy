@@ -7,7 +7,7 @@ namespace ICSharpCode.ILSpy
 {
     public class WpfPlatformService : IPlatformService
     {
-        public IDockWorkspace? DockWorkspace { get; private set; }
+        public Docking.IDockWorkspace? DockWorkspace { get; set; }
 
         public void InvokeOnUI(Action action)
         {
@@ -46,6 +46,7 @@ namespace ICSharpCode.ILSpy
                 value = null;
                 return false;
             }
+			value = null;
             return Application.Current.TryFindResource(key) is { } v && (value = v) != null;
         }
     }

@@ -18,7 +18,6 @@
 
 using System;
 using System.Linq;
-using System.Windows.Media;
 
 using ICSharpCode.Decompiler;
 
@@ -29,7 +28,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	using ICSharpCode.Decompiler.TypeSystem;
 	using ICSharpCode.ILSpyX;
 
-	public sealed class TypeTreeNode : ILSpyTreeNode, IMemberTreeNode
+	public sealed partial class TypeTreeNode : ILSpyTreeNode, IMemberTreeNode
 	{
 		public TypeTreeNode(ITypeDefinition typeDefinition, AssemblyTreeNode parentAssemblyNode)
 		{
@@ -133,11 +132,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		}
 
 		public override object Icon => GetIcon(TypeDefinition);
-
-		public static ImageSource GetIcon(ITypeDefinition type)
-		{
-			return Images.GetIcon(GetTypeIcon(type, out bool isStatic), GetOverlayIcon(type), isStatic);
-		}
 
 		internal static TypeIcon GetTypeIcon(IType type, out bool isStatic)
 		{

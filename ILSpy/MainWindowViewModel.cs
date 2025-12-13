@@ -27,9 +27,9 @@ namespace ICSharpCode.ILSpy
 {
 	[Export]
 	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, ICSharpCode.ILSpy.IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
+	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
 	{
-		public ICSharpCode.ILSpy.IDockWorkspace Workspace { get; } = dockWorkspace;
+		public IDockWorkspace Workspace { get; } = dockWorkspace;
 
 		public SessionSettings SessionSettings => settingsService.SessionSettings;
 

@@ -44,7 +44,7 @@ using TomsToolbox.Wpf;
 
 namespace ICSharpCode.ILSpy.Docking
 {
-	[Export]
+	[Export(typeof(IDockWorkspace))]
 	[Shared]
 	public class DockWorkspace : ObservableObject, ILayoutUpdateStrategy, ICSharpCode.ILSpy.Docking.IDockWorkspace
 	{
@@ -64,7 +64,7 @@ namespace ICSharpCode.ILSpy.Docking
 			sessionSettings = settingsService.SessionSettings;
 
 			this.tabPages.CollectionChanged += TabPages_CollectionChanged;
-			TabPages = new(tabPages);
+			TabPages = new ReadOnlyCollection<TabPageModel>(tabPages);
 
 			MessageBus<CurrentAssemblyListChangedEventArgs>.Subscribers += (sender, e) => CurrentAssemblyList_Changed(sender, e);
 		}
@@ -127,9 +127,9 @@ namespace ICSharpCode.ILSpy.Docking
 			return item;
 		}
 
-		public ReadOnlyObservableCollection<TabPageModel> TabPages { get; }
+		public IList<TabPageModel> TabPages { get; }
 
-		public ReadOnlyCollection<ToolPaneModel> ToolPanes => toolPanes ??= exportProvider
+		public IReadOnlyList<ToolPaneModel> ToolPanes => toolPanes ??= exportProvider
 			.GetExportedValues<ToolPaneModel>("ToolPane")
 			.OrderBy(item => item.Title)
 			.ToArray()
@@ -245,14 +245,14 @@ namespace ICSharpCode.ILSpy.Docking
 			ActiveTabPage.ShowTextView(textView => textView.ShowNodes(output, nodes, highlighting));
 		}
 
-		internal void CloseAllTabs()
+		public void CloseAllTabs()
 		{
 			var activePage = ActiveTabPage;
 
 			tabPages.RemoveWhere(page => page != activePage);
 		}
 
-		internal void ResetLayout()
+		public void ResetLayout()
 		{
 			foreach (var pane in ToolPanes)
 			{

@@ -37,15 +37,15 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// Represents a list of assemblies.
 	/// This is used as (invisible) root node of the tree view.
 	/// </summary>
-	sealed class AssemblyListTreeNode : ILSpyTreeNode
+	sealed partial class AssemblyListTreeNode : ILSpyTreeNode
 	{
-		readonly AssemblyList assemblyList;
+		readonly ILSpyX.AssemblyList assemblyList;
 
-		public AssemblyList AssemblyList {
+		public ILSpyX.AssemblyList AssemblyList {
 			get { return assemblyList; }
 		}
 
-		public AssemblyListTreeNode(AssemblyList assemblyList)
+		public AssemblyListTreeNode(ILSpyX.AssemblyList assemblyList)
 		{
 			ArgumentNullException.ThrowIfNull(assemblyList);
 
@@ -58,7 +58,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			get { return assemblyList.ListName; }
 		}
 
-		void BindToObservableCollection(AssemblyList collection)
+		void BindToObservableCollection(ILSpyX.AssemblyList collection)
 		{
 			this.Children.Clear();
 			this.Children.AddRange(collection.GetAssemblies().Select(a => new AssemblyTreeNode(a)));
@@ -85,36 +85,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 						throw new NotSupportedException("Invalid value for NotifyCollectionChangedAction");
 				}
 			};
-		}
-
-		public override bool CanDrop(IPlatformDragEventArgs e, int index)
-		{
-			e.Effects = XPlatDragDropEffects.Move | XPlatDragDropEffects.Copy | XPlatDragDropEffects.Link;
-			if (e.Data.GetDataPresent(AssemblyTreeNode.DataFormat))
-				return true;
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
-				return true;
-			e.Effects = XPlatDragDropEffects.None;
-			return false;
-		}
-
-		public override void Drop(IPlatformDragEventArgs e, int index)
-		{
-			string[] files = e.Data.GetData(AssemblyTreeNode.DataFormat) as string[];
-			if (files == null)
-				files = e.Data.GetData(DataFormats.FileDrop) as string[];
-			if (files != null)
-			{
-				var assemblies = files
-					.Where(file => file != null)
-					.Select(file => assemblyList.OpenAssembly(file))
-					.Where(asm => asm != null)
-					.Distinct()
-					.ToArray();
-				assemblyList.Move(assemblies, index);
-				var nodes = assemblies.SelectArray(AssemblyTreeModel.FindTreeNode);
-				AssemblyTreeModel.SelectNodes(nodes);
-			}
 		}
 
 		public Action<SharpTreeNode> Select = delegate { };
@@ -182,7 +152,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		{
 			if (asm == null)
 				return null;
-			App.Current.Dispatcher.VerifyAccess();
+			// TODO: App.Current.Dispatcher.VerifyAccess();
 			if (asm.ParentBundle != null)
 			{
 				var bundle = FindAssemblyNode(asm.ParentBundle);
