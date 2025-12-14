@@ -7,8 +7,12 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.AssemblyTree;
+using ICSharpCode.ILSpy.Metadata;
+using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpyX;
+using ICSharpCode.ILSpyX.FileLoaders;
+using ICSharpCode.ILSpyX.PdbProvider;
 using ICSharpCode.ILSpyX.TreeView;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
 using ProjectRover.Nodes;
@@ -58,7 +62,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
                 if (LoadedAssembly.IsLoaded)
                 {
                     if (LoadedAssembly.HasLoadError)
-                        return Images.AssemblyWarning;
+                        return "Images.AssemblyWarning";
                     var loadResult = LoadedAssembly.GetLoadResultAsync().GetAwaiter().GetResult();
                     if (loadResult.MetadataFile != null)
                     {
@@ -66,19 +70,19 @@ namespace ICSharpCode.ILSpy.TreeNodes
                         {
                             case MetadataFile.MetadataFileKind.PortableExecutable:
                             case MetadataFile.MetadataFileKind.WebCIL:
-                                return Images.Assembly;
+                                return "Images.Assembly";
                             default:
-                                return Images.MetadataFile;
+                                return "Images.MetadataFile";
                         }
                     }
                     else
                     {
-                        return Images.FindAssembly;
+                        return "Images.FindAssembly";
                     }
                 }
                 else
                 {
-                    return Images.FindAssembly;
+                    return "Images.FindAssembly";
                 }
             }
         }
@@ -195,7 +199,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
             var assembly = (MetadataModule)typeSystem.MainModule;
             this.Children.Add(new MetadataTreeNode(module, Resources.Metadata));
             Decompiler.DebugInfo.IDebugInfoProvider debugInfo = LoadedAssembly.GetDebugInfoOrNull();
-            if (debugInfo is Decompiler.DebugInfo.PortableDebugInfoProvider ppdb
+            if (debugInfo is PortableDebugInfoProvider ppdb
                 && ppdb.GetMetadataReader() is System.Reflection.Metadata.MetadataReader reader)
             {
                 this.Children.Add(new MetadataTreeNode(ppdb.ToMetadataFile(), $"Debug Metadata ({(ppdb.IsEmbedded ? "Embedded" : "From portable PDB")})"));

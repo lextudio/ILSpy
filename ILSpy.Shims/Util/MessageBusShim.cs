@@ -31,19 +31,10 @@ namespace ICSharpCode.ILSpy.Util
         }
     }
 
-    public class CurrentAssemblyListChangedEventArgs : EventArgs
-    {
-        public NotifyCollectionChangedEventArgs Inner { get; }
-        public CurrentAssemblyListChangedEventArgs(NotifyCollectionChangedEventArgs e) => Inner = e;
-    }
+	public class CurrentAssemblyListChangedEventArgs(NotifyCollectionChangedEventArgs e) : WrappedEventArgs<NotifyCollectionChangedEventArgs>(e);
+	public class TabPagesCollectionChangedEventArgs(NotifyCollectionChangedEventArgs e) : WrappedEventArgs<NotifyCollectionChangedEventArgs>(e);
 
-    public class TabPagesCollectionChangedEventArgs : EventArgs
-    {
-        public NotifyCollectionChangedEventArgs Inner { get; }
-        public TabPagesCollectionChangedEventArgs(NotifyCollectionChangedEventArgs e) => Inner = e;
-    }
-
-    public class NavigateToReferenceEventArgs : EventArgs
+	public class NavigateToReferenceEventArgs : EventArgs
     {
         public object Reference { get; }
         public object? Source { get; }

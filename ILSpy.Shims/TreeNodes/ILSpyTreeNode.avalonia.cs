@@ -1,3 +1,4 @@
+using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
 
 namespace ICSharpCode.ILSpy.TreeNodes
@@ -13,6 +14,12 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
 				assemblyTreeModel.RefreshDecompiledView,
 				Avalonia.Threading.DispatcherPriority.Background);
+		}
+
+		public object GetIcon(IMember member)
+		{
+			// TODO:
+			return null;
 		}
 	}
 }

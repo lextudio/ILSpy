@@ -32,6 +32,7 @@ using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
 using AssemblyTreeModel = ProjectRover.ViewModels.AssemblyTreeModel;
+using SettingsService = ProjectRover.Services.SettingsService;
 
 namespace ProjectRover.Extensions;
 

@@ -12,7 +12,7 @@ namespace ICSharpCode.ILSpy.Docking
     /// Minimal docking workspace abstraction used by view-models to avoid direct WPF/AvalonDock coupling.
     /// Implementations may expose concrete types via <c>object</c> and provide adapters where necessary.
     /// </summary>
-    public interface IDockWorkspace
+    public partial interface IDockWorkspace
     {
         IList<TabPageModel> TabPages { get; }
 
@@ -33,7 +33,5 @@ namespace ICSharpCode.ILSpy.Docking
         void CloseAllTabs();
 
         Task<T> RunWithCancellation<T>(Func<CancellationToken, Task<T>> taskCreation);
-
-        void ShowText(AvalonEditTextOutput textOutput);
     }
 }

@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Composition;
 using System.Windows;
 using System.Windows.Threading;
@@ -33,7 +34,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 	/// </summary>
 	[DataTemplate(typeof(AssemblyTreeModel))]
 	[NonShared]
-	public partial class AssemblyListPane
+	public partial class AssemblyListPane: IDisposable
 	{
 		public AssemblyListPane()
 		{
@@ -42,7 +43,12 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			ContextMenuProvider.Add(this);
 		}
 
-		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+	    public void Dispose()
+		{
+			
+	    }
+
+	    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
 

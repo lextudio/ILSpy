@@ -1,23 +1,82 @@
 // this file contains the WPF-specific part of AssemblyTreeModel
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 using ICSharpCode.ILSpy.AssemblyTree;
-
+using ICSharpCode.ILSpy.Docking;
 using ICSharpCode.ILSpy.TextView;
-
+using ICSharpCode.ILSpy.Updates;
+using ICSharpCode.ILSpy.Util;
 using ICSharpCode.ILSpy.ViewModels;
+using ICSharpCode.ILSpyX;
+using ICSharpCode.ILSpyX.TreeView;
+
 using ProjectRover.Views;
 
-namespace ICSharpCode.ILSpy
+using TomsToolbox.Composition;
+
+namespace ICSharpCode.ILSpy.AssemblyTree
 {
     public partial class AssemblyTreeModel
     {
-        private AssemblyListPane? activeView;
+		public AssemblyTreeModel(SettingsService settingsService, LanguageService languageService, IExportProvider exportProvider)
+		{
+			// TODO:
+		}
+
+		public void Initialize() {
+			// TODO:
+		}
+
+		private void ShowAssemblyList(AssemblyList assemblyList)
+		{
+			// TODO:
+		}
+
+		private void LoadAssemblies(IEnumerable<string> fileNames, List<LoadedAssembly>? loadedAssemblies = null, bool focusNode = true)
+		{
+			//
+			//
+			//TODO:
+		}
+
+		private async Task NavigateOnLaunch(string? navigateTo, string[]? activeTreeViewPath, UpdateSettings? updateSettings, List<LoadedAssembly> relevantAssemblies)
+		{
+			// TODO:
+		}
+
+		public void DecompileSelectedNodes(ViewState? newState = null)
+		{
+			// TODO:
+		}
+
+		private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			// TODO:
+		}
+
+		private AssemblyListPane? activeView;
 
         public void SetActiveView(AssemblyListPane activeView)
 		{
 			this.activeView = activeView;
+		}
+
+		public void SelectNode(SharpTreeNode? node, bool inNewTabPage = false)
+		{
+			// TODO:
+		}
+
+		private async Task OpenAssemblies()
+		{
+			// TODO:
+		}
+
+		public async Task HandleSingleInstanceCommandLineArguments(string[] args)
+		{
+			// TODO:
 		}
 
 		private static void LoadInitialAssemblies(AssemblyList assemblyList)
@@ -34,8 +93,8 @@ namespace ICSharpCode.ILSpy
 				typeof(Avalonia.Controls.Control).Assembly,
 				typeof(Avalonia.Controls.UserControl).Assembly
 			};
-			foreach (System.Reflection.Assembly asm in initialAssemblies)
-				assemblyList.OpenAssembly(asm.Location);
+			//foreach (System.Reflection.Assembly asm in initialAssemblies)
+				// TODO: assemblyList.OpenAssembly(asm.Location);
 		}
 
         private void RefreshInternal()
@@ -144,7 +203,12 @@ namespace ICSharpCode.ILSpy
 			output = new();
 			//output.Write(result);
 			return true;
-
 		}
-    }
+
+		private void TreeView_SelectionChanged(SharpTreeNode[] oldSelection, SharpTreeNode[] newSelection)
+		{
+			// TODO:
+		}
+
+	}
 }

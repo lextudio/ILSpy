@@ -31,8 +31,8 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					.Distinct()
 					.ToArray();
 				assemblyList.Move(assemblies, index);
-				var nodes = assemblies.SelectArray(AssemblyTreeModel.FindTreeNode);
-				AssemblyTreeModel.SelectNodes(nodes);
+				//var nodes = assemblies.SelectArray(AssemblyTreeModel.FindTreeNode);
+				//AssemblyTreeModel.SelectNodes(nodes);
 			}
 		}
     }

@@ -22,7 +22,6 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
-using System.Windows.Data;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Metadata;
@@ -45,7 +44,7 @@ namespace ICSharpCode.ILSpy.Metadata
 
 		public override object Text => title;
 
-		public override object Icon => Images.Metadata;
+		public override string Icon => "Images.Metadata";
 
 		public override bool View(TabPageModel tabPage)
 		{
@@ -142,21 +141,6 @@ namespace ICSharpCode.ILSpy.Metadata
 		{
 			this.Value = value;
 			this.Meaning = meaning;
-		}
-	}
-
-	class ByteWidthConverter : IValueConverter
-	{
-		public static readonly ByteWidthConverter Instance = new ByteWidthConverter();
-
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return string.Format("{0:X" + 2 * ((Entry)value).Size + "}", ((Entry)value).Value);
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

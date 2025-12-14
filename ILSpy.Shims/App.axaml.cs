@@ -23,12 +23,13 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ProjectRover.Extensions;
 using ProjectRover.Services;
-using ProjectRover.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Composition.Hosting;
 using TomsToolbox.Composition;
+using ProjectRover.Views;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectRover;
 
@@ -49,7 +50,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = Services.GetRequiredService<MainWindow>();
+            // TODO: desktop.MainWindow = Services.GetRequiredService<MainWindow>();
 
             // Initialize CompositionHost for MEF-style exports (compose ILSpy parts) using ContainerConfiguration
             try
@@ -176,7 +177,9 @@ public partial class App : Application
             _services = services;
         }
 
-        public T GetExportedValue<T>()
+		public event EventHandler<EventArgs>? ExportsChanged;
+
+		public T GetExportedValue<T>()
         {
             try
             {
@@ -200,7 +203,17 @@ public partial class App : Application
             throw new InvalidOperationException($"Export not found: {typeof(T).FullName}");
         }
 
-        public T[] GetExportedValues<T>()
+		public T GetExportedValue<T>(string? contractName = null) where T : class
+		{
+			throw new NotImplementedException();
+		}
+
+		public T? GetExportedValueOrDefault<T>(string? contractName = null) where T : class
+		{
+			throw new NotImplementedException();
+		}
+
+		public T[] GetExportedValues<T>()
         {
             try
             {
@@ -223,7 +236,39 @@ public partial class App : Application
                 return System.Linq.Enumerable.ToArray(svcs);
             return Array.Empty<T>();
         }
-    }
+
+		public IEnumerable<T> GetExportedValues<T>(string? contractName = null) where T : class
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<object> GetExportedValues(Type contractType, string? contractName = null)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<IExport<object>> GetExports(Type contractType, string? contractName = null)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<IExport<T>> GetExports<T>(string? contractName = null) where T : class
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<IExport<T, TMetadataView>> GetExports<T, TMetadataView>(string? contractName = null)
+			where T : class
+			where TMetadataView : class
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool TryGetExportedValue<T>(string? contractName, [NotNullWhen(true)] out T? value) where T : class
+		{
+			throw new NotImplementedException();
+		}
+	}
 
     // Small holder type that can be discovered by MEF consumers if they import IServiceProvider
     // We keep this type internal to avoid adding new public API surface.

@@ -1,8 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System;
 using System.Text;
+
+using ICSharpCode.Decompiler.Metadata;
+using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.ILSpy.Util;
+using ICSharpCode.ILSpyX;
+
+using TomsToolbox.Essentials;
 
 namespace ICSharpCode.ILSpy
 {
@@ -41,14 +48,37 @@ namespace ICSharpCode.ILSpy
             return output.ToString();
         }
 
-        public static IEnumerable<TSource> ExceptNullItems<TSource>(this IEnumerable<TSource?> source) where TSource : class
-        {
-            return source.Where(i => i != null)!;
-        }
+
 
         public static bool IsNullOrEmpty([NotNullWhen(false)] this string? value)
         {
             return string.IsNullOrEmpty(value);
         }
-    }
+
+		public static ICompilation? GetTypeSystemWithCurrentOptionsOrNull(this MetadataFile file, SettingsService settingsService, LanguageVersion languageVersion)
+		{
+			var decompilerSettings = settingsService.DecompilerSettings.Clone();
+			if (!Enum.TryParse(languageVersion?.Version, out Decompiler.CSharp.LanguageVersion csharpLanguageVersion))
+				csharpLanguageVersion = Decompiler.CSharp.LanguageVersion.Latest;
+			decompilerSettings.SetLanguageVersion(csharpLanguageVersion);
+			return file
+				.GetLoadedAssembly()
+				.GetTypeSystemOrNull(DecompilerTypeSystem.GetOptions(decompilerSettings));
+		}
+	}
 }
+
+namespace ICSharpCode.ILSpy.Properties
+{
+
+}
+
+namespace ICSharpCode.ILSpy.Analyzers
+{
+
+}
+
+namespace ICSharpCode.ILSpy.Search
+{
+
+} 

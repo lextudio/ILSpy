@@ -32,5 +32,26 @@ namespace ICSharpCode.ILSpy
         {
             return CreatePlaceholderBitmap(16, 16); // Avalonia will not use WPF ImageSource; return null as placeholder.
         }
-    }
+
+		public static object SubTypes {
+			get { return "SubTypes"; }
+		}
+
+		public static object ListFolder { get { return "ListFolder"; } }
+		public static object ListFolderOpen { get { return "ListFolderOpen"; } }
+
+		public static object Header { get; internal set; }
+		public static object MetadataTableGroup { get; internal set; }
+		public static object Library { get; internal set; }
+		public static object Namespace { get; internal set; }
+		public static object FolderClosed { get; internal set; }
+		public static object FolderOpen { get; internal set; }
+		public static object MetadataTable { get; internal set; }
+		public static object ExportedType { get; internal set; }
+		public static object TypeReference { get; internal set; }
+		public static object MethodReference { get; internal set; }
+		public static object FieldReference { get; internal set; }
+		public static object Interface { get; internal set; }
+		public static object Class { get; internal set; }
+	}
 }
