@@ -6,5 +6,7 @@ namespace ICSharpCode.ILSpy
 		public static string DerivedTypes { get { return "Derived Types"; } }
 
 		public static object Loading { get { return "Loading..."; } }
+
+		public static string NewTab { get; internal set; }
 	}
 }

@@ -75,6 +75,8 @@
     <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.1" />
     <PackageVersion Include="TomsToolbox.Composition.MicrosoftExtensions" Version="2.22.2" />
+  <PackageVersion Include="TomsToolbox.Composition" Version="2.22.2" />
+  <PackageVersion Include="TomsToolbox.Essentials" Version="2.22.2" />
     <PackageVersion Include="TomsToolbox.Wpf.Composition" Version="2.22.2" />
     <PackageVersion Include="TomsToolbox.Wpf.Composition.AttributedModel" Version="2.22.2" />
     <PackageVersion Include="TomsToolbox.Wpf.Styles" Version="2.22.2" />
