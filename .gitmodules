@@ -2,3 +2,6 @@
 	path = ILSpy-tests
 	url = https://github.com/icsharpcode/ILSpy-tests
 	branch = master
+[submodule "AvaloniaEdit"]
+	path = AvaloniaEdit
+	url = https://github.com/lextudio/AvaloniaEdit

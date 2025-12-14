@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>ProjectRover</RootNamespace>
+    <AssemblyName>ProjectRover</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Svg.Skia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="DeviceId" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Polly.Contrib.WaitAndRetry" />
+    <PackageReference Include="System.Composition" />
+    <PackageReference Include="TextMateSharp.Grammars" />
+    <PackageReference Include="ResXResourceReader.NetStandard" />
+    <PackageReference Include="Dock.Avalonia" />
+    <PackageReference Include="Dock.Model.Avalonia" />
+    <PackageReference Include="Dock.Avalonia.Themes.Fluent" />
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ICSharpCode.ILSpyX\ICSharpCode.ILSpyX.csproj" />
+    <ProjectReference Include="..\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj" />
+    <ProjectReference Include="..\AvaloniaEdit\src\AvaloniaEdit.TextMate\AvaloniaEdit.TextMate.csproj" />
+    <ProjectReference Include="..\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="appsettings*.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Services\IPlatformService.cs">
+      <Link>Services\IPlatformService.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Docking\IDockWorkspace.cs">
+      <Link>Docking\IDockWorkspace.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\DecompilationOptions.cs">
+      <Link>ILSpy\DecompilationOptions.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\IMemberTreeNode.cs">
+      <Link>ILSpy\TreeNodes\IMemberTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Options\DisplaySettings.cs">
+      <Link>ILSpy\Options\DisplaySettings.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\ViewState.cs">
+      <Link>ILSpy\TextView\ViewState.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\ILSpyTreeNode.cs">
+      <Link>ILSpy\TreeNodes\ILSpyTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\LanguageService.cs">
+      <Link>ILSpy\Languages\LanguageService.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\Language.cs">
+      <Link>ILSpy\Languages\Language.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\ILLanguage.cs">
+      <Link>ILSpy\Languages\ILLanguage.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\ILAstLanguage.cs">
+      <Link>ILSpy\Languages\ILAstLanguage.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\CSharpLanguage.cs">
+      <Link>ILSpy\Languages\CSharpLanguage.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\LanguageSettings.cs">
+      <Link>ILSpy\LanguageSettings.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Util\SettingsService.cs">
+      <Link>ILSpy\Util\SettingsService.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\IResourceFileHandler.cs">
+      <Link>ILSpy\Languages\IResourceFileHandler.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\ResourceNodes\IResourceNodeFactory.cs">
+      <Link>ILSpy\TreeNodes\ResourceNodes\IResourceNodeFactory.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\FilterResult.cs">
+      <Link>ILSpy\TreeNodes\FilterResult.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ExportCommandAttribute.cs">
+      <Link>ILSpy\Commands\ExportCommandAttribute.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\NavigationState.cs">
+      <Link>ILSpy\NavigationState.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\NavigationHistory.cs">
+      <Link>ILSpy\NavigationHistory.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\CommandLineArguments.cs">
+      <Link>ILSpy\CommandLineArguments.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Updates\UpdateSettings.cs">
+      <Link>ILSpy\Updates\UpdateSettings.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\NamespaceTreeNode.cs">
+      <Link>ILSpy\TreeNodes\NamespaceTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\TypeTreeNode.cs">
+      <Link>ILSpy\TreeNodes\TypeTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AssemblyTree\AssemblyTreeModel.cs">
+      <Link>ILSpy\AssemblyTree\AssemblyTreeModel.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Options\MiscSettings.cs">
+      <Link>ILSpy\Options\MiscSettings.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\SessionSettings.cs">
+      <Link>ILSpy\SessionSettings.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Util\SettingsChangedEventArgs.cs">
+      <Link>ILSpy\Util\SettingsChangedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Util\WrappedEventArgs.cs">
+      <Link>ILSpy\Util\WrappedEventArgs.cs</Link>
+    </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\TypeIcon.cs">
+        <Link>ILSpy\Images\TypeIcon.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\AccessOverlayIcon.cs">
+        <Link>ILSpy\Images\AccessOverlayIcon.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyListTreeNode.cs">
+        <Link>ILSpy\TreeNodes\AssemblyListTreeNode.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\FieldTreeNode.cs">
+        <Link>ILSpy\TreeNodes\FieldTreeNode.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\PropertyTreeNode.cs">
+        <Link>ILSpy\TreeNodes\PropertyTreeNode.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\EventTreeNode.cs">
+        <Link>ILSpy\TreeNodes\EventTreeNode.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\MethodTreeNode.cs">
+        <Link>ILSpy\TreeNodes\MethodTreeNode.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\PackageFolderTreeNode.cs">
+        <Link>ILSpy\TreeNodes\PackageFolderTreeNode.cs</Link>
+      </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\BracketSearchResult.cs">
+        <Link>ILSpy\TextView\BracketSearchResult.cs</Link>
+      </Compile>
+    <!-- <Compile Include="$(MSBuildThisFileDirectory)..\..\..\ilspy\ILSpy\ILSpySettingsFilePathProvider.cs">
+      <Link>ILSpy\ILSpySettingsFilePathProvider.cs</Link>
+    </Compile> -->
+  </ItemGroup>
+</Project>
