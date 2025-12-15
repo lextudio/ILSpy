@@ -40,11 +40,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.module = module;
 		}
 
-		public override object Text => "Resources._Resources";
+		public override object Text => Resources._Resources;
 
-		public override object Icon => "Images.FolderClosed";
+		public override object Icon => Images.FolderClosed;
 
-		public override object ExpandedIcon => "Images.FolderOpen";
+		public override object ExpandedIcon => Images.FolderOpen;
 
 		protected override void LoadChildren()
 		{

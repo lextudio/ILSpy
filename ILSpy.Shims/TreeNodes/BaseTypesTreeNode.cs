@@ -45,9 +45,9 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.LazyLoading = true;
 		}
 
-		public override object Text => "Properties.Resources.BaseTypes";
+		public override object Text => Properties.Resources.BaseTypes;
 
-		public override object Icon => "Images.SuperTypes";
+		public override object Icon => Images.SuperTypes;
 
 		protected override void LoadChildren()
 		{

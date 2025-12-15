@@ -41,7 +41,7 @@ namespace ICSharpCode.ILSpy.Metadata
 
 		public override object Text => $"{(int)Kind:X2} {Kind} ({metadataFile.Metadata.GetTableRowCount(Kind)})";
 
-		public override object Icon => "Images.MetadataTable";
+		public override object Icon => Images.MetadataTable;
 
 		public MetadataTableTreeNode(TableIndex table, MetadataFile metadataFile)
 		{

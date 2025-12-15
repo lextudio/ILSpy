@@ -51,7 +51,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
 		public override object Text => Language.EscapeName(Resource.Name);
 
-		public override object Icon => "Images.Resource";
+		public override object Icon => Images.Resource;
 
 		public override FilterResult Filter(LanguageSettings settings)
 		{
@@ -72,7 +72,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			ISmartTextOutput smartOutput = output as ISmartTextOutput;
 			if (smartOutput != null)
 			{
-				smartOutput.AddButton(null, "Resources.Save", delegate { Save(DockWorkspace.ActiveTabPage); });
+				smartOutput.AddButton(null, Resources.Save, delegate { Save(DockWorkspace.ActiveTabPage); });
 				output.WriteLine();
 			}
 		}

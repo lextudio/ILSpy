@@ -37,6 +37,16 @@ namespace ICSharpCode.ILSpy
 		public static Bitmap Save { get; internal set; }
 		public static object Assembly { get; internal set; }
 		public static Bitmap ViewCode { get; internal set; }
-
+		public static object AssemblyWarning { get; internal set; }
+		public static object MetadataFile { get; internal set; }
+		public static object FindAssembly { get; internal set; }
+		public static object SuperTypes { get; internal set; }
+		public static object ReferenceFolder { get; internal set; }
+		public static object ResourceImage { get; internal set; }
+		public static object Resource { get; internal set; }
+		public static object ResourceResourcesFile { get; internal set; }
+		public static object ResourceXml { get; internal set; }
+		public static object ResourceXsd { get; internal set; }
+		public static object ResourceXslt { get; internal set; }
 	}
 }

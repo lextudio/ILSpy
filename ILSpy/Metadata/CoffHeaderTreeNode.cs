@@ -43,7 +43,7 @@ namespace ICSharpCode.ILSpy.Metadata
 
 		public override object Text => "COFF Header";
 
-		public override object Icon => "Images.Header";
+		public override object Icon => Images.Header;
 
 		public override bool View(TabPageModel tabPage)
 		{

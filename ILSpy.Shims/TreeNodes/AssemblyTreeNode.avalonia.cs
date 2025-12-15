@@ -62,7 +62,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
                 if (LoadedAssembly.IsLoaded)
                 {
                     if (LoadedAssembly.HasLoadError)
-                        return "Images.AssemblyWarning";
+                        return Images.AssemblyWarning;
                     var loadResult = LoadedAssembly.GetLoadResultAsync().GetAwaiter().GetResult();
                     if (loadResult.MetadataFile != null)
                     {
@@ -70,19 +70,19 @@ namespace ICSharpCode.ILSpy.TreeNodes
                         {
                             case MetadataFile.MetadataFileKind.PortableExecutable:
                             case MetadataFile.MetadataFileKind.WebCIL:
-                                return "Images.Assembly";
+                                return Images.Assembly;
                             default:
-                                return "Images.MetadataFile";
+                                return Images.MetadataFile;
                         }
                     }
                     else
                     {
-                        return "Images.FindAssembly";
+                        return Images.FindAssembly;
                     }
                 }
                 else
                 {
-                    return "Images.FindAssembly";
+                    return Images.FindAssembly;
                 }
             }
         }

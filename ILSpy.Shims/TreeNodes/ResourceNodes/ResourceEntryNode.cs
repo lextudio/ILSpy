@@ -37,7 +37,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
 		public override object Text => Language.EscapeName(key);
 
-		public override object Icon => "Images.Resource";
+		public override object Icon => Images.Resource;
 
 		protected Stream OpenStream()
 		{

@@ -43,9 +43,9 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.LazyLoading = true;
 		}
 
-		public override object Text => "Resources.References";
+		public override object Text => Resources.References;
 
-		public override object Icon => "Images.ReferenceFolder";
+		public override object Icon => Images.ReferenceFolder;
 
 		protected override void LoadChildren()
 		{
