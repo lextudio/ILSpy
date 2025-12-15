@@ -13,44 +13,44 @@ namespace ICSharpCode.ILSpy
 			get { return "SubTypes"; }
 		}
 
-		public static object ListFolder { get { return "ListFolder"; } }
-		public static object ListFolderOpen { get { return "ListFolderOpen"; } }
+		public static Bitmap ListFolder { get ;set; }
+		public static Bitmap ListFolderOpen { get ;set; }
 
-		public static object Header { get; internal set; }
-		public static object MetadataTableGroup { get; internal set; }
-		public static object Library { get; internal set; }
-		public static object Namespace { get; internal set; }
-		public static object FolderClosed { get; internal set; }
-		public static object FolderOpen { get; internal set; }
-		public static object MetadataTable { get; internal set; }
-		public static object ExportedType { get; internal set; }
-		public static object TypeReference { get; internal set; }
-		public static object MethodReference { get; internal set; }
-		public static object FieldReference { get; internal set; }
-		public static object Interface { get; internal set; }
-		public static object Class { get; internal set; }
-		public static object Field { get; internal set; }
-		public static object Method { get; internal set; }
-		public static object Property { get; internal set; }
-		public static object Event { get; internal set; }
-		public static object Literal { get; internal set; }
+		public static Bitmap Header { get; internal set; }
+		public static Bitmap MetadataTableGroup { get; internal set; }
+		public static Bitmap Library { get; internal set; }
+		public static Bitmap Namespace { get; internal set; }
+		public static Bitmap FolderClosed { get; internal set; }
+		public static Bitmap FolderOpen { get; internal set; }
+		public static Bitmap MetadataTable { get; internal set; }
+		public static Bitmap ExportedType { get; internal set; }
+		public static Bitmap TypeReference { get; internal set; }
+		public static Bitmap MethodReference { get; internal set; }
+		public static Bitmap FieldReference { get; internal set; }
+		public static Bitmap Interface { get; internal set; }
+		public static Bitmap Class { get; internal set; }
+		public static Bitmap Field { get; internal set; }
+		public static Bitmap Method { get; internal set; }
+		public static Bitmap Property { get; internal set; }
+		public static Bitmap Event { get; internal set; }
+		public static Bitmap Literal { get; internal set; }
 		public static Bitmap Save { get; internal set; }
-		public static object Assembly { get; internal set; }
+		public static Bitmap Assembly { get; internal set; }
 		public static Bitmap ViewCode { get; internal set; }
-		public static object AssemblyWarning { get; internal set; }
-		public static object MetadataFile { get; internal set; }
-		public static object FindAssembly { get; internal set; }
-		public static object SuperTypes { get; internal set; }
-		public static object ReferenceFolder { get; internal set; }
-		public static object ResourceImage { get; internal set; }
-		public static object Resource { get; internal set; }
-		public static object ResourceResourcesFile { get; internal set; }
-		public static object ResourceXml { get; internal set; }
-		public static object ResourceXsd { get; internal set; }
-		public static object ResourceXslt { get; internal set; }
-		public static object Heap { get; internal set; }
-		public static object Metadata { get; internal set; }
+		public static Bitmap AssemblyWarning { get; internal set; }
+		public static Bitmap MetadataFile { get; internal set; }
+		public static Bitmap FindAssembly { get; internal set; }
+		public static Bitmap SuperTypes { get; internal set; }
+		public static Bitmap ReferenceFolder { get; internal set; }
+		public static Bitmap ResourceImage { get; internal set; }
+		public static Bitmap Resource { get; internal set; }
+		public static Bitmap ResourceResourcesFile { get; internal set; }
+		public static Bitmap ResourceXml { get; internal set; }
+		public static Bitmap ResourceXsd { get; internal set; }
+		public static Bitmap ResourceXslt { get; internal set; }
+		public static Bitmap Heap { get; internal set; }
+		public static Bitmap Metadata { get; internal set; }
 
-		public static object Search { get; internal set; }
+		public static Bitmap Search { get; internal set; }
 	}
 }

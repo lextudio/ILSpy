@@ -53,12 +53,12 @@ namespace ICSharpCode.ILSpy
 		/// <summary>
 		/// Creates a button.
 		/// </summary>
-		public static void AddButton(this ISmartTextOutput output, Bitmap icon, string text, EventHandler<RoutedEventArgs> click)
+		public static void AddButton(this ISmartTextOutput output, Bitmap icon, string text, RoutedEventHandler click)
 		{
 			output.AddUIElement(
 				delegate {
 					Button button = new Button(); // TODO: use ThemeManager when available
-					button.Cursor = Cursor.Default; //Cursor.Arrow;
+					button.Cursor = new Cursor(StandardCursorType.Arrow);
 					button.Margin = new Thickness(2);
 					button.Padding = new Thickness(9, 1, 9, 1);
 					button.MinWidth = 73;
@@ -76,7 +76,7 @@ namespace ICSharpCode.ILSpy
 					{
 						button.Content = text;
 					}
-					button.Click += click;
+					// TODO: button.Click += click;
 					return button;
 				});
 		}

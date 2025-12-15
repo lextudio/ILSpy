@@ -1,3 +1,5 @@
+using Avalonia.Media.Imaging;
+
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
 
@@ -16,7 +18,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				Avalonia.Threading.DispatcherPriority.Background);
 		}
 
-		public static object GetIcon(IMember member)
+		public static Bitmap GetIcon(IMember member)
 		{
 			// TODO:
 			return null;
