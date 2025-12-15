@@ -71,6 +71,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\IMemberTreeNode.cs">
       <Link>TreeNodes\IMemberTreeNode.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\DebugStepsPaneModel.cs">
+      <Link>ViewModels\DebugStepsPaneModel.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\LegacyToolPaneModel.cs">
+      <Link>ViewModels\LegacyToolPaneModel.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DelegateCommand.cs">
+      <Link>Commands\DelegateCommand.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Options\DisplaySettings.cs">
       <Link>Options\DisplaySettings.cs</Link>
     </Compile>

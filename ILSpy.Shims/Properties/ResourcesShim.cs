@@ -18,6 +18,15 @@ namespace ICSharpCode.ILSpy.Properties
 
 		public static string DecompilationWasCancelled {get;set;}
 
+		public static string DebugSteps { get { return "Debug Steps"; } }
+
+		public static string NewList { get { return "New List"; } }
+		public static string ListExistsAlready { get { return "A list with that name already exists."; } }
+		public static string ListsResetConfirmation { get { return "Are you sure you want to reset lists?"; } }
+		public static string ListDeleteConfirmation { get { return "Are you sure you want to delete this list?"; } }
+		public static string RenameList { get { return "Rename List"; } }
+		public static string AddPreconfiguredList { get { return "Add preconfigured list"; } }
+
 		public static string ProjectExportPathTooLong { get;set;}
 		public static string DecompilationCompleteInF1Seconds { get; internal set; }
 		public static string DisplayCode { get; internal set; }
