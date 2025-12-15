@@ -1,5 +1,13 @@
+using Avalonia.Input;
+
 namespace System.Windows.Input
 {
+
+    public static class Cursors
+    {
+        public static Cursor Arrow { get; } = new Cursor(StandardCursorType.Arrow);
+    }
+
     public static class Keyboard
     {
         public static FocusedElement FocusedElement => new FocusedElement();

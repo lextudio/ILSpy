@@ -75,7 +75,7 @@ namespace ICSharpCode.ILSpy
 					{
 						button.Content = text;
 					}
-					button.Click += click;
+					// TODO: button.Click += click;
 					return button;
 				});
 		}

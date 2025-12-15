@@ -20,7 +20,7 @@ using System.Windows.Input;
 
 namespace ICSharpCode.ILSpy.ViewModels
 {
-	public abstract partial class ToolPaneModel : PaneModel
+	public abstract class ToolPaneModel : PaneModel
 	{
 		public virtual void Show()
 		{
@@ -31,5 +31,6 @@ namespace ICSharpCode.ILSpy.ViewModels
 		public string Icon { get; protected set; }
 
 		public ICommand AssociatedCommand { get; set; }
+		public KeyGesture ShortcutKey { get; protected set; }
 	}
 }

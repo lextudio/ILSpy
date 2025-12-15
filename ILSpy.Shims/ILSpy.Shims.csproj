@@ -274,6 +274,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\CSharpBracketSearcher.cs">
       <Link>Languages\CSharpBracketSearcher.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ISmartTextOutput.cs">
+      <Link>ISmartTextOutput.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\LanguageSettings.cs">
       <Link>LanguageSettings.cs</Link>
     </Compile>

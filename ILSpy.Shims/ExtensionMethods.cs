@@ -83,7 +83,12 @@ namespace ICSharpCode.ILSpy.Analyzers
 namespace ICSharpCode.ILSpy.Search
 {
 
-} 
+}
+
+namespace System.Windows.Controls
+{
+    
+}
 
 namespace System.Windows.Data
 {
