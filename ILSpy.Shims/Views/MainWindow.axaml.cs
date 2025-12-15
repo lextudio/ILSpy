@@ -51,8 +51,9 @@ using TextMateSharp.Grammars;
 using System.IO;
 
 using static AvaloniaEdit.Utils.ExtensionMethods;
+using ProjectRover;
 
-namespace ProjectRover.Views;
+namespace ICSharpCode.ILSpy.Views;
 
 public partial class MainWindow : Window
 {
@@ -85,7 +86,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        Program.UnhandledException += (_, e) =>
+        ProjectRover.Program.UnhandledException += (_, e) =>
         {
             logger.LogCritical(e, "Unhandled exception occured");
         };
@@ -100,18 +101,18 @@ public partial class MainWindow : Window
         _ = autoUpdateService.CheckForNewerVersionAsync();
         _ = appInformationProvider.TryLoadRemoteAdditionalInfoAsync();
         
-        resourceInlineGenerator = new InlineResourceElementGenerator(
-            () => viewModel?.InlineObjects,
-            entry => viewModel?.SaveImageEntryAsync(entry),
-            entry => viewModel?.SaveObjectEntryAsync(entry));
-        TextEditor.TextArea.TextView.ElementGenerators.Insert(0, resourceInlineGenerator);
+        // resourceInlineGenerator = new InlineResourceElementGenerator(
+        //     () => viewModel?.InlineObjects,
+        //     entry => viewModel?.SaveImageEntryAsync(entry),
+        //     entry => viewModel?.SaveObjectEntryAsync(entry));
+        // TextEditor.TextArea.TextView.ElementGenerators.Insert(0, resourceInlineGenerator);
         TextEditor.TextArea.TextView.ElementGenerators.Add(new ReferenceElementGenerator());
         
         registryOptions = new RegistryOptions(ThemeName.LightPlus);
         textMateInstallation = TextEditor.InstallTextMate(registryOptions);
         textMateInstallation.SetGrammar(registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cs").Id));
-        ApplyTheme(viewModel.SelectedTheme);
-        viewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        //ApplyTheme(viewModel.SelectedTheme);
+        //viewModel.PropertyChanged += ViewModelOnPropertyChanged;
         viewModel.PropertyChanged += ViewModelPropertyChanged;
         UpdateDocumentTitle();
 
@@ -131,16 +132,16 @@ public partial class MainWindow : Window
             {
                 if (reference.MemberReference is System.Reflection.Metadata.EntityHandle handle)
                 {
-                    viewModel.SelectNodeByMemberReference(handle);
+                    //viewModel.SelectNodeByMemberReference(handle);
                 }
                 else if (reference.MemberReference is string fullName)
                 {
-                    viewModel.NavigateByFullName(fullName);
+                    //viewModel.NavigateByFullName(fullName);
                 }
             }
             else
             {
-                viewModel.TryLoadUnresolvedReference();
+                //viewModel.TryLoadUnresolvedReference();
             }
 
             args.Handled = true;
@@ -203,7 +204,7 @@ public partial class MainWindow : Window
             var files = data.GetFiles();
             if (files != null)
             {
-                viewModel?.LoadAssemblies(files.Select(file => file.Path.LocalPath));
+                //viewModel?.LoadAssemblies(files.Select(file => file.Path.LocalPath));
             }
 #pragma warning restore CS0618 // Type or member is obsolete
 
@@ -218,15 +219,15 @@ public partial class MainWindow : Window
             if (args.Handled)
                 return;
             
-            if (args.InitialPressMouseButton == MouseButton.XButton1 && viewModel.BackCommand.CanExecute(null))
+            if (args.InitialPressMouseButton == MouseButton.XButton1)// && viewModel.BackCommand.CanExecute(null))
             {
-                viewModel.BackCommand.Execute(null);
+                //viewModel.BackCommand.Execute(null);
 
                 args.Handled = true;
             }
-            else if (args.InitialPressMouseButton == MouseButton.XButton2 && viewModel.ForwardCommand.CanExecute(null))
+            else if (args.InitialPressMouseButton == MouseButton.XButton2)// && viewModel.ForwardCommand.CanExecute(null))
             {
-                viewModel.ForwardCommand.Execute(null);
+                //viewModel.ForwardCommand.Execute(null);
                 
                 args.Handled = true;
             }
@@ -242,7 +243,7 @@ public partial class MainWindow : Window
         documentHost = new Document
         {
             Id = "DocumentPane",
-            Title = GetDocumentTitle(),
+            //Title = GetDocumentTitle(),
             Content = centerDockView,
             Context = viewModel,
             CanClose = false,
@@ -354,24 +355,24 @@ public partial class MainWindow : Window
 
         UpdateDocumentTitle();
 
-        if (viewModel?.IsSearchDockVisible == true)
+        //if (viewModel?.IsSearchDockVisible == true)
         {
             ShowSearchDock();
         }
     }
 
-    private string GetDocumentTitle() =>
-        viewModel?.AssemblyNodes.Count == 0 ? "New Tab" : "Document";
+    // private string GetDocumentTitle() =>
+    //     viewModel?.AssemblyNodes.Count == 0 ? "New Tab" : "Document";
 
     private void ViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MainWindowViewModel.SelectedNode))
+        //if (e.PropertyName == nameof(MainWindowViewModel.SelectedNode))
         {
             UpdateDocumentTitle();
         }
 
-        if (e.PropertyName == nameof(MainWindowViewModel.Document)
-            || e.PropertyName == nameof(MainWindowViewModel.InlineObjects))
+        //if (e.PropertyName == nameof(MainWindowViewModel.Document)
+        //   || e.PropertyName == nameof(MainWindowViewModel.InlineObjects))
         {
             TextEditor.TextArea.TextView.Redraw();
         }
@@ -382,8 +383,8 @@ public partial class MainWindow : Window
         if (documentHost == null)
             return;
 
-        var name = viewModel?.SelectedNode?.Name;
-        documentHost.Title = string.IsNullOrWhiteSpace(name) ? "New Tab" : name;
+        //var name = viewModel?.SelectedNode?.Name;
+        //documentHost.Title = string.IsNullOrWhiteSpace(name) ? "New Tab" : name;
     }
 
     private void ShowSearchDock()
@@ -411,7 +412,7 @@ public partial class MainWindow : Window
 
         if (viewModel != null)
         {
-            viewModel.IsSearchDockVisible = true;
+            //viewModel.IsSearchDockVisible = true;
         }
     }
 
@@ -429,25 +430,25 @@ public partial class MainWindow : Window
             && !string.IsNullOrEmpty(resolved.FilePath)
             && File.Exists(resolved.FilePath))
         {
-            var existing = viewModel?.FindAssemblyNodeByFilePath(resolved.FilePath);
-            if (existing is not null)
+            //var existing = viewModel?.FindAssemblyNodeByFilePath(resolved.FilePath);
+            //if (existing is not null)
             {
                 if (viewModel != null)
                 {
-                    viewModel.SelectedNode = existing;
+                    //viewModel.SelectedNode = existing;
                 }
                 TreeView.Focus();
                 e.Handled = true;
                 return;
             }
 
-            var added = viewModel?.LoadAssemblies(new[] { resolved.FilePath }, loadDependencies: true);
-            var newAssembly = added?.FirstOrDefault();
-            if (newAssembly is not null)
+            //var added = viewModel?.LoadAssemblies(new[] { resolved.FilePath }, loadDependencies: true);
+            //var newAssembly = added?.FirstOrDefault();
+            //if (newAssembly is not null)
             {
                 if (viewModel != null)
                 {
-                    viewModel.SelectedNode = newAssembly;
+                    //viewModel.SelectedNode = newAssembly;
                 }
                 TreeView.Focus();
             }
@@ -462,36 +463,36 @@ public partial class MainWindow : Window
 
         if (e.Key == Key.Delete && TreeView.SelectedItem is AssemblyNode assemblyNode)
         {
-            viewModel?.RemoveAssembly(assemblyNode);
+            //viewModel?.RemoveAssembly(assemblyNode);
             e.Handled = true;
         }
     }
 
-    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(MainWindowViewModel.SelectedTheme))
-        {
-            ApplyTheme(viewModel?.SelectedTheme);
-        }
+    // private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    // {
+    //     if (e.PropertyName == nameof(MainWindowViewModel.SelectedTheme))
+    //     {
+    //         ApplyTheme(viewModel?.SelectedTheme);
+    //     }
 
-        if (e.PropertyName == nameof(MainWindowViewModel.Document)
-            || e.PropertyName == nameof(MainWindowViewModel.InlineObjects))
-        {
-            TextEditor.TextArea.TextView.Redraw();
-        }
-    }
+    //     if (e.PropertyName == nameof(MainWindowViewModel.Document)
+    //         || e.PropertyName == nameof(MainWindowViewModel.InlineObjects))
+    //     {
+    //         TextEditor.TextArea.TextView.Redraw();
+    //     }
+    // }
 
-    private void ApplyTheme(MainWindowViewModel.ThemeOption? themeOption)
-    {
-        var variant = themeOption?.Variant ?? ThemeVariant.Light;
-        Application.Current!.RequestedThemeVariant = variant;
+    // private void ApplyTheme(MainWindowViewModel.ThemeOption? themeOption)
+    // {
+    //     var variant = themeOption?.Variant ?? ThemeVariant.Light;
+    //     Application.Current!.RequestedThemeVariant = variant;
 
-        var textMateTheme = variant == ThemeVariant.Dark ? ThemeName.DarkPlus : ThemeName.LightPlus;
-        if (textMateInstallation != null && registryOptions != null)
-        {
-            textMateInstallation.SetTheme(registryOptions.LoadTheme(textMateTheme));
-        }
-    }
+    //     var textMateTheme = variant == ThemeVariant.Dark ? ThemeName.DarkPlus : ThemeName.LightPlus;
+    //     if (textMateInstallation != null && registryOptions != null)
+    //     {
+    //         textMateInstallation.SetTheme(registryOptions.LoadTheme(textMateTheme));
+    //     }
+    // }
     
     private void TreeView_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
@@ -499,46 +500,47 @@ public partial class MainWindow : Window
 
     private class InlineResourceElementGenerator : VisualLineElementGenerator
     {
-        private readonly Func<IReadOnlyList<MainWindowViewModel.InlineObjectSpec>?> inlineSource;
-        private readonly Action<MainWindowViewModel.ResourceImageEntry>? saveImage;
-        private readonly Action<MainWindowViewModel.ResourceObjectEntry>? saveObject;
+        //private readonly Func<IReadOnlyList<MainWindowViewModel.InlineObjectSpec>?> inlineSource;
+        //private readonly Action<MainWindowViewModel.ResourceImageEntry>? saveImage;
+        //private readonly Action<MainWindowViewModel.ResourceObjectEntry>? saveObject;
 
-        public InlineResourceElementGenerator(Func<IReadOnlyList<MainWindowViewModel.InlineObjectSpec>?> inlineSource,
-            Action<MainWindowViewModel.ResourceImageEntry>? saveImage = null,
-            Action<MainWindowViewModel.ResourceObjectEntry>? saveObject = null)
-        {
-            this.inlineSource = inlineSource;
-            this.saveImage = saveImage;
-            this.saveObject = saveObject;
-        }
+        // public InlineResourceElementGenerator(Func<IReadOnlyList<MainWindowViewModel.InlineObjectSpec>?> inlineSource,
+        //     Action<MainWindowViewModel.ResourceImageEntry>? saveImage = null,
+        //     Action<MainWindowViewModel.ResourceObjectEntry>? saveObject = null)
+        // {
+        //     this.inlineSource = inlineSource;
+        //     this.saveImage = saveImage;
+        //     this.saveObject = saveObject;
+        // }
 
         public override int GetFirstInterestedOffset(int startOffset)
         {
-            var inlines = inlineSource() ?? Array.Empty<MainWindowViewModel.InlineObjectSpec>();
-            var next = inlines.Select(i => i.Offset).Where(o => o >= startOffset).DefaultIfEmpty(-1).Min();
-            return next;
+            //var inlines = inlineSource() ?? Array.Empty<MainWindowViewModel.InlineObjectSpec>();
+            //var next = inlines.Select(i => i.Offset).Where(o => o >= startOffset).DefaultIfEmpty(-1).Min();
+            //return next;
+            return -1;
         }
 
         public override VisualLineElement ConstructElement(int offset)
         {
-            var inlines = inlineSource() ?? Array.Empty<MainWindowViewModel.InlineObjectSpec>();
-            var match = inlines.FirstOrDefault(i => i.Offset == offset);
-            if (match == null)
+            //var inlines = inlineSource() ?? Array.Empty<MainWindowViewModel.InlineObjectSpec>();
+            //var match = inlines.FirstOrDefault(i => i.Offset == offset);
+            //if (match == null)
+            //    return null!;
+
+            //Control control = match.Kind switch
+            // {
+            //     MainWindowViewModel.InlineObjectKind.Image when match.Image != null => BuildImageControl(match),
+            //     MainWindowViewModel.InlineObjectKind.Table when match.Entries != null => BuildTableControl(match.Caption, match.Entries),
+            //     MainWindowViewModel.InlineObjectKind.ObjectTable when match.ObjectEntries != null => BuildObjectTable(match.Caption, match.ObjectEntries),
+            //     MainWindowViewModel.InlineObjectKind.Image when match.ImageEntries != null => BuildImageList(match.Caption, match.ImageEntries),
+            //     _ => null!
+            // };
+
+            //if (control == null)
                 return null!;
 
-            Control control = match.Kind switch
-            {
-                MainWindowViewModel.InlineObjectKind.Image when match.Image != null => BuildImageControl(match),
-                MainWindowViewModel.InlineObjectKind.Table when match.Entries != null => BuildTableControl(match.Caption, match.Entries),
-                MainWindowViewModel.InlineObjectKind.ObjectTable when match.ObjectEntries != null => BuildObjectTable(match.Caption, match.ObjectEntries),
-                MainWindowViewModel.InlineObjectKind.Image when match.ImageEntries != null => BuildImageList(match.Caption, match.ImageEntries),
-                _ => null!
-            };
-
-            if (control == null)
-                return null!;
-
-            return new InlineObjectElement(1, control);
+            //return new InlineObjectElement(1, control);
         }
 
         private static Control BuildTableControl(string? caption, IReadOnlyList<KeyValuePair<string, string>> entries)
@@ -591,7 +593,7 @@ public partial class MainWindow : Window
             return stack;
         }
 
-        private Control BuildImageControl(MainWindowViewModel.InlineObjectSpec spec)
+        private Control BuildImageControl()//MainWindowViewModel.InlineObjectSpec spec)
         {
             var stack = new StackPanel
             {
@@ -599,36 +601,36 @@ public partial class MainWindow : Window
                 Spacing = 2
             };
 
-            if (!string.IsNullOrWhiteSpace(spec.Caption))
+            //if (!string.IsNullOrWhiteSpace(spec.Caption))
             {
                 stack.Children.Add(new TextBlock
                 {
-                    Text = spec.Caption,
+                    //Text = spec.Caption,
                     FontWeight = FontWeight.SemiBold
                 });
             }
 
             stack.Children.Add(new Image
             {
-                Source = spec.Image,
+                //Source = spec.Image,
                 Stretch = Stretch.None
             });
 
-            if (saveImage != null && spec.ImageEntries == null)
+            //if (saveImage != null && spec.ImageEntries == null)
             {
                 var btn = new Button
                 {
                     Content = "Save",
                     Padding = new Thickness(4)
                 };
-                btn.Click += (_, __) => saveImage(new MainWindowViewModel.ResourceImageEntry(spec.Caption ?? "image", spec.Image!, spec.Caption ?? string.Empty));
+                //btn.Click += (_, __) => saveImage(new MainWindowViewModel.ResourceImageEntry(spec.Caption ?? "image", spec.Image!, spec.Caption ?? string.Empty));
                 stack.Children.Add(btn);
             }
 
             return stack;
         }
 
-        private Control BuildObjectTable(string? caption, IReadOnlyList<MainWindowViewModel.ResourceObjectEntry> entries)
+        private Control BuildObjectTable()//string? caption, IReadOnlyList<MainWindowViewModel.ResourceObjectEntry> entries)
         {
             var stack = new StackPanel
             {
@@ -636,11 +638,11 @@ public partial class MainWindow : Window
                 Spacing = 4
             };
 
-            if (!string.IsNullOrWhiteSpace(caption))
+            //if (!string.IsNullOrWhiteSpace(caption))
             {
                 stack.Children.Add(new TextBlock
                 {
-                    Text = caption,
+                    //Text = caption,
                     FontWeight = FontWeight.SemiBold
                 });
             }
@@ -651,20 +653,20 @@ public partial class MainWindow : Window
                 Spacing = 2
             };
 
-            foreach (var entry in entries)
+            //foreach (var entry in entries)
             {
                 list.Children.Add(new TextBlock
                 {
-                    Text = $"{entry.Name} [{entry.Type}] = {entry.Display}"
+                    //Text = $"{entry.Name} [{entry.Type}] = {entry.Display}"
                 });
-                if (saveObject != null && entry.Raw != null)
+                //if (saveObject != null && entry.Raw != null)
                 {
                     var btn = new Button
                     {
                         Content = "Save entry",
                         Padding = new Thickness(2)
                     };
-                    btn.Click += (_, __) => saveObject(entry);
+                    //btn.Click += (_, __) => saveObject(entry);
                     list.Children.Add(btn);
                 }
             }
@@ -688,7 +690,7 @@ public partial class MainWindow : Window
             return stack;
         }
 
-        private Control BuildImageList(string? caption, IReadOnlyList<MainWindowViewModel.ResourceImageEntry> entries)
+        private Control BuildImageList(string? caption)//, IReadOnlyList<MainWindowViewModel.ResourceImageEntry> entries)
         {
             var stack = new StackPanel
             {
@@ -711,27 +713,27 @@ public partial class MainWindow : Window
                 Spacing = 6
             };
 
-            foreach (var entry in entries)
+            //foreach (var entry in entries)
             {
                 var itemStack = new StackPanel
                 {
                     Orientation = Avalonia.Layout.Orientation.Vertical,
                     Spacing = 2
                 };
-                itemStack.Children.Add(new TextBlock { Text = $"{entry.Name} ({entry.Label})" });
+                //itemStack.Children.Add(new TextBlock { Text = $"{entry.Name} ({entry.Label})" });
                 itemStack.Children.Add(new Image
                 {
-                    Source = entry.Image,
+                    //Source = entry.Image,
                     Stretch = Stretch.None
                 });
-                if (saveImage != null)
+                //if (saveImage != null)
                 {
                     var btn = new Button
                     {
                         Content = "Save entry",
                         Padding = new Thickness(2)
                     };
-                    btn.Click += (_, __) => saveImage(entry);
+                    //btn.Click += (_, __) => saveImage(entry);
                     itemStack.Children.Add(btn);
                 }
                 list.Children.Add(itemStack);
@@ -873,7 +875,7 @@ public partial class MainWindow : Window
 
             if (e.KeyModifiers.HasFlag(NavigateToKeyModifier))
             {
-                var mainWindow = ((App.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!.MainWindow as MainWindow)!;
+                var mainWindow = ((ProjectRover.App.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!.MainWindow as MainWindow)!;
                 var textEditor = mainWindow.TextEditor;
                 if (textEditor.TextArea.TextView.CapturePointer(e.Pointer))
                 {
@@ -895,7 +897,7 @@ public partial class MainWindow : Window
 
             if (pressed == this)
             {
-                var mainWindow = ((App.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!.MainWindow as MainWindow)!;
+                var mainWindow = ((ProjectRover.App.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!.MainWindow as MainWindow)!;
                 var textEditor = mainWindow.TextEditor;
                 textEditor.TextArea.TextView.ReleasePointerCapture(e.Pointer);
 
@@ -903,12 +905,12 @@ public partial class MainWindow : Window
                 {
                     if (memberReference is System.Reflection.Metadata.EntityHandle handle)
                     {
-                        mainWindow.viewModel?.SelectNodeByMemberReference(handle);
+                        //mainWindow.viewModel?.SelectNodeByMemberReference(handle);
                     }
                 }
                 else
                 {
-                    mainWindow.viewModel?.TryLoadUnresolvedReference();
+                    //mainWindow.viewModel?.TryLoadUnresolvedReference();
                 }
                 
                 pressed = null;

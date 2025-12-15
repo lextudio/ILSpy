@@ -30,6 +30,7 @@ using System.Composition.Hosting;
 using TomsToolbox.Composition;
 using ProjectRover.Views;
 using System.Diagnostics.CodeAnalysis;
+using ICSharpCode.ILSpy.Views;
 
 namespace ProjectRover;
 

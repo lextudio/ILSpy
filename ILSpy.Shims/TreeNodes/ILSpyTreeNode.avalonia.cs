@@ -16,7 +16,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				Avalonia.Threading.DispatcherPriority.Background);
 		}
 
-		public object GetIcon(IMember member)
+		public static object GetIcon(IMember member)
 		{
 			// TODO:
 			return null;

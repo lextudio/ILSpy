@@ -54,6 +54,6 @@ namespace ICSharpCode.ILSpy
 		public static object Interface { get; internal set; }
 		public static object Class { get; internal set; }
 		public static Bitmap Save { get; internal set; }
-
+		public static object Assembly { get; internal set; }
 	}
 }

@@ -68,7 +68,7 @@ using ICSharpCode.ILSpyX;
 
 using Microsoft.Win32;
 
-using ProjectRover.Views;
+using ICSharpCode.ILSpy.Views;
 
 using TomsToolbox.Composition;
 using TomsToolbox.Wpf;

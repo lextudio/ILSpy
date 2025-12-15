@@ -8,7 +8,7 @@
              xmlns:designViewModels="clr-namespace:ProjectRover.ViewModels.Design"
              xmlns:converters="clr-namespace:ProjectRover.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="ProjectRover.Views.UpdatePanel"
+             x:Class="ICSharpCode.ILSpy.Views.UpdatePanel"
              x:DataType="viewModels:IUpdatePanelViewModel">
 
     <Design.DataContext>

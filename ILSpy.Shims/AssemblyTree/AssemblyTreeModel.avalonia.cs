@@ -13,7 +13,7 @@ using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpyX;
 using ICSharpCode.ILSpyX.TreeView;
 
-using ProjectRover.Views;
+using ICSharpCode.ILSpy.Views;
 
 using TomsToolbox.Composition;
 

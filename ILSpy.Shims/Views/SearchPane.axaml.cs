@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using ProjectRover.SearchResults;
 using ProjectRover.ViewModels;
 
-namespace ProjectRover.Views;
+namespace ICSharpCode.ILSpy.Views;
 
 public partial class SearchPane : UserControl
 {
@@ -17,9 +17,9 @@ public partial class SearchPane : UserControl
 
     private void OnClearSearchClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (DataContext is ViewModels.MainWindowViewModel vm)
+        if (DataContext is MainWindowViewModel vm)
         {
-            vm.SearchText = string.Empty;
+            // TODO: vm.SearchText = string.Empty;
         }
 
         SearchTextBox.Focus();
@@ -35,7 +35,7 @@ public partial class SearchPane : UserControl
 
         if (listBox.SelectedItem is SearchResult result)
         {
-            vm.NavigateToSearchResult(result);
+            //vm.NavigateToSearchResult(result);
             e.Handled = true;
         }
     }

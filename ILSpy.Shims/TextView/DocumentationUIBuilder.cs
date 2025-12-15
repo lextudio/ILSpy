@@ -19,7 +19,7 @@ using ICSharpCode.Decompiler.Output;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.Options;
 
-using ProjectRover.Views;
+using ICSharpCode.ILSpy.Views;
 
 namespace ICSharpCode.ILSpy.TextView
 {

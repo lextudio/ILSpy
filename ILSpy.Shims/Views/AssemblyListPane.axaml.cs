@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 using ICSharpCode.ILSpyX.TreeView;
 
-namespace ProjectRover.Views;
+namespace ICSharpCode.ILSpy.Views;
 
 public partial class AssemblyListPane : UserControl
 {

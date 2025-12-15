@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using ProjectRover.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ProjectRover.Views;
+namespace ICSharpCode.ILSpy.Views;
 
 public partial class AboutDialog : Window
 {
@@ -10,7 +10,7 @@ public partial class AboutDialog : Window
     {
         InitializeComponent();
 
-        if (!Design.IsDesignMode)
-            DataContext = App.Current.Services.GetRequiredService<IAboutWindowViewModel>();
+        // TODO: if (!Design.IsDesignMode)
+        //    DataContext = App.Current.Services.GetRequiredService<IAboutWindowViewModel>();
     }
 }

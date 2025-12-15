@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:ProjectRover.ViewModels"
         xmlns:design="clr-namespace:ProjectRover.ViewModels.Design"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
-        x:Class="ProjectRover.Views.AboutDialog"
+        x:Class="ICSharpCode.ILSpy.Views.AboutDialog"
         x:DataType="viewModels:IAboutWindowViewModel"
         Width="500"
         Padding="30"

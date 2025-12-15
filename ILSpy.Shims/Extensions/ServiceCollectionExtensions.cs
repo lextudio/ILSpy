@@ -33,6 +33,7 @@ using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
 using AssemblyTreeModel = ProjectRover.ViewModels.AssemblyTreeModel;
 using SettingsService = ProjectRover.Services.SettingsService;
+using ICSharpCode.ILSpy.Views;
 
 namespace ProjectRover.Extensions;
 
@@ -66,7 +67,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddViewModels(this IServiceCollection services) =>
         services
             .AddSingleton<AssemblyTreeModel>()
-            .AddSingleton<MainWindowViewModel>()
+            .AddSingleton<ViewModels.MainWindowViewModel>()
             .AddTransient<IAboutWindowViewModel, AboutWindowViewModel>()
             .AddSingleton<IUpdatePanelViewModel, UpdatePanelViewModel>();
 

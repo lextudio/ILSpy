@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using AvaloniaEdit;
 
-namespace ProjectRover.Views;
+namespace ICSharpCode.ILSpy.Views;
 
 public partial class DecompilerPane : UserControl
 {
