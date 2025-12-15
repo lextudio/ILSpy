@@ -6,13 +6,8 @@ namespace ICSharpCode.ILSpy
     internal static class Images
     {
         // Return null for the ImageSource shim; callers in AboutPage handle nulls gracefully.
-        public static IImage OK => null;
-
-        public static IImage Load(object owner, string path) => null;
-
-
-
-
+        public static Bitmap OK => null;
+        public static Bitmap Load(object owner, string path) => null;
 
 		public static object SubTypes {
 			get { return "SubTypes"; }
@@ -48,5 +43,7 @@ namespace ICSharpCode.ILSpy
 		public static object ResourceXml { get; internal set; }
 		public static object ResourceXsd { get; internal set; }
 		public static object ResourceXslt { get; internal set; }
+		public static object Heap { get; internal set; }
+		public static object Metadata { get; internal set; }
 	}
 }
