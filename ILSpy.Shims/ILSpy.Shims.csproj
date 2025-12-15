@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -10,6 +10,7 @@
     <AssemblyName>ProjectRover</AssemblyName>
     <!-- <GenerateResxSource>true</GenerateResxSource>
     <ResxClassAccessibility>public</ResxClassAccessibility> -->
+    <UserSecretsId>57fe8775-5a92-48de-8bd9-948dc8880d3d</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -248,6 +249,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\UpdatePanelViewModel.cs">
       <Link>ViewModels\UpdatePanelViewModel.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\PaneModel.cs">
+      <Link>ViewModels\PaneModel.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\NamespaceTreeNode.cs">
       <Link>TreeNodes\NamespaceTreeNode.cs</Link>

@@ -42,6 +42,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 {
 	using Avalonia.Media;
 
+
 	using ICSharpCode.Decompiler.TypeSystem;
 
 	using TomsToolbox.Wpf;
