@@ -45,5 +45,7 @@ namespace ICSharpCode.ILSpy
 		public static object ResourceXslt { get; internal set; }
 		public static object Heap { get; internal set; }
 		public static object Metadata { get; internal set; }
+
+		public static object Search { get; internal set; }
 	}
 }

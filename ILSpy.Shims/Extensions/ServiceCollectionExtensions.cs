@@ -22,8 +22,6 @@ using ProjectRover.Options;
 using ProjectRover.Providers;
 using ProjectRover.Services;
 using ICSharpCode.ILSpy;
-using ProjectRover.ViewModels;
-using ProjectRover.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

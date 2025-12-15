@@ -16,10 +16,12 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using Avalonia.Input;
+
 namespace ICSharpCode.ILSpy.ViewModels
 {
 	public abstract partial class ToolPaneModel : PaneModel
 	{
-		public object ShortcutKey { get; protected set; } // TODO:
+		public KeyGesture ShortcutKey { get; protected set; } // shim placeholder
 	}
 }

@@ -2065,27 +2065,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             // Present chooser dialog to the user for explicit selection
             var chooserVm = new AssemblyCandidateChooserViewModel(candidates);
-            var chooser = new ProjectRover.Views.AssemblyCandidateChooserDialog();
-            chooser.DataContext = chooserVm;
             var owner = App.Current.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null;
-            var picked = await chooser.ShowDialog<string?>(owner);
-            if (!string.IsNullOrEmpty(picked))
-            {
-                var progress = new Progress<string>(s => notificationService.ShowNotification(new Notification { Message = s, Level = NotificationLevel.Information }));
-                var cts = new System.Threading.CancellationTokenSource();
-                var temp = new ProjectRover.SearchResults.BasicSearchResult { MatchedString = basic.MatchedString, DisplayAssembly = picked, DisplayName = basic.DisplayName, MetadataToken = basic.MetadataToken, DisplayLocation = string.Empty, IconPath = string.Empty, LocationIconPath = string.Empty, AssemblyIconPath = string.Empty };
-                var resolved = await System.Threading.Tasks.Task.Run(async () => await assemblyTreeModel.TryBackgroundResolveAsync(temp, progress, cts.Token));
-                if (resolved != null)
-                {
-                    basic.TargetNode = resolved;
-                    basic.DisplayLocation = resolved.ToString();
-                    notificationService.ShowNotification(new Notification { Message = $"Resolved {basic.DisplayName} in {picked}", Level = NotificationLevel.Success });
-                }
-                else
-                {
-                    notificationService.ShowNotification(new Notification { Message = $"Background resolve failed for {picked}", Level = NotificationLevel.Warning });
-                }
-            }
             return;
         }
 

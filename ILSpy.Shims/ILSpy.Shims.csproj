@@ -262,6 +262,48 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\TypeTreeNode.cs">
       <Link>TreeNodes\TypeTreeNode.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedAccessorTreeNode.cs">
+      <Link>Analyzers\TreeNodes\AnalyzedAccessorTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedEventTreeNode.cs">
+      <Link>Analyzers\TreeNodes\AnalyzedEventTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedFieldTreeNode.cs">
+      <Link>Analyzers\TreeNodes\AnalyzedFieldTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedMethodTreeNode.cs">
+      <Link>Analyzers\TreeNodes\AnalyzedMethodTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedModuleTreeNode.cs">
+      <Link>Analyzers\TreeNodes\AnalyzedModuleTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedPropertyTreeNode.cs">
+      <Link>Analyzers\TreeNodes\AnalyzedPropertyTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedTypeTreeNode.cs">
+      <Link>Analyzers\TreeNodes\AnalyzedTypeTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzerTreeNode.cs">
+      <Link>Analyzers\AnalyzerTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzerRootNode.cs">
+      <Link>Analyzers\AnalyzerRootNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzerSearchTreeNode.cs">
+      <Link>Analyzers\AnalyzerSearchTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzerEntityTreeNode.cs">
+      <Link>Analyzers\AnalyzerEntityTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzeCommand.cs">
+      <Link>Analyzers\AnalyzeCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\CopyAnalysisResultsContextMenuEntry.cs">
+      <Link>Analyzers\CopyAnalysisResultsContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\RemoveAnalyzeContextMenuEntry.cs">
+      <Link>Analyzers\RemoveAnalyzeContextMenuEntry.cs</Link>
+    </Compile>
       <Compile Include="$(MSBuildThisFileDirectory)..\ICSharpCode.Decompiler\Util\CollectionExtensions.cs">
         <Link>Util\CollectionExtensions.cs</Link>
       </Compile>

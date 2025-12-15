@@ -52,7 +52,7 @@ namespace ICSharpCode.ILSpy.Analyzers
 					}
 				}
 			}
-			Clipboard.SetText(sb.ToString());
+			// TODO: Clipboard.SetText(sb.ToString());
 		}
 	}
 }
