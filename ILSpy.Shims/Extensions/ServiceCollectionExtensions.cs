@@ -62,14 +62,12 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddViews(this IServiceCollection services) =>
         services
-            .AddSingleton<MainWindow>()
-            .AddTransient<AboutDialog>();
+            .AddSingleton<MainWindow>();
 
     public static IServiceCollection AddViewModels(this IServiceCollection services) =>
         services
             .AddSingleton<AssemblyTreeModel>()
             .AddSingleton<ViewModels.MainWindowViewModel>()
-            .AddTransient<IAboutWindowViewModel, AboutWindowViewModel>()
             .AddSingleton<UpdatePanelViewModel>();
 
     public static IServiceCollection AddServices(this IServiceCollection services) =>

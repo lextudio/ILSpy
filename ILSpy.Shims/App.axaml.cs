@@ -163,7 +163,7 @@ public partial class App : Application
     private void About_OnClick(object? sender, EventArgs e)
     {
         _ = Services.GetRequiredService<IAnalyticsService>().TrackEventAsync(AnalyticsEvents.About);
-        Services.GetRequiredService<IDialogService>().ShowDialog<AboutDialog>();
+        //Services.GetRequiredService<IDialogService>().ShowDialog<AboutDialog>();
     }
 
     // Small adapter so existing ILSpy code can call GetExportedValue<T>() against a provider.

@@ -1992,7 +1992,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void OpenAboutDialog()
     {
         _ = analyticsService.TrackEventAsync(AnalyticsEvents.About);
-        dialogService.ShowDialog<AboutDialog>();
+        //dialogService.ShowDialog<AboutDialog>();
     }
 
     [RelayCommand]

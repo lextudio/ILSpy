@@ -27,12 +27,12 @@ namespace ICSharpCode.ILSpy
     // Keep the original export attributes so MEF can discover this shim as before.
     [ExportMainMenuCommand(ParentMenuID = nameof(Resources._Help), Header = nameof(Resources._About), MenuOrder = 99999)]
     [Shared]
-    public sealed class AboutPageShim : SimpleCommand
+    public sealed class AboutPage : SimpleCommand
     {
         readonly SettingsService settingsService;
         readonly IEnumerable<IAboutPageAddition> aboutPageAdditions;
 
-        public AboutPageShim(SettingsService settingsService, IEnumerable<IAboutPageAddition> aboutPageAdditions)
+        public AboutPage(SettingsService settingsService, IEnumerable<IAboutPageAddition> aboutPageAdditions)
         {
             this.settingsService = settingsService;
             this.aboutPageAdditions = aboutPageAdditions;
@@ -95,7 +95,7 @@ namespace ICSharpCode.ILSpy
                 plugin.Write(output);
             output.WriteLine();
             output.Address = new Uri("resource://AboutPage");
-            using (Stream s = typeof(AboutPageShim).Assembly.GetManifestResourceStream(typeof(AboutPageShim), Resources.ILSpyAboutPageTxt))
+            using (Stream s = typeof(AboutPage).Assembly.GetManifestResourceStream(typeof(AboutPage), Resources.ILSpyAboutPageTxt))
             {
                 if (s != null)
                 {
