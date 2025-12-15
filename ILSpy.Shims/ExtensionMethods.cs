@@ -97,3 +97,8 @@ namespace System.Windows.Media
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {}
+
+namespace ICSharpCode.AvalonEdit.Document
+{
+    
+}

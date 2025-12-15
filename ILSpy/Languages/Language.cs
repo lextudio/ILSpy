@@ -41,7 +41,7 @@ namespace ICSharpCode.ILSpy
 	/// <remarks>
 	/// Implementations of this class must be thread-safe.
 	/// </remarks>
-	public abstract partial class Language : ILanguage
+	public abstract class Language : ILanguage
 	{
 		protected static Util.SettingsService SettingsService { get; } = App.ExportProvider.GetExportedValue<Util.SettingsService>();
 
@@ -570,6 +570,30 @@ namespace ICSharpCode.ILSpy
 		public static string EscapeName(string name)
 		{
 			return EscapeName(new StringBuilder(name.Length), name).ToString();
+		}
+
+		/// <summary>
+        /// Gets the syntax highlighting used for this language.
+        /// </summary>
+        public virtual IHighlightingDefinition SyntaxHighlighting {
+            get {
+                return HighlightingManager.Instance.GetDefinitionByExtension(FileExtension);
+            }
+        }
+
+        public virtual TextView.IBracketSearcher BracketSearcher {
+            get {
+                return new TextView.DefaultBracketSearcher(); // TODO: .Instance;
+            }
+        }
+
+        /// <summary>
+		/// Converts a member signature to a string.
+		/// This is used for displaying the tooltip on a member reference.
+		/// </summary>
+		public virtual RichText GetRichTextTooltip(IEntity entity)
+		{
+			return GetTooltip(entity);
 		}
 	}
 }

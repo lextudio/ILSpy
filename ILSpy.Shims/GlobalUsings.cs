@@ -25,3 +25,6 @@ global using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 global using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 global using Thickness = Avalonia.Thickness;
 global using Orientation = Avalonia.Layout.Orientation;
+global using RichTextModel = AvaloniaEdit.Highlighting.RichTextModel;
+global using DocumentHighlighter = AvaloniaEdit.Highlighting.DocumentHighlighter;
+global using IDocument = AvaloniaEdit.Document.IDocument;

@@ -48,8 +48,8 @@ namespace ProjectRover.Services
 
                 // create a document if none provided. Use concrete Document type
                 // to avoid depending on different factory API surface versions.
-                IDocument document;
-                if (tabPage is IDocument d)
+                Dock.Model.Controls.IDocument document;
+                if (tabPage is Dock.Model.Controls.IDocument d)
                 {
                     document = d;
                 }
