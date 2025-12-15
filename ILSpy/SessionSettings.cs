@@ -25,9 +25,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
+
 using System.Xml.Linq;
 
 using ICSharpCode.ILSpy.Docking;
+using ICSharpCode.ILSpy.Themes;
 using ICSharpCode.ILSpyX.Search;
 using ICSharpCode.ILSpyX.Settings;
 
@@ -37,7 +40,7 @@ namespace ICSharpCode.ILSpy
 	/// Per-session setting:
 	/// Loaded at startup; saved at exit.
 	/// </summary>
-	public sealed partial class SessionSettings : ISettingsSection
+	public sealed class SessionSettings : ISettingsSection
 	{
 		public XName SectionName => "SessionSettings";
 
@@ -188,6 +191,17 @@ namespace ICSharpCode.ILSpy
 			field = value;
 			OnPropertyChanged(propertyName);
 			return true;
+		}
+
+		public WindowState WindowState;
+        public Rect WindowBounds;
+        internal static Rect DefaultWindowBounds = new(10, 10, 750, 550);
+
+
+		private void LoadTheme(XElement section)
+		{
+			Theme = FromString((string)section.Element(nameof(Theme)), ThemeManager.Current.DefaultTheme);
+            WindowState = FromString((string)section.Element("WindowState"), WindowState.Normal);
 		}
 	}
 }

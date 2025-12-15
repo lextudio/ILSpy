@@ -11,6 +11,8 @@ namespace ICSharpCode.ILSpy.Themes
         public static ThemeManager Current { get; } = new ThemeManager();
 		public bool IsDarkTheme { get; internal set; } // TODO:
 
+        public string DefaultTheme => IsDarkTheme ? "Dark" : "Light"; // TODO:
+
 		internal static HighlightingColor GetColorForDarkTheme(HighlightingColor hc) // TODO:
 		{
 			throw new NotImplementedException();

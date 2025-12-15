@@ -32,3 +32,4 @@ global using RichTextModel = AvaloniaEdit.Highlighting.RichTextModel;
 global using DocumentHighlighter = AvaloniaEdit.Highlighting.DocumentHighlighter;
 global using IDocument = AvaloniaEdit.Document.IDocument;
 global using UIElement = Avalonia.Controls.Control;
+global using Rect = Avalonia.Rect;
