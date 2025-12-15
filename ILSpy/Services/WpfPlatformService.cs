@@ -39,7 +39,13 @@ namespace ICSharpCode.ILSpy
             return tcs.Task;
         }
 
-        public bool TryFindResource(object key, out object? value)
+		public Task SetTextClipboardAsync(string text)
+		{
+			Clipboard.SetText(text);
+			return Task.CompletedTask;
+		}
+
+		public bool TryFindResource(object key, out object? value)
         {
             if (Application.Current == null)
             {

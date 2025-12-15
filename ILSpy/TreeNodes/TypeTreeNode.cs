@@ -19,6 +19,8 @@
 using System;
 using System.Linq;
 
+using System.Windows.Media;
+
 using ICSharpCode.Decompiler;
 
 using SRM = System.Reflection.Metadata;

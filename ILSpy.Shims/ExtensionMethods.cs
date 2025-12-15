@@ -100,6 +100,11 @@ namespace System.Windows.Media
     
 }
 
+namespace System.Windows.Navigation
+{
+
+}
+
 namespace ICSharpCode.AvalonEdit.Highlighting
 {}
 

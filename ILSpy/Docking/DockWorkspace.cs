@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.ILSpy.Analyzers;
 using ICSharpCode.ILSpy.Search;
 using ICSharpCode.ILSpy.TextView;

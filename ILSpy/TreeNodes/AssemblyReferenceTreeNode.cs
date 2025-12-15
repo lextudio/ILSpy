@@ -24,6 +24,9 @@ using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
 using ICSharpCode.ILSpy.Themes;
+using ICSharpCode.AvalonEdit.Highlighting;
+using System.Windows.Media;
+using System.Windows;
 
 namespace ICSharpCode.ILSpy.TreeNodes
 {

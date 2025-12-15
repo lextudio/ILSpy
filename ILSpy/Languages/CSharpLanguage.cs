@@ -26,6 +26,7 @@ using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Highlighting;
