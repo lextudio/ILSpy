@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -21,6 +22,13 @@ namespace System.Windows.Threading
             Avalonia.Threading.Dispatcher.UIThread.Post(callback, Translate(priority));
         }
 
+        // Support Task-returning delegates (async methods) passed to BeginInvoke
+        public void BeginInvoke(DispatcherPriority priority, Func<Task> callback)
+        {
+            // Post a fire-and-forget wrapper to the UI thread; preserve priority translation
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () => { await callback().ConfigureAwait(false); }, Translate(priority));
+        }
+
 		private static Avalonia.Threading.DispatcherPriority Translate(DispatcherPriority priority)
 		{
             return priority switch
@@ -36,11 +44,22 @@ namespace System.Windows.Threading
             Avalonia.Threading.Dispatcher.UIThread.Post(callback);
         }
 
+        // Support Task-returning delegates without explicit priority
+        public void BeginInvoke(Func<Task> callback)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () => { await callback().ConfigureAwait(false); });
+        }
+
         public void Invoke(Action callback)
         {
             callback();
         }
-    }
+
+		internal async Task InvokeAsync(Action value, DispatcherPriority normal)
+		{
+			await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(value, Translate(normal));
+		}
+	}
 
     // public class DispatcherTimer
     // {

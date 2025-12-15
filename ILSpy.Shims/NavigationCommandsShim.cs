@@ -1,5 +1,35 @@
 namespace System.Windows.Input
 {
+    public static class Keyboard
+    {
+        public static FocusedElement FocusedElement => new FocusedElement();
+    }
+
+    public static class Mouse
+    {
+        public static MouseButtonState RightButton => MouseButtonState.Released; // TODO: implement properly
+    }
+
+    public enum MouseButtonState
+    {
+        Released,
+        Pressed
+    }
+
+    public class FocusedElement
+    {
+		internal IDisposable PreserveFocus()
+		{
+			throw new NotImplementedException();
+		}
+
+		internal IDisposable PreserveFocus(bool v)
+		{
+			throw new NotImplementedException();
+		}
+
+	}
+
     public static class NavigationCommands
     {
         public static readonly RoutedCommand BrowseBack = new RoutedCommand();

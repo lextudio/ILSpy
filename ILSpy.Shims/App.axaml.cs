@@ -30,6 +30,7 @@ using System.Composition.Hosting;
 using TomsToolbox.Composition;
 using System.Diagnostics.CodeAnalysis;
 using ICSharpCode.ILSpy.Views;
+using ICSharpCode.ILSpy.AppEnv;
 
 namespace ProjectRover;
 
@@ -40,6 +41,9 @@ public partial class App : Application
     public IServiceProvider Services { get; } = ConfigureServices();
     public object? CompositionHost { get; private set; }
     public static IExportProvider? ExportProvider { get; private set; }
+
+    public static CommandLineArguments CommandLineArguments { get; private set; } = CommandLineArguments.Create(Array.Empty<string>()); // TODO:
+    internal static readonly IList<ExceptionData> StartupExceptions = new List<ExceptionData>(); // TODO:
     
     public override void Initialize()
     {

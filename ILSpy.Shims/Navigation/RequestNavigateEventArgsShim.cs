@@ -7,6 +7,7 @@ namespace ICSharpCode.ILSpy
     {
         public Uri Uri { get; }
         public object? ExtraData { get; }
+        public bool Handled { get; set; }
 
         public RequestNavigateEventArgs(Uri uri, object? extraData)
         {

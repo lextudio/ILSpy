@@ -35,7 +35,7 @@ namespace TomsToolbox.Wpf
 		/// <summary>
 		/// Gets the dispatcher of the thread where this object was created.
 		/// </summary>
-		public Dispatcher Dispatcher { get; } = Dispatcher.UIThread; // TODO: verify Avalonia compatibility
+		public System.Windows.Threading.Dispatcher Dispatcher { get; } = new System.Windows.Threading.Dispatcher(); // TODO: further simplify
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -84,23 +84,23 @@ namespace TomsToolbox.Wpf
 		}
 	}
 
-	public static class DispatcherHelper
-	{
-		public static void BeginInvoke(Action action)
-		{
-			Dispatcher.UIThread.Invoke(action);
-		}
+	// public static class DispatcherHelper
+	// {
+	// 	public static void BeginInvoke(Action action)
+	// 	{
+	// 		Dispatcher.UIThread.Invoke(action);
+	// 	}
 
-		public static void BeginInvoke(string priority, Action action)
-		{
-			Dispatcher.UIThread.Post(action, Enum.Parse<DispatcherPriority>(priority));
-		}
+	// 	public static void BeginInvoke(string priority, Action action)
+	// 	{
+	// 		Dispatcher.UIThread.Post(action, Enum.Parse<DispatcherPriority>(priority));
+	// 	}
 
-		public static DispatcherOperation InvokeAsync(Action action)
-		{
-			return Dispatcher.UIThread.InvokeAsync(action);
-		}
-	}
+	// 	public static DispatcherOperation InvokeAsync(Action action)
+	// 	{
+	// 		return Dispatcher.UIThread.InvokeAsync(action);
+	// 	}
+	// }
 
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
 	public sealed class PropertyDependencyAttribute : Attribute

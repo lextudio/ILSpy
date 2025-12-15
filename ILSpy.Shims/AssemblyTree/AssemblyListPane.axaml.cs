@@ -3,6 +3,8 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
+using ICSharpCode.ILSpy.TreeNodes;
+
 using ICSharpCode.ILSpyX.TreeView;
 
 namespace ICSharpCode.ILSpy.Views;
@@ -26,4 +28,10 @@ public partial class AssemblyListPane : UserControl
 	{
 		// TODO:
 	}
+
+	internal void FocusNode(AssemblyTreeNode lastNode)
+	{
+		throw new NotImplementedException();
+	}
+
 }

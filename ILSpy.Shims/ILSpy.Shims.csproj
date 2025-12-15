@@ -478,6 +478,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ShowCFGContextMenuEntry.cs">
       <Link>Commands\ShowCFGContextMenuEntry.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzerTreeViewModel.cs">
+      <Link>Analyzers\AnalyzerTreeViewModel.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ShowPane.cs">
       <Link>Commands\ShowPane.cs</Link>
     </Compile>

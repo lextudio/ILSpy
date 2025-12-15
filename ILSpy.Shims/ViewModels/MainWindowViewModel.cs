@@ -2280,7 +2280,7 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     private static Window? GetMainWindow() =>
-        (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+        (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
     public record ThemeOption(string Name, ThemeVariant Variant);
 

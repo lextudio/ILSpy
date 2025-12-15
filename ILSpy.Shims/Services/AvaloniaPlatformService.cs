@@ -7,6 +7,7 @@ using Avalonia.Input.Platform;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.VisualTree;
 using Avalonia.Controls;
+using Application = Avalonia.Application;
 
 namespace ProjectRover.Services
 {

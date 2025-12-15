@@ -15,5 +15,16 @@ namespace ProjectRover
         {
             public string PluginName { get; init; }
         }
+
+        public Window MainWindow { get; set; } // TODO: proper shim
+    }
+}
+
+namespace ICSharpCode.ILSpy
+{
+
+    public static class Application
+    {
+        public static App Current { get; } = new App();
     }
 }
