@@ -9,5 +9,7 @@ namespace ICSharpCode.ILSpy
         Task InvokeOnUIAsync(Func<Task> action);
         bool TryFindResource(object key, out object? value);
         Docking.IDockWorkspace? DockWorkspace { get; }
+
+        Task SetTextClipboardAsync(string text);
     }
 }

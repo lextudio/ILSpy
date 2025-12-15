@@ -255,6 +255,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\TypeTreeNode.cs">
       <Link>TreeNodes\TypeTreeNode.cs</Link>
     </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ICSharpCode.Decompiler\Util\CollectionExtensions.cs">
+        <Link>Util\CollectionExtensions.cs</Link>
+      </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AssemblyTree\AssemblyTreeModel.cs">
       <Link>AssemblyTree\AssemblyTreeModel.cs</Link>
     </Compile>

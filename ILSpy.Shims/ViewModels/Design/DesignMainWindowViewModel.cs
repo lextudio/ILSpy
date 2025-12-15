@@ -57,6 +57,11 @@ file class DesignPlatformService : ICSharpCode.ILSpy.IPlatformService
     public Task InvokeOnUIAsync(Func<Task> action) => action();
     public bool TryFindResource(object key, out object? value) { value = null; return false; }
     public ICSharpCode.ILSpy.Docking.IDockWorkspace? DockWorkspace { get; } = null;
+
+    public Task SetTextClipboardAsync(string text)
+    {
+        return Task.CompletedTask;
+    }
 }
 
 file class DesignNotificationService : INotificationService

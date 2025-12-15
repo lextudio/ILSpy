@@ -40,11 +40,7 @@ using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
 
 namespace ICSharpCode.ILSpy.ViewModels
 {
-	using Avalonia.Input.Platform;
 	using Avalonia.Media;
-
-	using CommunityToolkit.Mvvm.Input;
-
 
 	using ICSharpCode.Decompiler.TypeSystem;
 
@@ -54,16 +50,18 @@ namespace ICSharpCode.ILSpy.ViewModels
 	{
 		private readonly TabPageModel tabPage;
 		private readonly AssemblyTreeModel assemblyTreeModel;
+		private readonly IPlatformService? platformService;
 		private LoadedAssembly leftAssembly;
 		private LoadedAssembly rightAssembly;
 		private ComparisonEntryTreeNode root;
 		private bool updating = false;
 		private bool showIdentical;
 
-		public CompareViewModel(TabPageModel tabPage, AssemblyTreeModel assemblyTreeModel, LoadedAssembly left, LoadedAssembly right)
+		public CompareViewModel(TabPageModel tabPage, AssemblyTreeModel assemblyTreeModel, LoadedAssembly left, LoadedAssembly right, ICSharpCode.ILSpy.IPlatformService? platformService = null)
 		{
 			this.tabPage = tabPage;
 			this.assemblyTreeModel = assemblyTreeModel;
+			this.platformService = platformService;
 			leftAssembly = left;
 			rightAssembly = right;
 
@@ -72,9 +70,9 @@ namespace ICSharpCode.ILSpy.ViewModels
 
 			this.root = new ComparisonEntryTreeNode(MergeTrees(leftTree.Item2, rightTree.Item2), this);
 
-			this.SwapAssembliesCommand = new RelayCommand(OnSwapAssemblies);
-			this.ExpandAllCommand = new RelayCommand(OnExpandAll);
-			this.CopyToClipboardAsJSONCommand = new RelayCommand(OnCopyToClipboardAsJSON);
+			this.SwapAssembliesCommand = new DelegateCommand(OnSwapAssemblies);
+			this.ExpandAllCommand = new DelegateCommand(OnExpandAll);
+			this.CopyToClipboardAsJSONCommand = new DelegateCommand(async () => await OnCopyToClipboardAsJSON());
 
 			this.PropertyChanged += CompareViewModel_PropertyChanged;
 		}
@@ -177,7 +175,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 			}
 		}
 
-		void OnCopyToClipboardAsJSON()
+		async Task OnCopyToClipboardAsJSON()
 		{
 			var options = new JsonSerializerOptions {
 				WriteIndented = true
@@ -185,7 +183,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 
 			var jsonEntry = ConvertToJson(this.root.Entry);
 			var json = JsonSerializer.Serialize(jsonEntry, options);
-			// TODO: Clipboard.SetText(json);
+			await platformService.SetTextClipboardAsync(json); 
 		}
 
 		private object ConvertToJson(Entry entry)
@@ -215,9 +213,9 @@ namespace ICSharpCode.ILSpy.ViewModels
 			var result = new {
 				left = LeftAssembly.FileName.Replace('\\', '/'),
 				right = RightAssembly.FileName.Replace('\\', '/'),
-				// TODO: changedTypes = changedTypes.SelectArray(t => new { typeName = ((ITypeDefinition)t.Entity).FullName, changes = GetChanges(t.Children) }),
-				// addedTypes = addedTypes.SelectArray(t => new { typeName = ((ITypeDefinition)t.Entity).FullName, changes = GetChanges(t.Children) }),
-				// removedTypes = removedTypes.SelectArray(t => new { typeName = ((ITypeDefinition)t.Entity).FullName, changes = GetChanges(t.Children) })
+				changedTypes = changedTypes.SelectArray(t => new { typeName = ((ITypeDefinition)t.Entity).FullName, changes = GetChanges(t.Children) }),
+				addedTypes = addedTypes.SelectArray(t => new { typeName = ((ITypeDefinition)t.Entity).FullName, changes = GetChanges(t.Children) }),
+				removedTypes = removedTypes.SelectArray(t => new { typeName = ((ITypeDefinition)t.Entity).FullName, changes = GetChanges(t.Children) })
 			};
 			return result;
 
@@ -531,14 +529,15 @@ namespace ICSharpCode.ILSpy.ViewModels
 				tabPage.Title = $"Compare {left.Text} - {right.Text}";
 				tabPage.SupportsLanguageSwitching = false;
 				tabPage.FrozenContent = true;
-				// TODO: var compareView = new CompareView();
-				// compareView.DataContext = vm;
-				// tabPage.Content = compareView;
+				var compareView = new CompareView();
+				compareView.DataContext = vm;
+				tabPage.Content = compareView;
 			}));
 
 			CompareViewModel DoCompare()
 			{
-				return new CompareViewModel(tabPage, assemblyTreeModel, left, right);
+				var platform = App.ExportProvider?.GetExportedValue<ICSharpCode.ILSpy.IPlatformService>();
+				return new CompareViewModel(tabPage, assemblyTreeModel, left, right, platform);
 			}
 		}
 	}
