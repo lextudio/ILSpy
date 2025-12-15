@@ -15,3 +15,4 @@ global using RoutedEventArgs = Avalonia.Interactivity.RoutedEventArgs;
 global using Key = Avalonia.Input.Key;
 global using ModifierKeys = Avalonia.Input.KeyModifiers;
 global using App = ProjectRover.App;
+global using WindowState = Avalonia.Controls.WindowState;

@@ -52,10 +52,10 @@ namespace ICSharpCode.ILSpy.Util
     public class NavigateToEventArgs : EventArgs
     {
         // Request navigation details are WPF-specific; use object to avoid WPF dependency.
-        public object Request { get; }
+        public RequestNavigateEventArgs Request { get; }
         public bool InNewTabPage { get; }
 
-        public NavigateToEventArgs(object request, bool inNewTabPage = false)
+        public NavigateToEventArgs(RequestNavigateEventArgs request, bool inNewTabPage = false)
         {
             Request = request;
             InNewTabPage = inNewTabPage;

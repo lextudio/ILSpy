@@ -415,7 +415,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				}
 				else if (newState.ViewState.ViewedUri != null)
 				{
-					// TODO: NavigateTo(new(newState.ViewState.ViewedUri, null));
+					NavigateTo(new(newState.ViewState.ViewedUri, null));
 				}
 			}
 			finally
@@ -1027,6 +1027,26 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			}
 
 			Dispatcher.BeginInvoke(DispatcherPriority.Loaded, OpenAssemblies);
+		}
+
+		public async Task HandleSingleInstanceCommandLineArguments(string[] args)
+		{
+			var cmdArgs = CommandLineArguments.Create(args);
+
+			await Dispatcher.InvokeAsync(async () => {
+
+				if (!HandleCommandLineArguments(cmdArgs))
+					return;
+
+				var window = Application.Current.MainWindow;
+
+				if (!cmdArgs.NoActivate && window is { WindowState: WindowState.Minimized })
+				{
+					window.WindowState = WindowState.Normal;
+				}
+
+				await HandleCommandLineArgumentsAfterShowList(cmdArgs);
+			});
 		}
 	}
 }

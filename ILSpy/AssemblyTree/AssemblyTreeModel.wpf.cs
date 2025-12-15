@@ -60,25 +60,6 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			AssemblyList = settingsService.CreateEmptyAssemblyList();
 		}
 
-		public async Task HandleSingleInstanceCommandLineArguments(string[] args)
-		{
-			var cmdArgs = CommandLineArguments.Create(args);
-
-			await Dispatcher.InvokeAsync(async () => {
-
-				if (!HandleCommandLineArguments(cmdArgs))
-					return;
-
-				var window = Application.Current.MainWindow;
-
-				if (!cmdArgs.NoActivate && window is { WindowState: WindowState.Minimized })
-				{
-					window.WindowState = WindowState.Normal;
-				}
-
-				await HandleCommandLineArgumentsAfterShowList(cmdArgs);
-			});
-		}
 		private static void LoadInitialAssemblies(AssemblyList assemblyList)
 		{
 			// Called when loading an empty assembly list; so that

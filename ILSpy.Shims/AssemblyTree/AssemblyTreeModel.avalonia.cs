@@ -18,6 +18,11 @@ using ICSharpCode.ILSpy.Views;
 using TomsToolbox.Composition;
 
 using ProjectRover;
+using ICSharpCode.ILSpy.Properties;
+using Avalonia.Input;
+using System.Windows.Threading;
+using ICSharpCode.ILSpy.AppEnv;
+using Avalonia.Controls;
 
 namespace ICSharpCode.ILSpy.AssemblyTree
 {
@@ -25,12 +30,32 @@ namespace ICSharpCode.ILSpy.AssemblyTree
     {
 		public AssemblyTreeModel(SettingsService settingsService, LanguageService languageService, IExportProvider exportProvider)
 		{
-			// TODO:
-		}
+			this.settingsService = settingsService;
+			this.languageService = languageService;
+			this.exportProvider = exportProvider;
 
-		public async Task HandleSingleInstanceCommandLineArguments(string[] args)
-		{
-			// TODO:
+			Title = Resources.Assemblies;
+			ContentId = PaneContentId;
+			IsCloseable = false;
+			ShortcutKey = new KeyGesture(Key.F6);
+
+			MessageBus<NavigateToReferenceEventArgs>.Subscribers += JumpToReference;
+			MessageBus<SettingsChangedEventArgs>.Subscribers += (sender, e) => Settings_PropertyChanged(sender, e);
+			MessageBus<ApplySessionSettingsEventArgs>.Subscribers += ApplySessionSettings;
+			MessageBus<ActiveTabPageChangedEventArgs>.Subscribers += ActiveTabPageChanged;
+			MessageBus<TabPagesCollectionChangedEventArgs>.Subscribers += (_, e) => history.RemoveAll(s => !DockWorkspace.TabPages.Contains(s.TabPage));
+			MessageBus<ResetLayoutEventArgs>.Subscribers += ResetLayout;
+			MessageBus<NavigateToEventArgs>.Subscribers += (_, e) => NavigateTo(e.Request, e.InNewTabPage);
+			MessageBus<MainWindowLoadedEventArgs>.Subscribers += (_, _) => {
+				Initialize();
+				Show();
+			};
+
+			// TODO: EventManager.RegisterClassHandler(typeof(Window), Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler((_, e) => NavigateTo(e)));
+
+			// refreshThrottle = new(DispatcherPriority.Background, RefreshInternal);
+
+			AssemblyList = settingsService.CreateEmptyAssemblyList();
 		}
 
 		private static void LoadInitialAssemblies(AssemblyList assemblyList)
@@ -47,8 +72,8 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				typeof(Avalonia.Controls.Control).Assembly,
 				typeof(Avalonia.Controls.UserControl).Assembly
 			};
-			//foreach (System.Reflection.Assembly asm in initialAssemblies)
-				// TODO: assemblyList.OpenAssembly(asm.Location);
+			foreach (System.Reflection.Assembly asm in initialAssemblies)
+				assemblyList.OpenAssembly(asm.Location);
 		}
 	}
 }

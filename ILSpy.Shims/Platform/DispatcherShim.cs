@@ -59,6 +59,11 @@ namespace System.Windows.Threading
 		{
 			await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(value, Translate(normal));
 		}
+
+		internal async Task InvokeAsync(Action value)
+		{
+			await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(value);
+		}
 	}
 
     // public class DispatcherTimer
