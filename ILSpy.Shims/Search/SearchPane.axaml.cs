@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using ProjectRover.SearchResults;
 using ProjectRover.ViewModels;
 
-namespace ICSharpCode.ILSpy.Views;
+namespace ICSharpCode.ILSpy.Search;
 
 public partial class SearchPane : UserControl
 {

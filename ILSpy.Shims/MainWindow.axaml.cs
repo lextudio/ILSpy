@@ -53,6 +53,7 @@ using System.IO;
 using static AvaloniaEdit.Utils.ExtensionMethods;
 using ProjectRover;
 using ICSharpCode.ILSpy.Views;
+using ICSharpCode.ILSpy.Search;
 
 namespace ICSharpCode.ILSpy;
 

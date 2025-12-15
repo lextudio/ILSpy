@@ -17,11 +17,13 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows.Threading;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
+using ICSharpCode.ILSpy.Themes;
 
 namespace ICSharpCode.ILSpy.TreeNodes
 {
@@ -96,6 +98,64 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				PrintAssemblyLoadLogMessages(output, info);
 				output.Unindent();
 				output.WriteLine();
+			}
+		}
+
+		public override bool ShowExpander {
+			get {
+				// Special case for mscorlib: It likely doesn't have any children so call EnsureLazyChildren to
+				// remove the expander from the node.
+				if (r.Name == "mscorlib")
+				{
+					// See https://github.com/icsharpcode/ILSpy/issues/2548: Adding assemblies to the tree view
+					// while the list of references is updated causes problems with WPF's ListView rendering.
+					// Moving the assembly resolving out of the "add assembly reference"-loop by using the
+					// dispatcher fixes the issue.
+					Dispatcher.CurrentDispatcher.BeginInvoke((Action)EnsureLazyChildren, DispatcherPriority.Normal);
+				}
+				return base.ShowExpander;
+			}
+		}
+
+		internal static void PrintAssemblyLoadLogMessages(ITextOutput output, UnresolvedAssemblyNameReference asm)
+		{
+			HighlightingColor red = GetColor(Colors.Red);
+			HighlightingColor yellow = GetColor(Colors.Yellow);
+
+			var smartOutput = output as ISmartTextOutput;
+
+			foreach (var item in asm.Messages)
+			{
+				switch (item.Item1)
+				{
+					case MessageKind.Error:
+						smartOutput?.BeginSpan(red);
+						output.Write("Error: ");
+						smartOutput?.EndSpan();
+						break;
+					case MessageKind.Warning:
+						smartOutput?.BeginSpan(yellow);
+						output.Write("Warning: ");
+						smartOutput?.EndSpan();
+						break;
+					default:
+						output.Write(item.Item1 + ": ");
+						break;
+				}
+				output.WriteLine(item.Item2);
+			}
+
+			static HighlightingColor GetColor(Color color)
+			{
+				var hc = new HighlightingColor {
+					Foreground = new SimpleHighlightingBrush(color),
+					FontWeight = FontWeights.Bold
+				};
+				if (ThemeManager.Current.IsDarkTheme)
+				{
+					return ThemeManager.GetColorForDarkTheme(hc);
+				}
+				return hc;
 			}
 		}
 	}

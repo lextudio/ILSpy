@@ -1,4 +1,7 @@
+using System;
+
 using Avalonia.Controls;
+
 
 namespace ICSharpCode.ILSpy.Themes
 {
@@ -6,8 +9,15 @@ namespace ICSharpCode.ILSpy.Themes
     public class ThemeManager
     {
         public static ThemeManager Current { get; } = new ThemeManager();
+		public bool IsDarkTheme { get; internal set; } // TODO:
 
-        public Button CreateButton()
+		internal static HighlightingColor GetColorForDarkTheme(HighlightingColor hc) // TODO:
+		{
+			throw new NotImplementedException();
+		}
+
+
+		public Button CreateButton()
         {
             return new Button();
         }

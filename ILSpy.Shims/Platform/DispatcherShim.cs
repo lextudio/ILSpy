@@ -29,6 +29,8 @@ namespace System.Windows.Threading
             Avalonia.Threading.Dispatcher.UIThread.Post(async () => { await callback().ConfigureAwait(false); }, Translate(priority));
         }
 
+        public static Dispatcher CurrentDispatcher { get; } = new Dispatcher();
+
 		private static Avalonia.Threading.DispatcherPriority Translate(DispatcherPriority priority)
 		{
             return priority switch
@@ -63,6 +65,11 @@ namespace System.Windows.Threading
 		internal async Task InvokeAsync(Action value)
 		{
 			await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(value);
+		}
+
+		internal void BeginInvoke(Action action, DispatcherPriority priority)
+		{
+			Avalonia.Threading.Dispatcher.UIThread.Post(action, Translate(priority));
 		}
 	}
 
