@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Labs.CommandManager" />
     <PackageReference Include="Avalonia.Svg.Skia" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
@@ -106,6 +107,33 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DelegateCommand.cs">
       <Link>Commands\DelegateCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\BrowseBackCommand.cs">
+      <Link>Commands\BrowseBackCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\BrowseForwardCommand.cs">
+      <Link>Commands\BrowseForwardCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CheckForUpdatesCommand.cs">
+      <Link>Commands\CheckForUpdatesCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CompareContextMenuEntry.cs">
+      <Link>Commands\CompareContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CopyFullyQualifiedNameContextMenuEntry.cs">
+      <Link>Commands\CopyFullyQualifiedNameContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CreateDiagramContextMenuEntry.cs">
+      <Link>Commands\CreateDiagramContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DecompileAllCommand.cs">
+      <Link>Commands\DecompileAllCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DecompileCommand.cs">
+      <Link>Commands\DecompileCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DecompileInNewViewCommand.cs">
+      <Link>Commands\DecompileInNewViewCommand.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Options\DisplaySettings.cs">
       <Link>Options\DisplaySettings.cs</Link>
@@ -261,6 +289,15 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\TypeTreeNode.cs">
       <Link>TreeNodes\TypeTreeNode.cs</Link>
+    </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\AppEnvironment.cs">
+        <Link>AppEnv\AppEnvironment.cs</Link>
+      </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\CommandLineTools.cs">
+      <Link>AppEnv\CommandLineTools.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\SingleInstance.cs">
+      <Link>AppEnv\SingleInstance.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedAccessorTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedAccessorTreeNode.cs</Link>

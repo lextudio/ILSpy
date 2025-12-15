@@ -185,7 +185,7 @@ namespace ICSharpCode.ILSpy.TextView
 			}
 		}
 
-		void RemoveEditCommand(RoutedCommand command)
+		void RemoveEditCommand(AvaloniaEdit.RoutedCommand command)
 		{
 			var handler = textEditor.TextArea.DefaultInputHandler.Editing;
 			//var inputBinding = handler.InputBindings.FirstOrDefault(b => b.Command == command);

@@ -8,6 +8,11 @@ namespace System.Windows
 
     public static class MessageBox
     {
+        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
+        {
+            // shim: no UI — return OK by default
+            return MessageBoxResult.OK;
+        }
         public static MessageBoxResult Show(string messageBoxText)
         {
             return MessageBoxResult.OK;
