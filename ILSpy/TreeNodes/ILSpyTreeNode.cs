@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using System.Windows.Threading;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.TypeSystem;
@@ -37,7 +38,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Base class of all ILSpy tree nodes.
 	/// </summary>
-	public abstract partial class ILSpyTreeNode : SharpTreeNode, ITreeNode
+	public abstract class ILSpyTreeNode : SharpTreeNode, ITreeNode
 	{
 		protected ILSpyTreeNode()
 		{
@@ -168,5 +169,14 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		}
 
 		IEnumerable<ITreeNode> ITreeNode.Children => this.Children.OfType<ILSpyTreeNode>();
+
+		public override void ActivateItemSecondary(IPlatformRoutedEventArgs e)
+		{
+			var assemblyTreeModel = AssemblyTreeModel;
+
+			assemblyTreeModel.SelectNode(this, inNewTabPage: true);
+
+			App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, assemblyTreeModel.RefreshDecompiledView);
+		}
 	}
 }

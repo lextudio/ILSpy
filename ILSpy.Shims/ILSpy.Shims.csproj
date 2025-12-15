@@ -429,6 +429,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\AccessOverlayIcon.cs">
       <Link>Images\AccessOverlayIcon.cs</Link>
     </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\MemberIcon.cs">
+        <Link>Images\MemberIcon.cs</Link>
+      </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyListTreeNode.cs">
       <Link>TreeNodes\AssemblyListTreeNode.cs</Link>
     </Compile>

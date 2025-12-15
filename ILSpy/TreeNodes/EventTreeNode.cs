@@ -29,7 +29,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Represents an event in the TreeView.
 	/// </summary>
-	public sealed partial class EventTreeNode : ILSpyTreeNode, IMemberTreeNode
+	public sealed class EventTreeNode : ILSpyTreeNode, IMemberTreeNode
 	{
 		public EventTreeNode(IEvent @event)
 		{
@@ -61,6 +61,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		}
 
 		public override object Icon => GetIcon(GetEventDefinition());
+
+		public static ImageSource GetIcon(IEvent @event)
+		{
+			return Images.GetIcon(MemberIcon.Event, Images.GetOverlayIcon(@event.Accessibility), @event.IsStatic);
+		}
 
 		public override FilterResult Filter(LanguageSettings settings)
 		{

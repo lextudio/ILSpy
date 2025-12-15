@@ -29,7 +29,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Represents a property in the TreeView.
 	/// </summary>
-	public sealed partial class PropertyTreeNode : ILSpyTreeNode, IMemberTreeNode
+	public sealed class PropertyTreeNode : ILSpyTreeNode, IMemberTreeNode
 	{
 		readonly bool isIndexer;
 
@@ -63,6 +63,12 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		}
 
 		public override object Icon => GetIcon(GetPropertyDefinition());
+
+		public static ImageSource GetIcon(IProperty property)
+		{
+			return Images.GetIcon(property.IsIndexer ? MemberIcon.Indexer : MemberIcon.Property,
+				Images.GetOverlayIcon(property.Accessibility), property.IsStatic);
+		}
 
 		public override FilterResult Filter(LanguageSettings settings)
 		{

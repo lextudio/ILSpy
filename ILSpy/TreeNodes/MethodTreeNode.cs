@@ -29,7 +29,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Tree Node representing a field, method, property, or event.
 	/// </summary>
-	public sealed partial class MethodTreeNode : ILSpyTreeNode, IMemberTreeNode
+	public sealed class MethodTreeNode : ILSpyTreeNode, IMemberTreeNode
 	{
 		public IMethod MethodDefinition { get; }
 
@@ -53,6 +53,24 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		}
 
 		public override object Icon => GetIcon(GetMethodDefinition());
+
+		public static ImageSource GetIcon(IMethod method)
+		{
+			if (method.IsOperator)
+				return Images.GetIcon(MemberIcon.Operator, Images.GetOverlayIcon(method.Accessibility), false);
+
+			if (method.IsExtensionMethod)
+				return Images.GetIcon(MemberIcon.ExtensionMethod, Images.GetOverlayIcon(method.Accessibility), false);
+
+			if (method.IsConstructor)
+				return Images.GetIcon(MemberIcon.Constructor, Images.GetOverlayIcon(method.Accessibility), method.IsStatic);
+
+			if (!method.HasBody && method.HasAttribute(KnownAttribute.DllImport))
+				return Images.GetIcon(MemberIcon.PInvokeMethod, Images.GetOverlayIcon(method.Accessibility), true);
+
+			return Images.GetIcon(method.IsVirtual ? MemberIcon.VirtualMethod : MemberIcon.Method,
+				Images.GetOverlayIcon(method.Accessibility), method.IsStatic);
+		}
 
 		public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
 		{

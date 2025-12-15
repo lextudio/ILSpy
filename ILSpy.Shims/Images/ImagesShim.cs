@@ -1,5 +1,9 @@
+using System;
+
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace ICSharpCode.ILSpy
 {
@@ -8,6 +12,16 @@ namespace ICSharpCode.ILSpy
         // Return null for the ImageSource shim; callers in AboutPage handle nulls gracefully.
         public static Bitmap OK => null;
         public static Bitmap Load(object owner, string path) => null;
+
+		internal static ImageSource GetIcon(object @event, object value, bool isStatic)
+		{
+			throw new NotImplementedException();
+		}
+
+		internal static object GetOverlayIcon(Accessibility accessibility)
+		{
+			throw new NotImplementedException();
+		}
 
 		public static object SubTypes {
 			get { return "SubTypes"; }
