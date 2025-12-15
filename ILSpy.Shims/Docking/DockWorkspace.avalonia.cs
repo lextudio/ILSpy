@@ -11,10 +11,5 @@ namespace ICSharpCode.ILSpy.Docking
 		{
 			// TODO:
 		}
-
-		public void ResetLayout()
-		{
-			// TODO:
-		}
 	}
 }

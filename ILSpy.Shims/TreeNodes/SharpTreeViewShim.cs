@@ -1,4 +1,7 @@
 // Minimal shim for SharpTreeView used by ILSpy sources when building ILSpy.Shims.
+using System;
+
+
 using Avalonia.Controls;
 
 using ICSharpCode.ILSpyX.TreeView;
@@ -13,5 +16,10 @@ namespace ICSharpCode.ILSpy.Controls.TreeView
         {
             return null!;
         }
-    }
+
+		internal IDisposable LockUpdates()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

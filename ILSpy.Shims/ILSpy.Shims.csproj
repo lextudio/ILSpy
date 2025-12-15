@@ -1,5 +1,4 @@
-﻿
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -15,7 +14,7 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
@@ -54,8 +53,14 @@
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.ILSpyX\ICSharpCode.ILSpyX.csproj" />
     <ProjectReference Include="..\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj" />
-    <ProjectReference Include="..\AvaloniaEdit\src\AvaloniaEdit.TextMate\AvaloniaEdit.TextMate.csproj" />
+    <ProjectReference
+      Include="..\AvaloniaEdit\src\AvaloniaEdit.TextMate\AvaloniaEdit.TextMate.csproj" />
     <ProjectReference Include="..\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="Microsoft.DiaSymReader.Converter.Xml" />
+    <PackageReference Include="Microsoft.DiaSymReader" />
+    <PackageReference Include="Microsoft.DiaSymReader.Native" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="appsettings*.json" />
@@ -84,6 +89,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\SolutionWriter.cs">
+      <Link>SolutionWriter.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Services\IPlatformService.cs">
       <Link>Services\IPlatformService.cs</Link>
     </Compile>
@@ -108,6 +116,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DelegateCommand.cs">
       <Link>Commands\DelegateCommand.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\SortAssemblyListCommand.cs">
+      <Link>Commands\SortAssemblyListCommand.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\BrowseBackCommand.cs">
       <Link>Commands\BrowseBackCommand.cs</Link>
     </Compile>
@@ -120,7 +131,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CompareContextMenuEntry.cs">
       <Link>Commands\CompareContextMenuEntry.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CopyFullyQualifiedNameContextMenuEntry.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CopyFullyQualifiedNameContextMenuEntry.cs">
       <Link>Commands\CopyFullyQualifiedNameContextMenuEntry.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\CreateDiagramContextMenuEntry.cs">
@@ -135,6 +147,22 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DecompileInNewViewCommand.cs">
       <Link>Commands\DecompileInNewViewCommand.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\DisassembleAllCommand.cs">
+      <Link>Commands\DisassembleAllCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ExitCommand.cs">
+      <Link>Commands\ExitCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ExportCommandAttribute.cs">
+      <Link>Commands\ExportCommandAttribute.cs</Link>
+    </Compile>
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ExtractPackageEntryContextMenuEntry.cs">
+      <Link>Commands\ExtractPackageEntryContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\GeneratePdbContextMenuEntry.cs">
+      <Link>Commands\GeneratePdbContextMenuEntry.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Options\DisplaySettings.cs">
       <Link>Options\DisplaySettings.cs</Link>
     </Compile>
@@ -147,7 +175,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\ILSpyTreeNode.cs">
       <Link>TreeNodes\ILSpyTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyReferenceReferencedTypesTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyReferenceReferencedTypesTreeNode.cs">
       <Link>TreeNodes\AssemblyReferenceReferencedTypesTreeNode.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyReferenceTreeNode.cs">
@@ -177,9 +206,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DosHeaderTreeNode.cs">
       <Link>Metadata\DosHeaderTreeNode.cs</Link>
     </Compile>
-    <Compile Remove="C:\Users\Administrator\source\repos\ilspy-new\ilspy\ILSpy.Shims\..\ILSpy\Metadata\CoffHeaderTreeNode.cs" />
-    <Compile Remove="C:\Users\Administrator\source\repos\ilspy-new\ilspy\ILSpy.Shims\..\ILSpy\Metadata\CoffHeaderTreeNode.cs" />
-    <!--<Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\OptionalHeaderTreeNode.cs">
+    <Compile
+      Remove="C:\Users\Administrator\source\repos\ilspy-new\ilspy\ILSpy.Shims\..\ILSpy\Metadata\CoffHeaderTreeNode.cs" />
+    <Compile
+      Remove="C:\Users\Administrator\source\repos\ilspy-new\ilspy\ILSpy.Shims\..\ILSpy\Metadata\CoffHeaderTreeNode.cs" />
+    <!--<Compile
+    Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\OptionalHeaderTreeNode.cs">
       <Link>Metadata\OptionalHeaderTreeNode.cs</Link>
     </Compile>-->
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DataDirectoriesTreeNode.cs">
@@ -188,13 +220,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DebugDirectoryTreeNode.cs">
       <Link>Metadata\DebugDirectoryTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DebugDirectory\CodeViewTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DebugDirectory\CodeViewTreeNode.cs">
       <Link>Metadata\DebugDirectory\CodeViewTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DebugDirectory\DebugDirectoryEntryTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DebugDirectory\DebugDirectoryEntryTreeNode.cs">
       <Link>Metadata\DebugDirectory\DebugDirectoryEntryTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DebugDirectory\PdbChecksumTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\DebugDirectory\PdbChecksumTreeNode.cs">
       <Link>Metadata\DebugDirectory\PdbChecksumTreeNode.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\MetadataTreeNode.cs">
@@ -251,7 +286,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\IResourceFileHandler.cs">
       <Link>Languages\IResourceFileHandler.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\ResourceNodes\IResourceNodeFactory.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\ResourceNodes\IResourceNodeFactory.cs">
       <Link>TreeNodes\ResourceNodes\IResourceNodeFactory.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\FilterResult.cs">
@@ -290,34 +326,41 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\TypeTreeNode.cs">
       <Link>TreeNodes\TypeTreeNode.cs</Link>
     </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\AppEnvironment.cs">
-        <Link>AppEnv\AppEnvironment.cs</Link>
-      </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\AppEnvironment.cs">
+      <Link>AppEnv\AppEnvironment.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\CommandLineTools.cs">
       <Link>AppEnv\CommandLineTools.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AppEnv\SingleInstance.cs">
       <Link>AppEnv\SingleInstance.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedAccessorTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedAccessorTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedAccessorTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedEventTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedEventTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedEventTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedFieldTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedFieldTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedFieldTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedMethodTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedMethodTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedMethodTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedModuleTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedModuleTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedModuleTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedPropertyTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedPropertyTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedPropertyTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedTypeTreeNode.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\TreeNodes\AnalyzedTypeTreeNode.cs">
       <Link>Analyzers\TreeNodes\AnalyzedTypeTreeNode.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzerTreeNode.cs">
@@ -335,17 +378,26 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzeCommand.cs">
       <Link>Analyzers\AnalyzeCommand.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\CopyAnalysisResultsContextMenuEntry.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\CopyAnalysisResultsContextMenuEntry.cs">
       <Link>Analyzers\CopyAnalysisResultsContextMenuEntry.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\RemoveAnalyzeContextMenuEntry.cs">
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\RemoveAnalyzeContextMenuEntry.cs">
       <Link>Analyzers\RemoveAnalyzeContextMenuEntry.cs</Link>
     </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ICSharpCode.Decompiler\Util\CollectionExtensions.cs">
-        <Link>Util\CollectionExtensions.cs</Link>
-      </Compile>
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ICSharpCode.Decompiler\Util\CollectionExtensions.cs">
+      <Link>Util\CollectionExtensions.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\AssemblyTree\AssemblyTreeModel.cs">
       <Link>AssemblyTree\AssemblyTreeModel.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Search\SearchPaneModel.cs">
+      <Link>Search\SearchPaneModel.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Search\SearchResultFactory.cs">
+      <Link>Search\SearchResultFactory.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Options\MiscSettings.cs">
       <Link>Options\MiscSettings.cs</Link>
@@ -359,43 +411,90 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Util\SettingsChangedEventArgs.cs">
       <Link>Util\SettingsChangedEventArgs.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Util\GraphVizGraph.cs">
+      <Link>Util\GraphVizGraph.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Util\WrappedEventArgs.cs">
       <Link>Util\WrappedEventArgs.cs</Link>
     </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\TypeIcon.cs">
-        <Link>Images\TypeIcon.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\AccessOverlayIcon.cs">
-        <Link>Images\AccessOverlayIcon.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyListTreeNode.cs">
-        <Link>TreeNodes\AssemblyListTreeNode.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\FieldTreeNode.cs">
-        <Link>TreeNodes\FieldTreeNode.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\PropertyTreeNode.cs">
-        <Link>TreeNodes\PropertyTreeNode.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\EventTreeNode.cs">
-        <Link>TreeNodes\EventTreeNode.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\MethodTreeNode.cs">
-        <Link>TreeNodes\MethodTreeNode.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\PackageFolderTreeNode.cs">
-        <Link>TreeNodes\PackageFolderTreeNode.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\BracketSearchResult.cs">
-        <Link>TextView\BracketSearchResult.cs</Link>
-      </Compile>
-      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\OutputLengthExceededException.cs">
-        <Link>TextView\OutputLengthExceededException.cs</Link>
-      </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\TypeIcon.cs">
+      <Link>Images\TypeIcon.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Images\AccessOverlayIcon.cs">
+      <Link>Images\AccessOverlayIcon.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyListTreeNode.cs">
+      <Link>TreeNodes\AssemblyListTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Views\GacEntry.cs">
+      <Link>Views\GacEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\FieldTreeNode.cs">
+      <Link>TreeNodes\FieldTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\PropertyTreeNode.cs">
+      <Link>TreeNodes\PropertyTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\EventTreeNode.cs">
+      <Link>TreeNodes\EventTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\MethodTreeNode.cs">
+      <Link>TreeNodes\MethodTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\OpenCommand.cs">
+      <Link>Commands\OpenCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\Pdb2XmlCommand.cs">
+      <Link>Commands\Pdb2XmlCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\RefreshCommand.cs">
+      <Link>Commands\RefreshCommand.cs</Link>
+    </Compile>
+    <Compile
+      Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\RemoveAssembliesWithLoadErrors.cs">
+      <Link>Commands\RemoveAssembliesWithLoadErrors.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\SaveCodeContextMenuEntry.cs">
+      <Link>Commands\SaveCodeContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\SaveCommand.cs">
+      <Link>Commands\SaveCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ScopeSearchToAssembly.cs">
+      <Link>Commands\ScopeSearchToAssembly.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ScopeSearchToNamespace.cs">
+      <Link>Commands\ScopeSearchToNamespace.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\SearchMsdnContextMenuEntry.cs">
+      <Link>Commands\SearchMsdnContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\SelectPdbContextMenuEntry.cs">
+      <Link>Commands\SelectPdbContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\SetThemeCommand.cs">
+      <Link>Commands\SetThemeCommand.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ShowCFGContextMenuEntry.cs">
+      <Link>Commands\ShowCFGContextMenuEntry.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Commands\ShowPane.cs">
+      <Link>Commands\ShowPane.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\PackageFolderTreeNode.cs">
+      <Link>TreeNodes\PackageFolderTreeNode.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\BracketSearchResult.cs">
+      <Link>TextView\BracketSearchResult.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\OutputLengthExceededException.cs">
+      <Link>TextView\OutputLengthExceededException.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\ToolPaneModel.cs">
       <Link>ViewModels\ToolPaneModel.cs</Link>
     </Compile>
-    <!-- <Compile Include="$(MSBuildThisFileDirectory)..\..\..\ilspy\ILSpy\ILSpySettingsFilePathProvider.cs">
+    <!-- <Compile
+    Include="$(MSBuildThisFileDirectory)..\..\..\ilspy\ILSpy\ILSpySettingsFilePathProvider.cs">
       <Link>ILSpy\ILSpySettingsFilePathProvider.cs</Link>
     </Compile> -->
   </ItemGroup>

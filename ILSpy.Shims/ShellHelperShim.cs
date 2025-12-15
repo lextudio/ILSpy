@@ -32,5 +32,10 @@ namespace ICSharpCode.ILSpy
                 OpenFolderAndSelectItem(p);
             }
         }
-    }
+
+		internal static void OpenFolder(string targetFolder)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

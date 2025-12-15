@@ -39,7 +39,7 @@ public partial class App : Application
     
     public IServiceProvider Services { get; } = ConfigureServices();
     public object? CompositionHost { get; private set; }
-    public IExportProvider? ExportProvider { get; private set; }
+    public static IExportProvider? ExportProvider { get; private set; }
     
     public override void Initialize()
     {

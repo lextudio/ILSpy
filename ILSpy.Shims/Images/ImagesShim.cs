@@ -29,6 +29,11 @@ namespace ICSharpCode.ILSpy
 		public static object FieldReference { get; internal set; }
 		public static object Interface { get; internal set; }
 		public static object Class { get; internal set; }
+		public static object Field { get; internal set; }
+		public static object Method { get; internal set; }
+		public static object Property { get; internal set; }
+		public static object Event { get; internal set; }
+		public static object Literal { get; internal set; }
 		public static Bitmap Save { get; internal set; }
 		public static object Assembly { get; internal set; }
 		public static Bitmap ViewCode { get; internal set; }

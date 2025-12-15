@@ -52,8 +52,9 @@ using System.IO;
 
 using static AvaloniaEdit.Utils.ExtensionMethods;
 using ProjectRover;
+using ICSharpCode.ILSpy.Views;
 
-namespace ICSharpCode.ILSpy.Views;
+namespace ICSharpCode.ILSpy;
 
 public partial class MainWindow : Window
 {

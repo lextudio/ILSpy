@@ -17,6 +17,8 @@ using ICSharpCode.ILSpy.Views;
 
 using TomsToolbox.Composition;
 
+using ProjectRover;
+
 namespace ICSharpCode.ILSpy.AssemblyTree
 {
     public partial class AssemblyTreeModel

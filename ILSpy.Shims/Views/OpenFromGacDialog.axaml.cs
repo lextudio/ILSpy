@@ -81,5 +81,11 @@ namespace ICSharpCode.ILSpy
         {
             Close(true);
         }
+
+        public string[] SelectedFileNames {
+			get {
+				return listView.SelectedItems.OfType<GacEntry>().Select(e => e.FileName).ToArray();
+			}
+		}
     }
 }

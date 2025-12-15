@@ -50,7 +50,7 @@ using ProjectRover.SearchResults;
 using ProjectRover.Services;
 using ProjectRover.Services.IlSpyX;
 using ProjectRover.Settings;
-using ICSharpCode.ILSpy.Views;
+using ICSharpCode.ILSpy;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ICSharpCode.Decompiler;

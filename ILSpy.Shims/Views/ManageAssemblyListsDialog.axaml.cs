@@ -10,7 +10,7 @@ namespace ICSharpCode.ILSpy
 {
     public partial class ManageAssemblyListsDialog : Window
     {
-        public ManageAssemblyListsDialog()
+        public ManageAssemblyListsDialog(SettingsService settingsService)
         {
             InitializeComponent();
             // Resource strings are provided via AXAML static bindings

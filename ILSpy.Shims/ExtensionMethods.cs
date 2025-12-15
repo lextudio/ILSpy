@@ -9,6 +9,8 @@ using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.Util;
 using ICSharpCode.ILSpyX;
 
+using ProjectRover;
+
 using TomsToolbox.Essentials;
 
 namespace ICSharpCode.ILSpy
@@ -20,7 +22,7 @@ namespace ICSharpCode.ILSpy
             if (exceptions.Count == 0)
                 return null;
 
-            string delimiter = $"-------------------------------------------------{Environment.NewLine}";
+            string delimiter = $"-------------------------------------------------{System.Environment.NewLine}";
 
             return string.Join(delimiter, exceptions.Select(FormatException));
         }
@@ -82,3 +84,16 @@ namespace ICSharpCode.ILSpy.Search
 {
 
 } 
+
+namespace System.Windows.Data
+{
+    
+}
+
+namespace System.Windows.Media
+{
+    
+}
+
+namespace ICSharpCode.AvalonEdit.Highlighting
+{}

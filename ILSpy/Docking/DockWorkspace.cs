@@ -25,6 +25,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 using ICSharpCode.ILSpy.Analyzers;
 using ICSharpCode.ILSpy.Search;
@@ -191,6 +192,24 @@ namespace ICSharpCode.ILSpy.Docking
 		public void ShowText(AvalonEditTextOutput textOutput)
 		{
 			ActiveTabPage.ShowTextView(textView => textView.ShowText(textOutput));
+		}
+
+		internal void ShowNodes(AvalonEditTextOutput output, TreeNodes.ILSpyTreeNode[] nodes, IHighlightingDefinition highlighting)
+		{
+			ActiveTabPage.ShowTextView(textView => textView.ShowNodes(output, nodes, highlighting));
+		}
+
+		public void ResetLayout()
+		{
+			foreach (var pane in ToolPanes)
+			{
+				pane.IsVisible = false;
+			}
+			CloseAllTabs();
+			sessionSettings.DockLayout.Reset();
+			InitializeLayout();
+
+			App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => MessageBus.Send(this, new ResetLayoutEventArgs()));
 		}
 	}
 }

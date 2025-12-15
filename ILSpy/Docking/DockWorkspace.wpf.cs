@@ -72,24 +72,6 @@ namespace ICSharpCode.ILSpy.Docking
 			DockingManager.SetBinding(DockingManager.DocumentsSourceProperty, new Binding(nameof(TabPages)));
 		}
 
-		internal void ShowNodes(AvalonEditTextOutput output, TreeNodes.ILSpyTreeNode[] nodes, IHighlightingDefinition highlighting)
-		{
-			ActiveTabPage.ShowTextView(textView => textView.ShowNodes(output, nodes, highlighting));
-		}
-
-		public void ResetLayout()
-		{
-			foreach (var pane in ToolPanes)
-			{
-				pane.IsVisible = false;
-			}
-			CloseAllTabs();
-			sessionSettings.DockLayout.Reset();
-			InitializeLayout();
-
-			App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => MessageBus.Send(this, new ResetLayoutEventArgs()));
-		}
-
 		static readonly PropertyInfo previousContainerProperty = typeof(LayoutContent).GetProperty("PreviousContainer", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		public bool BeforeInsertAnchorable(LayoutRoot layout, LayoutAnchorable anchorableToShow, ILayoutContainer destinationContainer)

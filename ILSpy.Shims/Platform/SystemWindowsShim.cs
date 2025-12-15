@@ -1,3 +1,4 @@
+
 namespace System.Windows
 {
     // Minimal stubs to allow ILSpy.Shims to compile when WPF types are referenced.
@@ -48,7 +49,12 @@ namespace System.Windows
         {
             return true;
         }
-    }
+
+		internal static MessageBoxResult Show(string assemblySaveCodeDirectoryNotEmpty, string assemblySaveCodeDirectoryNotEmptyTitle, MessageBoxButton yesNo, MessageBoxImage question, MessageBoxResult no)
+		{
+			throw new NotImplementedException();
+		}
+	}
 
     public class Window
     {
