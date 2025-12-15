@@ -32,6 +32,7 @@ using AvaloniaEdit.Rendering;
 
 using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.ILSpy.Properties;
 
 using TextLocation = ICSharpCode.Decompiler.CSharp.Syntax.TextLocation;
 

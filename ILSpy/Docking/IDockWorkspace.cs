@@ -33,5 +33,7 @@ namespace ICSharpCode.ILSpy.Docking
         void CloseAllTabs();
 
         Task<T> RunWithCancellation<T>(Func<CancellationToken, Task<T>> taskCreation);
+
+        void ShowText(AvalonEditTextOutput textOutput);
     }
 }

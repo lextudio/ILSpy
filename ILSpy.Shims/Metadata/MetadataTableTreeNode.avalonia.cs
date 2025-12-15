@@ -172,7 +172,7 @@ namespace ICSharpCode.ILSpy.Metadata
 			ConfigureDataGrid(view);
 
 			view.ItemsSource = LoadTable();
-			tabPage.Content = view;
+			// TODO: tabPage.Content = view;
 
 			ScrollRowIntoView(view, scrollTarget);
 

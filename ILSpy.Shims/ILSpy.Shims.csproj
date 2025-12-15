@@ -253,6 +253,9 @@
       <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\BracketSearchResult.cs">
         <Link>TextView\BracketSearchResult.cs</Link>
       </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\OutputLengthExceededException.cs">
+        <Link>TextView\OutputLengthExceededException.cs</Link>
+      </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\ToolPaneModel.cs">
       <Link>ViewModels\ToolPaneModel.cs</Link>
     </Compile>

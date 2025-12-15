@@ -187,5 +187,10 @@ namespace ICSharpCode.ILSpy.Docking
 
 		// Dummy property to make the XAML designer happy, the model is provided by the AvalonDock PaneStyleSelectors, not by the DockWorkspace, but the designer assumes the data context in the PaneStyleSelectors is the DockWorkspace.
 		public PaneModel Model { get; } = null;
+
+		public void ShowText(AvalonEditTextOutput textOutput)
+		{
+			ActiveTabPage.ShowTextView(textView => textView.ShowText(textOutput));
+		}
 	}
 }

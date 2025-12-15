@@ -92,7 +92,7 @@ public partial class App : Application
                 {
                     // Add a diagnostic tab and show some text
                     var doc = dockWorkspace.AddTabPage(null);
-                    dockWorkspace.ShowText("ProjectRover: diagnostic tab created at startup.");
+                    dockWorkspace.ShowText(null);//  TODO: "ProjectRover: diagnostic tab created at startup.");
                 }
             }
             catch

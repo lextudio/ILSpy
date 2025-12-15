@@ -7,11 +7,6 @@ namespace ICSharpCode.ILSpy.Docking
     /// </summary>
     public partial class DockWorkspace
     {
-        public void ShowText(string textOutput)
-		{
-			//TOOD: ActiveTabPage.ShowTextView(textView => textView.ShowText(textOutput));
-		}
-
 		public void InitializeLayout()
 		{
 			// TODO:

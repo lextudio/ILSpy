@@ -93,25 +93,25 @@ namespace ICSharpCode.ILSpy.ViewModels
 
     public static class TabPageModelExtensions
     {
-        public static System.Threading.Tasks.Task<T> ShowTextViewAsync<T>(this TabPageModel tabPage, Func<object, System.Threading.Tasks.Task<T>> action)
+        public static System.Threading.Tasks.Task<T> ShowTextViewAsync<T>(this TabPageModel tabPage, Func<DecompilerTextView, System.Threading.Tasks.Task<T>> action)
         {
             if (tabPage.Content == null)
-                tabPage.Content = new object();
-            return action(tabPage.Content!);
+                tabPage.Content = new DecompilerTextView(null); // TODO:
+            return action((DecompilerTextView)tabPage.Content!);
         }
 
-        public static System.Threading.Tasks.Task ShowTextViewAsync(this TabPageModel tabPage, Func<object, System.Threading.Tasks.Task> action)
+        public static System.Threading.Tasks.Task ShowTextViewAsync(this TabPageModel tabPage, Func<DecompilerTextView, System.Threading.Tasks.Task> action)
         {
             if (tabPage.Content == null)
-                tabPage.Content = new object();
-            return action(tabPage.Content!);
+                tabPage.Content = new DecompilerTextView(null);
+            return action((DecompilerTextView)tabPage.Content!);
         }
 
-        public static void ShowTextView(this TabPageModel tabPage, Action<object> action)
+        public static void ShowTextView(this TabPageModel tabPage, Action<DecompilerTextView> action)
         {
             if (tabPage.Content == null)
-                tabPage.Content = new object();
-            action(tabPage.Content!);
+                tabPage.Content = new DecompilerTextView(null);
+            action((DecompilerTextView)tabPage.Content!);
         }
 
         public static void Focus(this TabPageModel tabPage)

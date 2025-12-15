@@ -197,7 +197,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
         {
             typeSystem = LoadedAssembly.GetTypeSystemOrNull();
             var assembly = (MetadataModule)typeSystem.MainModule;
-            this.Children.Add(new MetadataTreeNode(module, Resources.Metadata));
+            this.Children.Add(new MetadataTreeNode(module, Properties.Resources.Metadata));
             Decompiler.DebugInfo.IDebugInfoProvider debugInfo = LoadedAssembly.GetDebugInfoOrNull();
             if (debugInfo is PortableDebugInfoProvider ppdb
                 && ppdb.GetMetadataReader() is System.Reflection.Metadata.MetadataReader reader)

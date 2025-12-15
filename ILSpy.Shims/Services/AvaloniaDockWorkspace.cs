@@ -9,6 +9,7 @@ using Dock.Model.Controls;
 using Dock.Model.Avalonia.Controls;
 using Dock.Model.Avalonia;
 using ICSharpCode.ILSpy.ViewModels;
+using ICSharpCode.ILSpy.TextView;
 
 namespace ProjectRover.Services
 {
@@ -310,7 +311,7 @@ namespace ProjectRover.Services
             return taskCreation(CancellationToken.None);
         }
 
-        public void ShowText(string textOutput)
+        public void ShowText(AvalonEditTextOutput textOutput)
         {
             Console.WriteLine("showtext called");
             // Try to find the main window and set its Document to display the provided text.
@@ -335,9 +336,6 @@ namespace ProjectRover.Services
                     string? textFallback = null;
                     switch (textOutput)
                     {
-                        case string s:
-                            textFallback = s;
-                            break;
                         default:
                             try { textFallback = textOutput?.ToString(); } catch { textFallback = null; }
                             break;

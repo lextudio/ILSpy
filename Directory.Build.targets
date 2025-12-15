@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <!-- Ensure nullable context is disabled during compilation -->
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Suppress the common nullable diagnostics (CS86xx family) and the CS8632 annotation error -->
+    <NoWarn Include="CS8600;CS8601;CS8602;CS8603;CS8604;CS8605;CS8618;CS8620;CS8621;CS8622;CS8625;CS8766;CS8767;CS8632" />
+  </ItemGroup>
+</Project>

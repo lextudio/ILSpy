@@ -92,11 +92,6 @@ namespace ICSharpCode.ILSpy.Docking
 
 		static readonly PropertyInfo previousContainerProperty = typeof(LayoutContent).GetProperty("PreviousContainer", BindingFlags.NonPublic | BindingFlags.Instance);
 
-		public void ShowText(AvalonEditTextOutput textOutput)
-		{
-			ActiveTabPage.ShowTextView(textView => textView.ShowText(textOutput));
-		}
-
 		public bool BeforeInsertAnchorable(LayoutRoot layout, LayoutAnchorable anchorableToShow, ILayoutContainer destinationContainer)
 		{
 			if (!(anchorableToShow.Content is LegacyToolPaneModel legacyContent))
