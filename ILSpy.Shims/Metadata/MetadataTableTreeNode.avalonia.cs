@@ -17,12 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+
+using Avalonia;
 
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.IL;
@@ -64,15 +68,38 @@ namespace ICSharpCode.ILSpy.Metadata
 			{
 				View_Loaded(view, new RoutedEventArgs());
 			}
-			//if (view.Items.Count > row && row >= 0)
-				// TODO: view.Dispatcher.BeginInvoke(() => view.SelectItem(view.Items[row]), DispatcherPriority.Background);
+			if (row < 0 || row >= view.ItemCount) // ItemCount is the Avalonia way
+				return;
+
+			var index = row;
+
+			Dispatcher.UIThread.Post(() =>
+			{
+				if (index < 0 || index >= view.ItemCount)
+					return;
+
+				var item = view.Items[index];
+
+				// equivalent of SelectItem + ensure visibility
+				view.SelectedItem = item;
+				view.ScrollIntoView(item);
+			}, DispatcherPriority.Background);
 		}
 
 		private void View_Loaded(object sender, RoutedEventArgs e)
 		{
 			ListBox view = (ListBox)sender;
-			//var sv = view.FindVisualChild<ScrollViewer>();
-			//sv.ScrollToVerticalOffset(scrollTarget - 1);
+			var sv = view
+				.GetVisualDescendants()
+				.OfType<ScrollViewer>()
+				.FirstOrDefault();
+
+			if (sv != null)
+			{
+				var offset = sv.Offset;
+				sv.Offset = new Vector(offset.X, scrollTarget - 1);
+			}
+
 			view.Loaded -= View_Loaded;
 			this.scrollTarget = default;
 		}
@@ -172,7 +199,7 @@ namespace ICSharpCode.ILSpy.Metadata
 			ConfigureDataGrid(view);
 
 			view.ItemsSource = LoadTable();
-			// TODO: tabPage.Content = view;
+			tabPage.Content = view;
 
 			ScrollRowIntoView(view, scrollTarget);
 
