@@ -23,9 +23,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
-using System.Windows.Media;
 
-using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
@@ -44,7 +42,7 @@ namespace ICSharpCode.ILSpy
 
 	[Export(typeof(Language))]
 	[Shared]
-	class CSharpILMixedLanguage(SettingsService settingsService, DockWorkspace dockWorkspace) : ILLanguage(dockWorkspace)
+	partial class CSharpILMixedLanguage(SettingsService settingsService, DockWorkspace dockWorkspace) : ILLanguage(dockWorkspace)
 	{
 		public override string Name => "IL with C#";
 
@@ -80,7 +78,7 @@ namespace ICSharpCode.ILSpy
 			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(tokenWriter, settings.CSharpFormattingOptions));
 		}
 
-		class MixedMethodBodyDisassembler : MethodBodyDisassembler
+		partial class MixedMethodBodyDisassembler : MethodBodyDisassembler
 		{
 			readonly DecompilationOptions options;
 			// list sorted by IL offset
@@ -150,8 +148,6 @@ namespace ICSharpCode.ILSpy
 				}
 				base.WriteInstruction(output, metadata, methodHandle, ref blob, methodRva);
 			}
-
-			HighlightingColor gray = new HighlightingColor { Foreground = new SimpleHighlightingBrush(Colors.DarkGray) };
 
 			void WriteHighlightedCommentLine(ISmartTextOutput output, string text, int startColumn, int endColumn, bool isSingleLine)
 			{

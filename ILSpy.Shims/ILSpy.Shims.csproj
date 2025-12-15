@@ -196,6 +196,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\ILLanguage.cs">
       <Link>Languages\ILLanguage.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\CSharpILMixedLanguage.cs">
+      <Link>Languages\CSharpILMixedLanguage.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Languages\ILAstLanguage.cs">
       <Link>Languages\ILAstLanguage.cs</Link>
     </Compile>
