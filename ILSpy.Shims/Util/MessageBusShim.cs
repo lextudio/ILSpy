@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.ViewModels;
 
 namespace ICSharpCode.ILSpy.Util
 {
@@ -81,8 +82,8 @@ namespace ICSharpCode.ILSpy.Util
 
     public class ShowAboutPageEventArgs : EventArgs
     {
-        public object TabPage { get; }
-        public ShowAboutPageEventArgs(object tabPage) => TabPage = tabPage;
+        public TabPageModel TabPage { get; }
+        public ShowAboutPageEventArgs(TabPageModel tabPage) => TabPage = tabPage;
     }
 
     public class ShowSearchPageEventArgs : EventArgs

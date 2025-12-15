@@ -1,8 +1,10 @@
 // Minimal shim for TomsToolbox.Wpf.ObservableObjectBase used by linked ILSpy sources
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using Avalonia.Threading;
@@ -34,6 +36,53 @@ namespace TomsToolbox.Wpf
 		/// Gets the dispatcher of the thread where this object was created.
 		/// </summary>
 		public Dispatcher Dispatcher { get; } = Dispatcher.UIThread; // TODO: verify Avalonia compatibility
+
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+		{
+			if (propertyName == null)
+				return;
+
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+			// raise for dependent properties
+			foreach (var dependent in GetDependentProperties(propertyName))
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(dependent));
+			}
+		}
+
+		static readonly ConcurrentDictionary<Type, Dictionary<string, string[]>> _cache = new();
+
+		static IReadOnlyList<string> GetDependentProperties(string propertyName, Type? type = null)
+		{
+			type ??= typeof(ObservableObject);
+
+			var map = _cache.GetOrAdd(type, t =>
+			{
+				var dict = new Dictionary<string, List<string>>();
+
+				foreach (var prop in t.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+				{
+					var attrs = prop.GetCustomAttributes<PropertyDependencyAttribute>();
+					foreach (var attr in attrs)
+					{
+						foreach (var source in attr.PropertyNames)
+						{
+							if (!dict.TryGetValue(source, out var list))
+								list = dict[source] = new List<string>();
+
+							list.Add(prop.Name);
+						}
+					}
+				}
+
+				return dict.ToDictionary(k => k.Key, v => v.Value.ToArray());
+			});
+
+			return map.TryGetValue(propertyName, out var deps) ? deps : Array.Empty<string>();
+		}
 	}
 
 	public static class DispatcherHelper
@@ -52,5 +101,16 @@ namespace TomsToolbox.Wpf
 		{
 			return Dispatcher.UIThread.InvokeAsync(action);
 		}
+	}
+
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+	public sealed class PropertyDependencyAttribute : Attribute
+	{
+		public PropertyDependencyAttribute(params string[] propertyNames)
+		{
+			PropertyNames = propertyNames;
+		}
+
+		public string[] PropertyNames { get; }
 	}
 }

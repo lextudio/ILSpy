@@ -1,11 +1,10 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 
 namespace ICSharpCode.ILSpy.Views
 {
-    public partial class UpdatePanel : UserControl
+    public partial class CompareView : UserControl
     {
-        public UpdatePanel()
+        public CompareView()
         {
             InitializeComponent();
         }

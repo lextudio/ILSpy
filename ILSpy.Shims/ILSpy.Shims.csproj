@@ -12,6 +12,7 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
@@ -210,6 +211,18 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Updates\UpdateSettings.cs">
       <Link>Updates\UpdateSettings.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Updates\AvailableVersionInfo.cs">
+      <Link>Updates\AvailableVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Updates\UpdateService.cs">
+      <Link>Updates\UpdateService.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Updates\AppUpdateService.cs">
+      <Link>Updates\AppUpdateService.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\UpdatePanelViewModel.cs">
+      <Link>ViewModels\UpdatePanelViewModel.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\NamespaceTreeNode.cs">
       <Link>TreeNodes\NamespaceTreeNode.cs</Link>
