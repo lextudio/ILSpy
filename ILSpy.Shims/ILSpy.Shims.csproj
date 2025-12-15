@@ -6,8 +6,10 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <RootNamespace>ProjectRover</RootNamespace>
+    <RootNamespace>ICSharpCode.ILSpy</RootNamespace>
     <AssemblyName>ProjectRover</AssemblyName>
+    <!-- <GenerateResxSource>true</GenerateResxSource>
+    <ResxClassAccessibility>public</ResxClassAccessibility> -->
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -56,6 +58,29 @@
   <ItemGroup>
     <EmbeddedResource Include="appsettings*.json" />
   </ItemGroup>
+
+  <!-- Link real Resources.resx from ILSpy so the strongly-typed Resources class is generated -->
+  <!-- <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)..\ILSpy\Properties\Resources.resx">
+      <Link>Properties\Resources.resx</Link>
+    </EmbeddedResource>
+  </ItemGroup> -->
+
+  <ItemGroup>
+    <Compile Update="Properties\Resource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Properties\Resource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Services\IPlatformService.cs">
       <Link>Services\IPlatformService.cs</Link>
