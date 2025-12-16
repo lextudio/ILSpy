@@ -40,7 +40,6 @@ namespace ICSharpCode.ILSpy.Metadata
 			this.metadataFile = module;
 			this.title = title;
 			this.LazyLoading = true;
-			this.Children.Add(new ICSharpCode.ILSpy.TreeNodes.DummyTreeNode());
 		}
 
 		public override object Text => title;

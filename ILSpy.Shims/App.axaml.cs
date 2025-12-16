@@ -36,20 +36,21 @@ using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using ICSharpCode.ILSpy.Views;
 using ICSharpCode.ILSpy.AppEnv;
+using ICSharpCode.ILSpyX.TreeView;
 
 namespace ProjectRover;
 
 public partial class App : Application
 {
     public new static App Current => (App)Application.Current!;
-    
+
     public IServiceProvider Services { get; private set; } = null!;
     public object? CompositionHost { get; private set; }
     public static IExportProvider? ExportProvider { get; private set; }
 
     public static CommandLineArguments CommandLineArguments { get; private set; } = CommandLineArguments.Create(Array.Empty<string>()); // TODO:
     internal static readonly IList<ExceptionData> StartupExceptions = new List<ExceptionData>(); // TODO:
-    
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -89,7 +90,7 @@ public partial class App : Application
             // Create the adapter
             Console.WriteLine("Creating ExportProviderAdapter...");
             ExportProvider = new ExportProviderAdapter(serviceProvider);
-            
+
             Console.WriteLine($"ExportProvider initialized: {ExportProvider != null}");
 
             Console.WriteLine("Creating MainWindow...");
@@ -98,6 +99,16 @@ public partial class App : Application
 
             // Register command bindings
             ICSharpCode.ILSpy.CommandWrapper.RegisterBindings(desktop.MainWindow);
+
+            // Diagnostic: attach to AssemblyTreeModel export when available and watch Root.Children
+            try
+            {
+                _ = AttachAssemblyTreeDiagnosticsAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Startup] Failed to start assembly diagnostics: " + ex);
+            }
 
             // Exercise docking workspace once at startup (diagnostic)
             try
@@ -115,42 +126,41 @@ public partial class App : Application
                 // swallow diagnostic errors
             }
 
-                // Runtime MEF diagnostics: try to resolve the exported IlSpy backend wrapper
-                try
+            // Runtime MEF diagnostics: try to resolve the exported IlSpy backend wrapper
+            try
+            {
+                if (ExportProvider != null)
                 {
-                    if (ExportProvider != null)
+                    try
                     {
-                        try
-                        {
-                            // var exportedBackend = ExportProvider.GetExportedValue<ProjectRover.Services.ExportedIlSpyBackend>();
-                            // if (exportedBackend != null && exportedBackend.Backend != null)
-                            // {
-                            //     Console.WriteLine("MEF: Resolved ExportedIlSpyBackend via ExportProvider.");
-                            //     try
-                            //     {
-                            //         // Call a safe method to verify the backend is callable
-                            //         exportedBackend.Backend.Clear();
-                            //         Console.WriteLine("IlSpyBackend.Clear() invoked successfully.");
-                            //     }
-                            //     catch (Exception ex)
-                            //     {
-                            //         Console.WriteLine("IlSpyBackend.Clear failed: " + ex.Message);
-                            //     }
-                            // }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("MEF: ExportedIlSpyBackend not resolved via ExportProvider: " + ex.Message);
-                        }
+                        // var exportedBackend = ExportProvider.GetExportedValue<ProjectRover.Services.ExportedIlSpyBackend>();
+                        // if (exportedBackend != null && exportedBackend.Backend != null)
+                        // {
+                        //     Console.WriteLine("MEF: Resolved ExportedIlSpyBackend via ExportProvider.");
+                        //     try
+                        //     {
+                        //         // Call a safe method to verify the backend is callable
+                        //         exportedBackend.Backend.Clear();
+                        //         Console.WriteLine("IlSpyBackend.Clear() invoked successfully.");
+                        //     }
+                        //     catch (Exception ex)
+                        //     {
+                        //         Console.WriteLine("IlSpyBackend.Clear failed: " + ex.Message);
+                        //     }
+                        // }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("MEF: ExportedIlSpyBackend not resolved via ExportProvider: " + ex.Message);
                     }
                 }
-                catch
-                {
-                    // swallow diagnostics
-                }
-
-            desktop.ShutdownRequested += (_, _) =>
+            }
+            catch
             {
+                // swallow diagnostics
+            }
+
+            desktop.ShutdownRequested += (_, _) => {
                 // var analyticsService = Services.GetRequiredService<IAnalyticsService>();
                 // try
                 // {
@@ -159,10 +169,108 @@ public partial class App : Application
                 // catch { }
             };
         }
-
         base.OnFrameworkInitializationCompleted();
     }
-    
+
+    // Diagnostic helper: wait for AssemblyTreeModel export and attach to Root.Children changes
+    private static async System.Threading.Tasks.Task AttachAssemblyTreeDiagnosticsAsync()
+    {
+        for (int attempt = 0; attempt < 30; attempt++)
+        {
+            try
+            {
+                var model = ExportProvider?.GetExportedValueOrDefault<ICSharpCode.ILSpy.AssemblyTree.AssemblyTreeModel>();
+                if (model != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("[Startup] AssemblyTreeModel export found.");
+                    AttachModelDiagnostics(model);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Startup] Error retrieving AssemblyTreeModel: " + ex);
+            }
+            await System.Threading.Tasks.Task.Delay(200);
+        }
+        System.Diagnostics.Debug.WriteLine("[Startup] AssemblyTreeModel export not found after polling.");
+    }
+
+    private static void AttachModelDiagnostics(ICSharpCode.ILSpy.AssemblyTree.AssemblyTreeModel model)
+    {
+        try
+        {
+            model.PropertyChanged += (s, e) => {
+                if (e.PropertyName == "Root")
+                {
+                    System.Diagnostics.Debug.WriteLine("[Startup] AssemblyTreeModel.Root changed.");
+                    SubscribeToRoot(model.Root);
+                }
+            };
+
+            if (model.Root != null)
+            {
+                System.Diagnostics.Debug.WriteLine("[Startup] AssemblyTreeModel.Root already set.");
+                SubscribeToRoot(model.Root);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("[Startup] AttachModelDiagnostics failed: " + ex);
+        }
+    }
+
+    private static void SubscribeToRoot(SharpTreeNode? root)
+    {
+        try
+        {
+            if (root == null)
+                return;
+            System.Diagnostics.Debug.WriteLine($"[Startup] Root has {root.Children.Count} children.");
+            if (root.Children is System.Collections.Specialized.INotifyCollectionChanged incc)
+            {
+                incc.CollectionChanged += (s, e) => {
+                    System.Diagnostics.Debug.WriteLine($"[Startup] Root.Children changed: action={e.Action}, newCount={root.Children.Count}");
+                    if (e.NewItems != null)
+                    {
+                        foreach (var ni in e.NewItems)
+                        {
+                            if (ni is ICSharpCode.ILSpy.TreeNodes.AssemblyTreeNode atn)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"[Startup] New assembly node: {atn.LoadedAssembly?.ShortName}");
+                                    atn.EnsureLazyChildren();
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine("[Startup] EnsureLazyChildren failed in CollectionChanged: " + ex);
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+
+            foreach (var node in root.Children.OfType<ICSharpCode.ILSpy.TreeNodes.AssemblyTreeNode>())
+            {
+                try
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Startup] Forcing EnsureLazyChildren for existing node: {node.LoadedAssembly?.ShortName}");
+                    node.EnsureLazyChildren();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[Startup] EnsureLazyChildren failed for existing node: " + ex);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("[Startup] SubscribeToRoot failed: " + ex);
+        }
+    }
+
     private static IServiceCollection CreateServiceCollection() =>
         new ServiceCollection()
             .ConfigureOptions()
@@ -191,9 +299,9 @@ public partial class App : Application
             _services = services;
         }
 
-		public event EventHandler<EventArgs>? ExportsChanged;
+        public event EventHandler<EventArgs>? ExportsChanged;
 
-		public T GetExportedValue<T>()
+        public T GetExportedValue<T>()
         {
             if (_host.TryGetExport<T>(out var export))
                 return export;
@@ -205,8 +313,8 @@ public partial class App : Application
             throw new InvalidOperationException($"Export not found: {typeof(T).FullName}");
         }
 
-		public T GetExportedValue<T>(string? contractName = null) where T : class
-		{
+        public T GetExportedValue<T>(string? contractName = null) where T : class
+        {
             if (_host.TryGetExport<T>(contractName, out var export))
                 return export;
 
@@ -217,58 +325,59 @@ public partial class App : Application
                     return svc;
             }
             throw new InvalidOperationException($"Export not found: {typeof(T).FullName} (contract: {contractName})");
-		}
+        }
 
-		public T? GetExportedValueOrDefault<T>(string? contractName = null) where T : class
-		{
+        public T? GetExportedValueOrDefault<T>(string? contractName = null) where T : class
+        {
             if (_host.TryGetExport<T>(contractName, out var export))
                 return export;
 
             if (contractName == null)
             {
                 var svc = (T?)_services.GetService(typeof(T));
-                if (svc != null) return svc;
+                if (svc != null)
+                    return svc;
             }
             return default;
-		}
+        }
 
-		public T[] GetExportedValues<T>()
+        public T[] GetExportedValues<T>()
         {
             return System.Linq.Enumerable.ToArray(_host.GetExports<T>());
         }
 
-		public IEnumerable<T> GetExportedValues<T>(string? contractName = null) where T : class
-		{
-			return _host.GetExports<T>(contractName);
-		}
+        public IEnumerable<T> GetExportedValues<T>(string? contractName = null) where T : class
+        {
+            return _host.GetExports<T>(contractName);
+        }
 
-		public IEnumerable<object> GetExportedValues(Type contractType, string? contractName = null)
-		{
-			throw new NotImplementedException();
-		}
+        public IEnumerable<object> GetExportedValues(Type contractType, string? contractName = null)
+        {
+            throw new NotImplementedException();
+        }
 
-		public IEnumerable<IExport<object>> GetExports(Type contractType, string? contractName = null)
-		{
-			throw new NotImplementedException();
-		}
+        public IEnumerable<IExport<object>> GetExports(Type contractType, string? contractName = null)
+        {
+            throw new NotImplementedException();
+        }
 
-		public IEnumerable<IExport<T>> GetExports<T>(string? contractName = null) where T : class
-		{
-			throw new NotImplementedException();
-		}
+        public IEnumerable<IExport<T>> GetExports<T>(string? contractName = null) where T : class
+        {
+            throw new NotImplementedException();
+        }
 
-		public IEnumerable<IExport<T, TMetadataView>> GetExports<T, TMetadataView>(string? contractName = null)
-			where T : class
-			where TMetadataView : class
-		{
-			throw new NotImplementedException();
-		}
+        public IEnumerable<IExport<T, TMetadataView>> GetExports<T, TMetadataView>(string? contractName = null)
+            where T : class
+            where TMetadataView : class
+        {
+            throw new NotImplementedException();
+        }
 
-		public bool TryGetExportedValue<T>(string? contractName, [NotNullWhen(true)] out T? value) where T : class
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public bool TryGetExportedValue<T>(string? contractName, [NotNullWhen(true)] out T? value) where T : class
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     // Small holder type that can be discovered by MEF consumers if they import IServiceProvider
     // We keep this type internal to avoid adding new public API surface.

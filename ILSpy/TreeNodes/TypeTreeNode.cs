@@ -37,7 +37,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.ParentAssemblyNode = parentAssemblyNode ?? throw new ArgumentNullException(nameof(parentAssemblyNode));
 			this.TypeDefinition = typeDefinition ?? throw new ArgumentNullException(nameof(typeDefinition));
 			this.LazyLoading = true;
-			this.Children.Add(new DummyTreeNode());
 		}
 
 		public ITypeDefinition TypeDefinition { get; }

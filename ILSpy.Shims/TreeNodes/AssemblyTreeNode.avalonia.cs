@@ -38,7 +38,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
             this.LoadedAssembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
             this.LazyLoading = true;
             this.PackageEntry = packageEntry;
-            this.Children.Add(new DummyTreeNode());
             Init();
         }
 

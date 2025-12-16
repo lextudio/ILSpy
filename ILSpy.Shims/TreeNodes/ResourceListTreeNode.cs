@@ -38,7 +38,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		{
 			this.LazyLoading = true;
 			this.module = module;
-			this.Children.Add(new ICSharpCode.ILSpy.TreeNodes.DummyTreeNode());
 		}
 
 		public override object Text => Resources._Resources;

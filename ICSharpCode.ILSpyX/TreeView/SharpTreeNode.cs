@@ -319,7 +319,21 @@ namespace ICSharpCode.ILSpyX.TreeView
 				}
 				RaisePropertyChanged(nameof(LazyLoading));
 				RaisePropertyChanged(nameof(ShowExpander));
+				RaisePropertyChanged(nameof(ViewChildren));
 			}
+		}
+
+		public System.Collections.IEnumerable ViewChildren {
+			get {
+				if (LazyLoading && Children.Count == 0)
+					return new[] { new LoadingTreeNode() };
+				return Children;
+			}
+		}
+
+		class LoadingTreeNode : SharpTreeNode
+		{
+			public override object Text => "Loading...";
 		}
 
 		bool canExpandRecursively = true;
