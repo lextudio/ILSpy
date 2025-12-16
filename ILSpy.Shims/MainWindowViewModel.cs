@@ -24,6 +24,7 @@ using CommunityToolkit.Mvvm.Input;
 using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Docking;
+using ICSharpCode.ILSpy.Search;
 using ICSharpCode.ILSpyX;
 
 using TomsToolbox.Wpf;
@@ -42,6 +43,7 @@ namespace ICSharpCode.ILSpy
         private readonly DockWorkspace dockWorkspace;
         private readonly IPlatformService platformService;
         private readonly AssemblyTreeModel assemblyTreeModel;
+        private readonly SearchPaneModel searchPaneModel;
 
         public MainWindowViewModel(
             SettingsService settingsService, 
@@ -49,6 +51,7 @@ namespace ICSharpCode.ILSpy
             DockWorkspace dockWorkspace, 
             IPlatformService platformService, 
             AssemblyTreeModel assemblyTreeModel,
+            SearchPaneModel searchPaneModel,
             ManageAssemblyListsCommand manageAssemblyListsCommand)
         {
             this.settingsService = settingsService;
@@ -56,6 +59,7 @@ namespace ICSharpCode.ILSpy
             this.dockWorkspace = dockWorkspace;
             this.platformService = platformService;
             this.assemblyTreeModel = assemblyTreeModel;
+            this.searchPaneModel = searchPaneModel;
             this.ManageAssemblyListsCommand = manageAssemblyListsCommand;
 
             OpenFileCommand = new RelayCommand(OpenFile);
@@ -82,6 +86,7 @@ namespace ICSharpCode.ILSpy
 		public DockWorkspace Workspace => dockWorkspace;
 
         public AssemblyTreeModel AssemblyTreeModel => assemblyTreeModel;
+        public SearchPaneModel SearchPaneModel => searchPaneModel;
 
 		public LanguageService LanguageService => languageService;
 

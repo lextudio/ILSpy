@@ -56,7 +56,7 @@ namespace ICSharpCode.ILSpy
 
             leftDockView = new AssemblyListPane { DataContext = viewModel.AssemblyTreeModel };
             centerDockView = new DecompilerTextView { DataContext = viewModel };
-            searchDockView = new SearchPane { DataContext = viewModel };
+            searchDockView = new SearchPane { DataContext = viewModel.SearchPaneModel };
 
             documentHost = new Document
             {

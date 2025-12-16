@@ -32,6 +32,7 @@ namespace ICSharpCode.ILSpy.Search
 		public ImageSource Image { get; init; }
 	}
 
+	[Export]
 	[ExportToolPane]
 	[Shared]
 	public partial class SearchPaneModel : ToolPaneModel
