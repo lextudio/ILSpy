@@ -57,7 +57,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
 		protected static LanguageService LanguageService { get; } = App.ExportProvider.GetExportedValue<LanguageService>();
 
-		protected static IDockWorkspace DockWorkspace { get; } = App.ExportProvider.GetExportedValue<IDockWorkspace>();
+		protected static DockWorkspace DockWorkspace { get; } = App.ExportProvider.GetExportedValue<DockWorkspace>();
 
 		public virtual FilterResult Filter(LanguageSettings settings)
 		{

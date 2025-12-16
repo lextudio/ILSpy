@@ -49,9 +49,9 @@ namespace ICSharpCode.ILSpy
 	public class ILLanguage : Language
 	{
 		protected bool detectControlStructure = true;
-		private IDockWorkspace dockWorkspace;
+		private Docking.DockWorkspace dockWorkspace;
 
-		public ILLanguage(IDockWorkspace dockWorkspace)
+		public ILLanguage(Docking.DockWorkspace dockWorkspace)
 		{
 			this.dockWorkspace = dockWorkspace;
 		}

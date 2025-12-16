@@ -7,7 +7,7 @@ namespace ICSharpCode.ILSpy
 {
     public class WpfPlatformService : IPlatformService
     {
-        public Docking.IDockWorkspace? DockWorkspace { get; set; }
+        public Docking.DockWorkspace? DockWorkspace { get; set; }
 
         public void InvokeOnUI(Action action)
         {

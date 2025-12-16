@@ -40,9 +40,9 @@ using TomsToolbox.Wpf;
 
 namespace ICSharpCode.ILSpy.Docking
 {
-	[Export(typeof(IDockWorkspace))]
+	[Export(typeof(DockWorkspace))]
 	[Shared]
-	public partial class DockWorkspace : ObservableObject, ICSharpCode.ILSpy.Docking.IDockWorkspace
+	public partial class DockWorkspace : ObservableObject
 	{
 		private readonly IExportProvider exportProvider;
 

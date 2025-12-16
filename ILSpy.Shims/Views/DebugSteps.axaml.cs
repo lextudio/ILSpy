@@ -19,7 +19,7 @@ namespace ICSharpCode.ILSpy
         private readonly AssemblyTreeModel assemblyTreeModel;
         private readonly SettingsService settingsService;
         private readonly LanguageService languageService;
-        private readonly IDockWorkspace dockWorkspace;
+        private readonly DockWorkspace dockWorkspace;
 
         static readonly ILAstWritingOptions writingOptions = new ILAstWritingOptions {
             UseFieldSugar = true,
@@ -39,12 +39,12 @@ namespace ICSharpCode.ILSpy
                 ProjectRover.App.ExportProvider.GetExportedValue<AssemblyTreeModel>(),
                 ProjectRover.App.ExportProvider.GetExportedValue<SettingsService>(),
                 ProjectRover.App.ExportProvider.GetExportedValue<LanguageService>(),
-                ProjectRover.App.ExportProvider.GetExportedValue<IDockWorkspace>()
+                ProjectRover.App.ExportProvider.GetExportedValue<DockWorkspace>()
             )
         {
         }
 
-        public DebugSteps(AssemblyTreeModel assemblyTreeModel, SettingsService settingsService, LanguageService languageService, IDockWorkspace dockWorkspace)
+        public DebugSteps(AssemblyTreeModel assemblyTreeModel, SettingsService settingsService, LanguageService languageService, DockWorkspace dockWorkspace)
         {
             InitializeComponent();
 

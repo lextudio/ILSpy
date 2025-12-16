@@ -71,7 +71,7 @@ public static class ServiceCollectionExtensions
         services
             //.AddSingleton<IlSpyBackend>()
             //.AddSingleton<ICSharpCode.ILSpy.Docking.IDockWorkspace, AvaloniaDockWorkspace>()
-            .AddSingleton<IPlatformService>(sp => new AvaloniaPlatformService(sp.GetRequiredService<ICSharpCode.ILSpy.Docking.IDockWorkspace>()))
+            .AddSingleton<IPlatformService>(sp => new AvaloniaPlatformService(sp.GetRequiredService<ICSharpCode.ILSpy.Docking.DockWorkspace>()))
             //.AddSingleton<INotificationService, NotificationService>()
             //.AddTransient<IProjectGenerationService, ProjectGenerationService>()
             //.AddTransient<IAutoUpdateService, AutoUpdateService>()
@@ -79,9 +79,9 @@ public static class ServiceCollectionExtensions
             //.AddTransient<IDialogService, DialogService>()
             .AddSingleton<ICSharpCode.ILSpy.Util.SettingsService>()
             .AddSingleton<ICSharpCode.ILSpy.LanguageService>(sp => new ICSharpCode.ILSpy.LanguageService(
-                new ICSharpCode.ILSpy.Language[] { new ICSharpCode.ILSpy.CSharpLanguage(), new ICSharpCode.ILSpy.ILLanguage(sp.GetRequiredService<ICSharpCode.ILSpy.Docking.IDockWorkspace>()) },
+                new ICSharpCode.ILSpy.Language[] { new ICSharpCode.ILSpy.CSharpLanguage(), new ICSharpCode.ILSpy.ILLanguage(sp.GetRequiredService<ICSharpCode.ILSpy.Docking.DockWorkspace>()) },
                 sp.GetRequiredService<ICSharpCode.ILSpy.Util.SettingsService>(),
-                sp.GetRequiredService<ICSharpCode.ILSpy.Docking.IDockWorkspace>()
+                sp.GetRequiredService<ICSharpCode.ILSpy.Docking.DockWorkspace>()
             ))
             .AddSingleton<ICSharpCode.ILSpy.AssemblyTree.AssemblyTreeModel>(sp => new ICSharpCode.ILSpy.AssemblyTree.AssemblyTreeModel(
                 sp.GetRequiredService<ICSharpCode.ILSpy.Util.SettingsService>(),

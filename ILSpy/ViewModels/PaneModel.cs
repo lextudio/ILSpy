@@ -31,7 +31,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 	{
 		private readonly Throttle titleChangeThrottle;
 
-		protected static IDockWorkspace DockWorkspace => App.ExportProvider.GetExportedValue<IDockWorkspace>();
+		protected static DockWorkspace DockWorkspace => App.ExportProvider.GetExportedValue<DockWorkspace>();
 
 		protected PaneModel()
 		{

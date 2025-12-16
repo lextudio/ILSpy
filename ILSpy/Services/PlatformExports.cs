@@ -7,7 +7,7 @@ namespace ICSharpCode.ILSpy
     public class PlatformExports : WpfPlatformService
     {
         [ImportingConstructor]
-        public PlatformExports(ICSharpCode.ILSpy.Docking.IDockWorkspace dockWorkspace)
+        public PlatformExports(ICSharpCode.ILSpy.Docking.DockWorkspace dockWorkspace)
         {
             this.DockWorkspace = dockWorkspace;
         }

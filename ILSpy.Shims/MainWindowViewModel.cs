@@ -39,14 +39,14 @@ namespace ICSharpCode.ILSpy
 	{
         private readonly SettingsService settingsService;
         private readonly LanguageService languageService;
-        private readonly IDockWorkspace dockWorkspace;
+        private readonly DockWorkspace dockWorkspace;
         private readonly IPlatformService platformService;
         private readonly AssemblyTreeModel assemblyTreeModel;
 
         public MainWindowViewModel(
             SettingsService settingsService, 
             LanguageService languageService, 
-            IDockWorkspace dockWorkspace, 
+            DockWorkspace dockWorkspace, 
             IPlatformService platformService, 
             AssemblyTreeModel assemblyTreeModel,
             ManageAssemblyListsCommand manageAssemblyListsCommand)
@@ -79,7 +79,7 @@ namespace ICSharpCode.ILSpy
             SelectedSearchMode = SearchModes[0];
         }
 
-		public IDockWorkspace Workspace => dockWorkspace;
+		public DockWorkspace Workspace => dockWorkspace;
 
         public AssemblyTreeModel AssemblyTreeModel => assemblyTreeModel;
 

@@ -301,10 +301,6 @@
       <Link>Docking\DockWorkspace.cs</Link>
     </Compile>
 
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Docking\IDockWorkspace.cs">
-      <Link>Docking\IDockWorkspace.cs</Link>
-    </Compile>
-
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\EntityReference.cs">
       <Link>EntityReference.cs</Link>
     </Compile>

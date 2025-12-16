@@ -38,7 +38,7 @@ namespace ICSharpCode.ILSpy
 		private readonly Util.SettingsService settingsService;
 		private readonly LanguageSettings languageSettings;
 
-		public LanguageService(IEnumerable<Language> languages, Util.SettingsService settingsService, IDockWorkspace dockWorkspace)
+		public LanguageService(IEnumerable<Language> languages, Util.SettingsService settingsService, DockWorkspace dockWorkspace)
 		{
 			this.settingsService = settingsService;
 			languageSettings = settingsService.SessionSettings.LanguageSettings;
