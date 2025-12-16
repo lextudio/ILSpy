@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	/// <summary>
 	/// Describes a pair of matching brackets found by <see cref="IBracketSearcher"/>.

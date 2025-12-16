@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Decompiler.Metadata;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpyX.Abstractions;

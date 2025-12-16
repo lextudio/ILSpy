@@ -21,6 +21,7 @@ using System.Threading;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.Options;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpyX;
 
 using DecompilerSettings = ICSharpCode.ILSpyX.Settings.DecompilerSettings;
@@ -77,7 +78,7 @@ namespace ICSharpCode.ILSpy
 		/// <remarks>
 		/// This state is used to restore test view's state when decompilation is started by Go Back/Forward action.
 		/// </remarks>
-		public TextView.DecompilerTextViewState TextViewState { get; set; }
+		public DecompilerTextViewState TextViewState { get; set; }
 
 		/// <summary>
 		/// Used internally for debugging.

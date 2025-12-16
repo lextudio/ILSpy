@@ -25,7 +25,7 @@ using Avalonia.Controls;
 
 using AvaloniaEdit;
 
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpyX.Search;
 using ICSharpCode.ILSpy.Controls.TreeView;
 using ICSharpCode.ILSpyX.TreeView;

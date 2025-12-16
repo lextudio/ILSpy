@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.ViewModels;
 
 namespace ICSharpCode.ILSpy.Util

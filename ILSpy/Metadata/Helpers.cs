@@ -38,7 +38,7 @@ using DataGridExtensions;
 
 using ICSharpCode.Decompiler.Util;
 using ICSharpCode.ILSpy.Controls;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.ViewModels;
 

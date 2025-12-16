@@ -32,6 +32,7 @@ using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using ICSharpCode.Decompiler.Util;
 using ICSharpCode.ILSpy.AssemblyTree;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpyX;
 using ICSharpCode.ILSpyX.Abstractions;
 
@@ -583,9 +584,9 @@ namespace ICSharpCode.ILSpy
             }
         }
 
-        public virtual TextView.IBracketSearcher BracketSearcher {
+        public virtual IBracketSearcher BracketSearcher {
             get {
-                return new TextView.DefaultBracketSearcher(); // TODO: .Instance;
+                return DefaultBracketSearcher.DefaultInstance;
             }
         }
 

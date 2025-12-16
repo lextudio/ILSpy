@@ -21,7 +21,7 @@ using System;
 using System.Collections.Specialized;
 using System.Windows.Navigation;
 
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.ViewModels;
 
 using TomsToolbox.Essentials;

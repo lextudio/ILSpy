@@ -16,41 +16,49 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#nullable enable
+using System.Composition;
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using ICSharpCode.ILSpy.Properties;
 
-using ICSharpCode.ILSpy.TreeNodes;
-
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
-	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public class ViewState : IEquatable<ViewState>
+	[ExportContextMenuEntry(Header = nameof(Resources.Copy), Category = nameof(Resources.Editor))]
+	[Shared]
+	sealed class CopyContextMenuEntry : IContextMenuEntry
 	{
-		public HashSet<ILSpyTreeNode>? DecompiledNodes;
-		public Uri? ViewedUri;
-
-		public virtual bool Equals(ViewState? other)
+		public bool IsVisible(TextViewContext context)
 		{
-			return other != null
-				&& ViewedUri == other.ViewedUri
-				&& NullSafeSetEquals(DecompiledNodes, other.DecompiledNodes);
-
-			static bool NullSafeSetEquals(HashSet<ILSpyTreeNode>? a, HashSet<ILSpyTreeNode>? b)
-			{
-				if (a == b)
-					return true;
-				if (a == null || b == null)
-					return false;
-				return a.SetEquals(b);
-			}
+			return context.TextView != null;
 		}
 
-		protected virtual string GetDebuggerDisplay()
+		public bool IsEnabled(TextViewContext context)
 		{
-			return $"Nodes = {DecompiledNodes?.Count.ToString() ?? "<null>"}, ViewedUri = {ViewedUri?.ToString() ?? "<null>"}";
+			return context.TextView != null && context.TextView.textEditor.SelectionLength > 0;
+		}
+
+		public void Execute(TextViewContext context)
+		{
+			context.TextView.textEditor.Copy();
+		}
+	}
+
+	[ExportContextMenuEntry(Header = nameof(Resources.Select), Category = nameof(Resources.Editor))]
+	[Shared]
+	sealed class SelectAllContextMenuEntry : IContextMenuEntry
+	{
+		public bool IsVisible(TextViewContext context)
+		{
+			return context.TextView != null;
+		}
+
+		public bool IsEnabled(TextViewContext context)
+		{
+			return context.TextView != null;
+		}
+
+		public void Execute(TextViewContext context)
+		{
+			context.TextView.textEditor.SelectAll();
 		}
 	}
 }

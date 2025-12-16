@@ -33,7 +33,7 @@ using ICSharpCode.Decompiler.TypeSystem;
 
 using TextLocation = ICSharpCode.Decompiler.CSharp.Syntax.TextLocation;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	/// <summary>
 	/// A text segment that references some object. Used for hyperlinks in the editor.

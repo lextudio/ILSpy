@@ -9,7 +9,7 @@ using Dock.Model.Controls;
 using Dock.Model.Avalonia.Controls;
 using Dock.Model.Avalonia;
 using ICSharpCode.ILSpy.ViewModels;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 
 namespace ProjectRover.Services
 {

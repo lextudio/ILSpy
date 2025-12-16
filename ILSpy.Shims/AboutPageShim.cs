@@ -14,7 +14,7 @@ using Avalonia.Interactivity;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.Properties;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.Themes;
 using ICSharpCode.ILSpy.Updates;
 using ICSharpCode.ILSpy.ViewModels;

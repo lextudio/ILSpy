@@ -105,10 +105,35 @@ namespace System.Windows.Navigation
 
 }
 
+namespace System.Windows.Documents
+{
+    
+}
+
+namespace System.Windows.Media.Animation
+{
+    
+}
+
 namespace ICSharpCode.AvalonEdit.Highlighting
 {}
 
 namespace ICSharpCode.AvalonEdit.Document
+{
+    
+}
+
+namespace ICSharpCode.AvalonEdit.Editing
+{
+    
+}
+
+namespace ICSharpCode.AvalonEdit.Folding
+{
+    
+}
+
+namespace ICSharpCode.AvalonEdit.Rendering
 {
     
 }

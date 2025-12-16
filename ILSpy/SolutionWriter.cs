@@ -29,7 +29,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Solution;
 using ICSharpCode.Decompiler.Util;
 using ICSharpCode.ILSpy.Properties;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpyX;
 

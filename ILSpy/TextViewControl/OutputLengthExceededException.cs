@@ -1,4 +1,4 @@
-// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,19 +16,25 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using AvaloniaEdit.Document;
+using System;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	/// <summary>
-	/// Allows language specific search for matching brackets.
+	/// This exception gets used when the text output is longer than the specified limit.
 	/// </summary>
-	public interface IBracketSearcher
+	class OutputLengthExceededException : Exception
 	{
-		/// <summary>
-		/// Searches for a matching bracket from the given offset to the start of the document.
-		/// </summary>
-		/// <returns>A BracketSearchResult that contains the positions and lengths of the brackets. Return null if there is nothing to highlight.</returns>
-		BracketSearchResult SearchBracket(IDocument document, int offset);
+		public OutputLengthExceededException()
+		{
+		}
+
+		public OutputLengthExceededException(string message) : base(message)
+		{
+		}
+
+		public OutputLengthExceededException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
 	}
 }

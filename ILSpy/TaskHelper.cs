@@ -21,7 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ICSharpCode.ILSpy.Docking;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 
 namespace ICSharpCode.ILSpy
 {

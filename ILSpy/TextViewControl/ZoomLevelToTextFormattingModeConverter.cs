@@ -19,7 +19,7 @@ using System;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	sealed class ZoomLevelToTextFormattingModeConverter : IValueConverter
 	{

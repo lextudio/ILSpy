@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 
 namespace ICSharpCode.ILSpy
 {

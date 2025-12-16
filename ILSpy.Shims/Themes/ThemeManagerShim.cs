@@ -18,6 +18,11 @@ namespace ICSharpCode.ILSpy.Themes
 			throw new NotImplementedException();
 		}
 
+        public bool IsThemeAware(IHighlightingDefinition highlightingDefinition)
+        {
+            return false;
+        }
+
 
 		public Button CreateButton()
         {

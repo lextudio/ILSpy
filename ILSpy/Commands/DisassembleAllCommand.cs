@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Docking;
 using ICSharpCode.ILSpy.Properties;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.ViewModels;
 
 namespace ICSharpCode.ILSpy

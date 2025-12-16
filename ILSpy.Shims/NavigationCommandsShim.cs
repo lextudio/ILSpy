@@ -2,6 +2,10 @@ using Avalonia.Input;
 
 namespace System.Windows.Input
 {
+    public class QueryCursorEventArgs
+    {
+        
+    }
 
     public static class Cursors
     {

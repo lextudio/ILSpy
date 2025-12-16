@@ -16,49 +16,23 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Composition;
+using System.Windows.Input;
 
-using ICSharpCode.ILSpy.Properties;
+using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
-	[ExportContextMenuEntry(Header = nameof(Resources.Copy), Category = nameof(Resources.Editor))]
-	[Shared]
-	sealed class CopyContextMenuEntry : IContextMenuEntry
-	{
-		public bool IsVisible(TextViewContext context)
+	/// <summary>
+	/// VisualLineElement that represents a piece of text and is a clickable link.
+	/// </summary>
+	partial class VisualLineReferenceText
+    {
+        /// <inheritdoc/>
+		protected override void OnQueryCursor(QueryCursorEventArgs e)
 		{
-			return context.TextView != null;
+            // IMPORTANT: not ported to AvaloniaEdit
+			e.Handled = true;
+			e.Cursor = referenceSegment.IsLocal ? Cursors.Arrow : Cursors.Hand;
 		}
-
-		public bool IsEnabled(TextViewContext context)
-		{
-			return context.TextView != null && context.TextView.textEditor.SelectionLength > 0;
-		}
-
-		public void Execute(TextViewContext context)
-		{
-			context.TextView.textEditor.Copy();
-		}
-	}
-
-	[ExportContextMenuEntry(Header = nameof(Resources.Select), Category = nameof(Resources.Editor))]
-	[Shared]
-	sealed class SelectAllContextMenuEntry : IContextMenuEntry
-	{
-		public bool IsVisible(TextViewContext context)
-		{
-			return context.TextView != null;
-		}
-
-		public bool IsEnabled(TextViewContext context)
-		{
-			return context.TextView != null;
-		}
-
-		public void Execute(TextViewContext context)
-		{
-			context.TextView.textEditor.SelectAll();
-		}
-	}
+    }
 }

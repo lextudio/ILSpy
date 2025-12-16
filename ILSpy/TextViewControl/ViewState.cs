@@ -1,4 +1,4 @@
-// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,19 +16,41 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.AvalonEdit.Document;
+#nullable enable
 
-namespace ICSharpCode.ILSpy.TextView
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+using ICSharpCode.ILSpy.TreeNodes;
+
+namespace ICSharpCode.ILSpy.TextViewControl
 {
-	/// <summary>
-	/// Allows language specific search for matching brackets.
-	/// </summary>
-	public interface IBracketSearcher
+	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+	public class ViewState : IEquatable<ViewState>
 	{
-		/// <summary>
-		/// Searches for a matching bracket from the given offset to the start of the document.
-		/// </summary>
-		/// <returns>A BracketSearchResult that contains the positions and lengths of the brackets. Return null if there is nothing to highlight.</returns>
-		BracketSearchResult SearchBracket(IDocument document, int offset);
+		public HashSet<ILSpyTreeNode>? DecompiledNodes;
+		public Uri? ViewedUri;
+
+		public virtual bool Equals(ViewState? other)
+		{
+			return other != null
+				&& ViewedUri == other.ViewedUri
+				&& NullSafeSetEquals(DecompiledNodes, other.DecompiledNodes);
+
+			static bool NullSafeSetEquals(HashSet<ILSpyTreeNode>? a, HashSet<ILSpyTreeNode>? b)
+			{
+				if (a == b)
+					return true;
+				if (a == null || b == null)
+					return false;
+				return a.SetEquals(b);
+			}
+		}
+
+		protected virtual string GetDebuggerDisplay()
+		{
+			return $"Nodes = {DecompiledNodes?.Count.ToString() ?? "<null>"}, ViewedUri = {ViewedUri?.ToString() ?? "<null>"}";
+		}
 	}
 }

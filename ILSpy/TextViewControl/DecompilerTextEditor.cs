@@ -1,9 +1,8 @@
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Rendering;
 
-using AvaloniaEdit;
-using AvaloniaEdit.Highlighting;
-using AvaloniaEdit.Rendering;
-
-namespace ICSharpCode.ILSpy.TextView;
+namespace ICSharpCode.ILSpy.TextViewControl;
 
 public class DecompilerTextEditor : TextEditor
 {

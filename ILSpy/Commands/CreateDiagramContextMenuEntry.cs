@@ -32,7 +32,7 @@ using ICSharpCode.ILSpyX.MermaidDiagrammer;
 
 using Microsoft.Win32;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	[ExportContextMenuEntry(Header = nameof(Resources._CreateDiagram), Category = nameof(Resources.Save), Icon = "Images/Save")]
 	[Shared]

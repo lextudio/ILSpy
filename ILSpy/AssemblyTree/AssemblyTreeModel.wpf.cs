@@ -16,7 +16,7 @@ using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.AppEnv;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Properties;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.Updates;
 using ICSharpCode.ILSpy.ViewModels;

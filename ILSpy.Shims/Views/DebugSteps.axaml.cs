@@ -10,6 +10,7 @@ using ICSharpCode.ILSpy.Docking;
 using ICSharpCode.ILSpy.ViewModels;
 using ProjectRover; // For App
 using System.Collections.ObjectModel;
+using ICSharpCode.ILSpy.TextViewControl;
 
 namespace ICSharpCode.ILSpy
 {
@@ -175,7 +176,7 @@ namespace ICSharpCode.ILSpy
                 new DecompilationOptions(assemblyTreeModel.CurrentLanguageVersion, settingsService.DecompilerSettings, settingsService.DisplaySettings) {
                     StepLimit = step,
                     IsDebug = isDebug,
-                    TextViewState = state as TextView.DecompilerTextViewState
+                    TextViewState = state as DecompilerTextViewState
                 }));
         }
     }

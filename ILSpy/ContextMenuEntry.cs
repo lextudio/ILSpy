@@ -24,7 +24,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 using ICSharpCode.AvalonEdit;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpyX.Search;
 using ICSharpCode.ILSpy.Controls.TreeView;
 using ICSharpCode.ILSpyX.TreeView;

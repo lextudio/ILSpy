@@ -166,8 +166,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Options\DisplaySettings.cs">
       <Link>Options\DisplaySettings.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\ViewState.cs">
-      <Link>TextView\ViewState.cs</Link>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\ViewState.cs">
+      <Link>TextViewControl\ViewState.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\NaturalStringComparer.cs">
       <Link>TreeNodes\NaturalStringComparer.cs</Link>
@@ -175,6 +175,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\ILSpyTreeNode.cs">
       <Link>TreeNodes\ILSpyTreeNode.cs</Link>
     </Compile>
+      <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\ThemeAwareHighlightingColorizer.cs">
+        <Link>TextViewControl\ThemeAwareHighlightingColorizer.cs</Link>
+      </Compile>
     <Compile
       Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\AssemblyReferenceReferencedTypesTreeNode.cs">
       <Link>TreeNodes\AssemblyReferenceReferencedTypesTreeNode.cs</Link>
@@ -499,11 +502,38 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\PackageFolderTreeNode.cs">
       <Link>TreeNodes\PackageFolderTreeNode.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\BracketSearchResult.cs">
-      <Link>TextView\BracketSearchResult.cs</Link>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\BracketSearchResult.cs">
+      <Link>TextViewControl\BracketSearchResult.cs</Link>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextView\OutputLengthExceededException.cs">
-      <Link>TextView\OutputLengthExceededException.cs</Link>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\IBracketSearcher.cs">
+      <Link>TextViewControl\IBracketSearcher.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\ReferenceElementGenerator.cs">
+      <Link>TextViewControl\ReferenceElementGenerator.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\VisualLineReferenceText.cs">
+      <Link>TextViewControl\VisualLineReferenceText.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\UIElementGenerator.cs">
+      <Link>TextViewControl\UIElementGenerator.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\OutputLengthExceededException.cs">
+      <Link>TextViewControl\OutputLengthExceededException.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\EditorCommands.cs">
+      <Link>TextViewControl\EditorCommands.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\FoldingCommands.cs">
+      <Link>TextViewControl\FoldingCommands.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\DecompilerTextEditor.cs">
+      <Link>TextViewControl\DecompilerTextEditor.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\AvalonEditTextOutput.cs">
+      <Link>TextViewControl\AvalonEditTextOutput.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\BracketHighlightRenderer.cs">
+      <Link>TextViewControl\BracketHighlightRenderer.cs</Link>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\ToolPaneModel.cs">
       <Link>ViewModels\ToolPaneModel.cs</Link>

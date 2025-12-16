@@ -31,7 +31,7 @@ using System.Windows.Navigation;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.Properties;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.Themes;
 using ICSharpCode.ILSpy.Updates;
 using ICSharpCode.ILSpy.ViewModels;

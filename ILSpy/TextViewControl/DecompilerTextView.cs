@@ -68,7 +68,7 @@ using TomsToolbox.Wpf;
 
 using ResourceKeys = ICSharpCode.ILSpy.Themes.ResourceKeys;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	/// <summary>
 	/// Manages the TextEditor showing the decompiled code.

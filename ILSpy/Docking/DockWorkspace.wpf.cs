@@ -10,7 +10,7 @@ using AvalonDock.Layout.Serialization;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.ILSpy.Analyzers;
 using ICSharpCode.ILSpy.Search;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.ViewModels;
 
 namespace ICSharpCode.ILSpy.Docking

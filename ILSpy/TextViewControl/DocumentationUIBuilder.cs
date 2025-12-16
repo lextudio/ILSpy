@@ -35,7 +35,7 @@ using ICSharpCode.Decompiler.Output;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.Options;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	/// <summary>
 	/// Renders XML documentation into a WPF <see cref="FlowDocument"/>.

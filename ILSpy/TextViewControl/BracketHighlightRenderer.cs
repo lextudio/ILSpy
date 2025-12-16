@@ -17,13 +17,12 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows.Media;
 
-using Avalonia.Media;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 
-using AvaloniaEdit.Document;
-using AvaloniaEdit.Rendering;
-
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 
 	public class DefaultBracketSearcher : IBracketSearcher
@@ -41,26 +40,26 @@ namespace ICSharpCode.ILSpy.TextView
 		BracketSearchResult result;
 		Pen borderPen;
 		Brush backgroundBrush;
-		AvaloniaEdit.Rendering.TextView textView;
+		TextView textView;
 
 		public void SetHighlight(BracketSearchResult result)
 		{
 			if (this.result != result)
 			{
 				this.result = result;
-				// TODO: this.borderPen = (Pen)textView.FindResource(Themes.ResourceKeys.BracketHighlightBorderPen);
-				// this.backgroundBrush = (SolidColorBrush)textView.FindResource(Themes.ResourceKeys.BracketHighlightBackgroundBrush);
+				this.borderPen = (Pen)textView.FindResource(Themes.ResourceKeys.BracketHighlightBorderPen);
+				this.backgroundBrush = (SolidColorBrush)textView.FindResource(Themes.ResourceKeys.BracketHighlightBackgroundBrush);
 				textView.InvalidateLayer(this.Layer);
 			}
 		}
 
-		public BracketHighlightRenderer(AvaloniaEdit.Rendering.TextView textView)
+		public BracketHighlightRenderer(TextView textView)
 		{
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 
-			//this.borderPen = (Pen)textView.FindResource(Themes.ResourceKeys.BracketHighlightBorderPen);
-			//this.backgroundBrush = (SolidColorBrush)textView.FindResource(Themes.ResourceKeys.BracketHighlightBackgroundBrush);
+			this.borderPen = (Pen)textView.FindResource(Themes.ResourceKeys.BracketHighlightBorderPen);
+			this.backgroundBrush = (SolidColorBrush)textView.FindResource(Themes.ResourceKeys.BracketHighlightBackgroundBrush);
 
 			this.textView = textView;
 
@@ -73,7 +72,7 @@ namespace ICSharpCode.ILSpy.TextView
 			}
 		}
 
-		public void Draw(AvaloniaEdit.Rendering.TextView textView, DrawingContext drawingContext)
+		public void Draw(TextView textView, DrawingContext drawingContext)
 		{
 			if (this.result == null)
 				return;

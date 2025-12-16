@@ -23,7 +23,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.ViewModels;
 

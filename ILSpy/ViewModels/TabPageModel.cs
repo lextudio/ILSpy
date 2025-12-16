@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 using ICSharpCode.Decompiler;
-using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.TextViewControl;
 
 using TomsToolbox.Composition;
 using TomsToolbox.Wpf;

@@ -26,7 +26,7 @@ using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Editing;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	/// <summary>
 	/// Animated rectangle around the caret.

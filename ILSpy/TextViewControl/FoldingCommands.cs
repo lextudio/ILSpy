@@ -23,7 +23,7 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.ILSpy.Properties;
 
-namespace ICSharpCode.ILSpy.TextView
+namespace ICSharpCode.ILSpy.TextViewControl
 {
 	[ExportContextMenuEntryAttribute(Header = nameof(Resources.ToggleFolding), Category = nameof(Resources.Folding))]
 	[Shared]

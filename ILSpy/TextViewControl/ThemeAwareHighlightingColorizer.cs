@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 
-using AvaloniaEdit.Highlighting;
-using AvaloniaEdit.Rendering;
-
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.ILSpy.Themes;
 
-namespace ICSharpCode.ILSpy.TextView;
+namespace ICSharpCode.ILSpy.TextViewControl;
 
 #nullable enable
 
@@ -17,12 +16,12 @@ public class ThemeAwareHighlightingColorizer : HighlightingColorizer
 	public ThemeAwareHighlightingColorizer(IHighlightingDefinition highlightingDefinition)
 		: base(highlightingDefinition)
 	{
-		_isHighlightingThemeAware = false; // TODO: ThemeManager.Current.IsThemeAware(highlightingDefinition);
+		_isHighlightingThemeAware = ThemeManager.Current.IsThemeAware(highlightingDefinition);
 	}
 
 	protected override void ApplyColorToElement(VisualLineElement element, HighlightingColor color)
 	{
-		if (!_isHighlightingThemeAware) // && ThemeManager.Current.IsDarkTheme)
+		if (!_isHighlightingThemeAware && ThemeManager.Current.IsDarkTheme)
 		{
 			color = GetColorForDarkTheme(color);
 		}
@@ -39,7 +38,7 @@ public class ThemeAwareHighlightingColorizer : HighlightingColorizer
 
 		if (!_darkColors.TryGetValue(lightColor, out var darkColor))
 		{
-			_darkColors[lightColor] = darkColor = lightColor;// TODO: ThemeManager.GetColorForDarkTheme(lightColor);
+			_darkColors[lightColor] = darkColor = ThemeManager.GetColorForDarkTheme(lightColor);
 		}
 
 		return darkColor;
