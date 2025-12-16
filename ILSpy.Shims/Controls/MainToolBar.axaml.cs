@@ -44,6 +44,12 @@ namespace ICSharpCode.ILSpy.Controls
                 .GetExports<ICommand, IToolbarCommandMetadata>("ToolbarCommand")
                 .ToList();
 
+            Console.WriteLine($"InitToolbar: Found {toolbarCommands.Count} toolbar commands.");
+            foreach (var tc in toolbarCommands)
+            {
+                Console.WriteLine($"InitToolbar: Command metadata: Category={tc.Metadata?.ToolbarCategory}, Icon={tc.Metadata?.ToolbarIcon}, ToolTip={tc.Metadata?.ToolTip}");
+            }
+
             // 1. Navigation
             var navCommands = toolbarCommands
                 .Where(c => c.Metadata?.ToolbarCategory == "Navigation")

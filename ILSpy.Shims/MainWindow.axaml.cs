@@ -22,6 +22,9 @@ namespace ICSharpCode.ILSpy
         private SearchPane searchDockView = null!;
         private Document? documentHost;
         private Factory dockFactory = null!;
+        private ToolDock? searchDock;
+        private ProportionalDock? verticalLayout;
+        private ProportionalDockSplitter? searchSplitter;
 
         public MainWindow()
         {
@@ -122,7 +125,7 @@ namespace ICSharpCode.ILSpy
 
             var searchTool = new Tool
             {
-                Id = "SearchTool",
+                Id = ICSharpCode.ILSpy.Search.SearchPaneModel.PaneContentId,
                 Title = "Search",
                 Content = searchDockView,
                 Context = viewModel,
@@ -131,7 +134,7 @@ namespace ICSharpCode.ILSpy
                 CanPin = false
             };
 
-            var searchDock = new ToolDock
+            searchDock = new ToolDock
             {
                 Id = "SearchDock",
                 Title = "Search",
@@ -141,13 +144,17 @@ namespace ICSharpCode.ILSpy
             };
             searchDock.Proportion = 0.25;
 
-            var verticalLayout = new ProportionalDock
+            searchSplitter = new ProportionalDockSplitter { CanResize = true };
+
+            verticalLayout = new ProportionalDock
             {
                 Id = "VerticalLayout",
                 Orientation = Dock.Model.Core.Orientation.Vertical,
                 VisibleDockables = new ObservableCollection<IDockable>
                 {
-                    mainLayout
+                    mainLayout,
+                    searchSplitter,
+                    searchDock
                 },
                 ActiveDockable = mainLayout
             };

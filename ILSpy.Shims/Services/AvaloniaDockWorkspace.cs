@@ -70,7 +70,7 @@ namespace ProjectRover.Services
                 factory.SetActiveDockable(document);
 
                 // If caller expects an ILSpy TabPageModel-like object, wrap the document in our shim
-                object returnObj = document;
+                var returnObj = document;
                 try
                 {
                     if (!(tabPage is Dock.Model.Controls.IDocument))
@@ -78,12 +78,12 @@ namespace ProjectRover.Services
                         // Create a TabPageModel shim and set its Content to a DecompilerPane hosted in the document
                         var tabType = Type.GetType("ICSharpCode.ILSpy.ViewModels.TabPageModel, ProjectRover")
                                       ?? Type.GetType("ICSharpCode.ILSpy.ViewModels.TabPageModel");
-                        object? shim = null;
+                        Dock.Model.Controls.IDocument? shim = null;
                         if (tabType != null)
                         {
                             try
                             {
-                                shim = Activator.CreateInstance(tabType);
+                                shim = (Dock.Model.Controls.IDocument)Activator.CreateInstance(tabType);
                             }
                             catch { shim = null; }
                         }
@@ -131,15 +131,15 @@ namespace ProjectRover.Services
                 {
                 }
 
-				ActiveTabPage = null; // returnObj;
+				ActiveTabPage = (TabPageModel)returnObj;
                 // refresh TabPages/ToolPanes from layout
                 UpdateCollections(dockHost);
 
-				return null; //				returnObj;
+				return (TabPageModel)returnObj;
             }
             catch
             {
-				ActiveTabPage = null; //		tabPage ?? new object();
+				ActiveTabPage = tabPage;
                 return ActiveTabPage!;
             }
         }
@@ -148,6 +148,7 @@ namespace ProjectRover.Services
         {
             try
             {
+                Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane called with contentId={contentId}");
                 var app = Avalonia.Application.Current;
                 var main = (app?.ApplicationLifetime as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime)?.MainWindow
                            ?? Avalonia.Controls.TopLevel.GetTopLevel(null);
@@ -155,24 +156,87 @@ namespace ProjectRover.Services
                     return false;
 
                 var dockHost = main.FindControl<Dock.Avalonia.Controls.DockControl>("DockHost");
+                Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: dockHost found: {dockHost != null}");
                 var factory = dockHost?.Factory;
+                Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: factory found: {factory != null}");
                 if (factory == null)
                     return false;
 
                 // find a tool pane with matching Id or Title
                 var layout = dockHost.Layout;
+                Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: layout present: {layout != null}");
                 if (layout == null)
                     return false;
 
                 // Search recursively for tool by Id or Title
                 Dock.Model.Core.IDockable? found = DockSearchHelpers.FindByContentId(layout, contentId);
+                Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: DockSearchHelpers.FindByContentId returned: {found != null}");
                 if (found is Dock.Model.Controls.ITool tool)
                 {
-                    factory.SetActiveDockable(tool);
-                    factory.SetFocusedDockable(layout, tool);
-                    UpdateCollections(dockHost);
-                    return true;
+                    try
+                    {
+                        Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: found tool Id={tool.Id} Title={tool.Title}");
+                        bool beforeVisible = (factory.VisibleDockableControls != null && factory.VisibleDockableControls.ContainsKey(tool)) || (factory.ToolControls != null && factory.ToolControls.ContainsKey(tool));
+                        Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: before activation visible={beforeVisible}");
+                        factory.SetActiveDockable(tool);
+                        factory.SetFocusedDockable(layout, tool);
+                        bool afterVisible = (factory.VisibleDockableControls != null && factory.VisibleDockableControls.ContainsKey(tool)) || (factory.ToolControls != null && factory.ToolControls.ContainsKey(tool));
+                        Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: after activation visible={afterVisible}");
+                        UpdateCollections(dockHost);
+                        // If activation didn't actually make the tool visible/registered, try a fallback:
+                        if (!afterVisible)
+                        {
+                            Console.WriteLine("AvaloniaDockWorkspace.ShowToolPane: activation didn't make tool visible, attempting fallback creation of tool pane.");
+                            try
+                            {
+                                var newTool = new Dock.Model.Avalonia.Controls.Tool() { Id = contentId, Title = contentId };
+                                Dock.Model.Core.IDock? targetToolDock = null;
+                                void FindToolDock(Dock.Model.Core.IDock d)
+                                {
+                                    if (targetToolDock != null) return;
+                                    if (d is Dock.Model.Controls.IToolDock td && td.VisibleDockables != null)
+                                    {
+                                        targetToolDock = d;
+                                        return;
+                                    }
+                                    if (d.VisibleDockables != null)
+                                    {
+                                        foreach (var v in d.VisibleDockables)
+                                        {
+                                            if (v is Dock.Model.Core.IDock dc)
+                                                FindToolDock(dc);
+                                            if (targetToolDock != null) return;
+                                        }
+                                    }
+                                }
+                                FindToolDock(layout);
+                                if (targetToolDock is Dock.Model.Controls.IToolDock ttd)
+                                {
+                                    int insertIndex = ttd.VisibleDockables?.Count ?? 0;
+                                    factory.InsertDockable(ttd, newTool, insertIndex);
+                                    factory.SetActiveDockable(newTool);
+                                    factory.SetFocusedDockable(layout, newTool);
+                                    Console.WriteLine("AvaloniaDockWorkspace.ShowToolPane: fallback tool created and activated.");
+                                    UpdateCollections(dockHost);
+                                    return true;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: fallback creation failed: {ex}");
+                            }
+                        }
+
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"AvaloniaDockWorkspace.ShowToolPane: activation exception: {ex}");
+                        return false;
+                    }
                 }
+
+                Console.WriteLine("AvaloniaDockWorkspace.ShowToolPane: no tool found");
 
                 return false;
             }
@@ -347,7 +411,7 @@ namespace ProjectRover.Services
                         {
                             try
                             {
-                                //mwvm.Document = new AvaloniaEdit.Document.TextDocument(textFallback);
+                                // mwvm.Document = new AvaloniaEdit.Document.TextDocument(textFallback);
                             }
                             catch
                             {
@@ -373,6 +437,8 @@ namespace ProjectRover.Services
                 var docs = new List<TabPageModel>();
                 var tools = new List<ToolPaneModel>();
 
+                Console.WriteLine("AvaloniaDockWorkspace.UpdateCollections: scanning layout for docs/tools");
+
                 void Collect(IDock? d)
                 {
                     if (d == null)
@@ -390,7 +456,14 @@ namespace ProjectRover.Services
                     {
                         foreach (var v in td.VisibleDockables)
                         {
-                            // tools.Add(v);
+                            try
+                            {
+                                if (v is Dock.Model.Controls.ITool t)
+                                {
+                                    Console.WriteLine($"AvaloniaDockWorkspace.UpdateCollections: found tool in tooldock Id={t.Id} Title={t.Title}");
+                                }
+                            }
+                            catch { }
                         }
                     }
 
