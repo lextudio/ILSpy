@@ -37,30 +37,68 @@ namespace ICSharpCode.ILSpy
              return null;
         }
 
-		internal static ImageSource GetIcon(object @event, object value, bool isStatic)
+		internal static ImageSource GetIcon(object icon, object overlay, bool isStatic)
 		{
-			// Simplified mapping: return class/interface/enum icons based on value or event when available
-			try
+			string name = null;
+			string access = "Public";
+
+			if (overlay is AccessOverlayIcon accessOverlay)
 			{
-				if (value is ICSharpCode.Decompiler.TypeSystem.IType t)
+				switch (accessOverlay)
 				{
-					var kind = t.Kind;
-					switch (kind)
-					{
-						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Interface:
-							return Interface as ImageSource;
-						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Enum:
-							return Class as ImageSource; // fallback
-						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Struct:
-							return Class as ImageSource;
-						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Delegate:
-							return Class as ImageSource;
-						default:
-							return Class as ImageSource;
-					}
+					case AccessOverlayIcon.Public: access = "Public"; break;
+					case AccessOverlayIcon.Internal: access = "Internal"; break;
+					case AccessOverlayIcon.Protected: access = "Protected"; break;
+					case AccessOverlayIcon.Private: access = "Private"; break;
+					case AccessOverlayIcon.ProtectedInternal: access = "Protected"; break;
+					case AccessOverlayIcon.PrivateProtected: access = "Private"; break;
+					case AccessOverlayIcon.CompilerControlled: access = "Private"; break;
 				}
 			}
-			catch { }
+
+			if (icon is TypeIcon typeIcon)
+			{
+				switch (typeIcon)
+				{
+					case TypeIcon.Class: name = "Class"; break;
+					case TypeIcon.Struct: name = "Structure"; break;
+					case TypeIcon.Interface: name = "Interface"; break;
+					case TypeIcon.Delegate: name = "Delegate"; break;
+					case TypeIcon.Enum: name = "Enum"; break;
+					default: name = "Class"; break;
+				}
+			}
+			else if (icon is MemberIcon memberIcon)
+			{
+				switch (memberIcon)
+				{
+					case MemberIcon.Literal: name = "Constant"; break;
+					case MemberIcon.FieldReadOnly: name = "Field"; break;
+					case MemberIcon.Field: name = "Field"; break;
+					case MemberIcon.Property: name = "Property"; break;
+					case MemberIcon.Method: name = "Method"; break;
+					case MemberIcon.Event: name = "Event"; break;
+					case MemberIcon.EnumValue: name = "EnumerationItem"; break;
+					case MemberIcon.Constructor: name = "Method"; break;
+					case MemberIcon.VirtualMethod: name = "Method"; break;
+					case MemberIcon.Operator: name = "Method"; break;
+					case MemberIcon.ExtensionMethod: name = "Method"; break;
+					case MemberIcon.PInvokeMethod: name = "Method"; break;
+					case MemberIcon.Indexer: name = "Property"; break;
+					default: name = "Method"; break;
+				}
+			}
+
+			if (name != null)
+			{
+				var image = Load($"{name}{access}.svg");
+				if (image != null) return image as ImageSource;
+				
+				// Fallback to Public
+				image = Load($"{name}Public.svg");
+				if (image != null) return image as ImageSource;
+			}
+
 			return Class as ImageSource;
 		}
 
