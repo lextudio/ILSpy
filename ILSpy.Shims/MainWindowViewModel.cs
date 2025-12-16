@@ -18,6 +18,7 @@
 
 using System.Collections.ObjectModel;
 using System.Composition;
+using System.Windows.Input;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.Input;
 using ICSharpCode.Decompiler;
@@ -42,13 +43,20 @@ namespace ICSharpCode.ILSpy
         private readonly IPlatformService platformService;
         private readonly AssemblyTreeModel assemblyTreeModel;
 
-        public MainWindowViewModel(SettingsService settingsService, LanguageService languageService, IDockWorkspace dockWorkspace, IPlatformService platformService, AssemblyTreeModel assemblyTreeModel)
+        public MainWindowViewModel(
+            SettingsService settingsService, 
+            LanguageService languageService, 
+            IDockWorkspace dockWorkspace, 
+            IPlatformService platformService, 
+            AssemblyTreeModel assemblyTreeModel,
+            ManageAssemblyListsCommand manageAssemblyListsCommand)
         {
             this.settingsService = settingsService;
             this.languageService = languageService;
             this.dockWorkspace = dockWorkspace;
             this.platformService = platformService;
             this.assemblyTreeModel = assemblyTreeModel;
+            this.ManageAssemblyListsCommand = manageAssemblyListsCommand;
 
             OpenFileCommand = new RelayCommand(OpenFile);
             ExitCommand = new RelayCommand(Exit);
@@ -77,6 +85,8 @@ namespace ICSharpCode.ILSpy
 
 		public LanguageService LanguageService => languageService;
 
+		public SessionSettings SessionSettings => settingsService.SessionSettings;
+
 		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
 
 		public IPlatformService PlatformService => platformService;
@@ -92,6 +102,7 @@ namespace ICSharpCode.ILSpy
 
         public IRelayCommand OpenFileCommand { get; }
         public IRelayCommand ExitCommand { get; }
+        public ICommand ManageAssemblyListsCommand { get; }
 
         private void OpenFile()
         {

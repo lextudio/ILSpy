@@ -27,7 +27,7 @@ namespace ICSharpCode.ILSpy
 {
 	[ExportMainMenuCommand(ParentMenuID = nameof(Resources._File), Header = nameof(Resources.ManageAssembly_Lists), MenuIcon = "Images/AssemblyList", MenuCategory = nameof(Resources.Open), MenuOrder = 1.7)]
 	[Shared]
-	sealed class ManageAssemblyListsCommand(SettingsService settingsService) : SimpleCommand, IProvideParameterBinding
+	public sealed class ManageAssemblyListsCommand(SettingsService settingsService) : SimpleCommand, IProvideParameterBinding
 	{
 		public override void Execute(object parameter)
 		{

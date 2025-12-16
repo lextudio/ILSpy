@@ -23,14 +23,22 @@ namespace ICSharpCode.ILSpy.Controls
                 var exportProvider = ProjectRover.App.ExportProvider;
                 if (exportProvider != null)
                 {
-                     InitToolbar(ToolBarItems, exportProvider);
+                     InitToolbar(exportProvider);
                 }
             };
         }
 
-        static void InitToolbar(ItemsControl toolBar, IExportProvider exportProvider)
+        void InitToolbar(IExportProvider exportProvider)
         {
-            toolBar.Items.Clear();
+            var navToolbar = this.FindControl<ItemsControl>("NavToolbarItems");
+            var openToolbar = this.FindControl<ItemsControl>("OpenToolbarItems");
+            var otherToolbar = this.FindControl<ItemsControl>("OtherToolbarItems");
+            
+            if (navToolbar == null || openToolbar == null || otherToolbar == null) return;
+
+            navToolbar.Items.Clear();
+            openToolbar.Items.Clear();
+            otherToolbar.Items.Clear();
             
             var toolbarCommands = exportProvider
                 .GetExports<ICommand, IToolbarCommandMetadata>("ToolbarCommand")
@@ -43,7 +51,7 @@ namespace ICSharpCode.ILSpy.Controls
                 
             foreach (var cmd in navCommands)
             {
-                toolBar.Items.Add(CreateToolbarItem(cmd));
+                navToolbar.Items.Add(CreateToolbarItem(cmd));
             }
 
             // 2. Open
@@ -53,7 +61,7 @@ namespace ICSharpCode.ILSpy.Controls
                 
             foreach (var cmd in openCommands)
             {
-                toolBar.Items.Add(CreateToolbarItem(cmd));
+                openToolbar.Items.Add(CreateToolbarItem(cmd));
             }
             
             // 3. Others
@@ -63,7 +71,7 @@ namespace ICSharpCode.ILSpy.Controls
                 
             foreach (var group in otherGroups)
             {
-                toolBar.Items.Add(new Border { 
+                otherToolbar.Items.Add(new Border { 
                     Width = 1, 
                     Height = 16, 
                     Background = Brushes.Gray, 
@@ -72,7 +80,7 @@ namespace ICSharpCode.ILSpy.Controls
                 
                 foreach (var cmd in group.OrderBy(c => c.Metadata?.ToolbarOrder))
                 {
-                    toolBar.Items.Add(CreateToolbarItem(cmd));
+                    otherToolbar.Items.Add(CreateToolbarItem(cmd));
                 }
             }
         }
