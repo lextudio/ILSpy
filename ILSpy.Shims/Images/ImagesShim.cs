@@ -108,7 +108,7 @@ namespace ICSharpCode.ILSpy
 			return null;
 		}
 
-		public static object SubTypes => "SubTypes";
+		public static IImage SubTypes => Load("SubTypes.svg");
 
 		public static IImage ListFolder => Load("FolderClosed.svg");
 		public static IImage ListFolderOpen => Load("FolderOpened.svg");
