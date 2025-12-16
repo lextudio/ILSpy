@@ -60,12 +60,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddViews(this IServiceCollection services) =>
         services
-            .AddSingleton<MainWindow>();
+            .AddSingleton<ICSharpCode.ILSpy.Views.MainWindow>();
 
     public static IServiceCollection AddViewModels(this IServiceCollection services) =>
         services
-            //.AddSingleton<AssemblyTreeModel>()
-            .AddSingleton<ViewModels.MainWindowViewModel>()
+            .AddSingleton<ICSharpCode.ILSpy.MainWindowViewModel>()
             .AddSingleton<UpdatePanelViewModel>();
 
     public static IServiceCollection AddServices(this IServiceCollection services) =>
@@ -78,6 +77,17 @@ public static class ServiceCollectionExtensions
             .AddTransient<IAutoUpdateService, AutoUpdateService>()
             .AddTransient<IAnalyticsService, NullAnalyticsService>()
             .AddTransient<IDialogService, DialogService>()
+            .AddSingleton<ICSharpCode.ILSpy.Util.SettingsService>()
+            .AddSingleton<ICSharpCode.ILSpy.LanguageService>(sp => new ICSharpCode.ILSpy.LanguageService(
+                new ICSharpCode.ILSpy.Language[] { new ICSharpCode.ILSpy.CSharpLanguage(), new ICSharpCode.ILSpy.ILLanguage(sp.GetRequiredService<ICSharpCode.ILSpy.Docking.IDockWorkspace>()) },
+                sp.GetRequiredService<ICSharpCode.ILSpy.Util.SettingsService>(),
+                sp.GetRequiredService<ICSharpCode.ILSpy.Docking.IDockWorkspace>()
+            ))
+            .AddSingleton<ICSharpCode.ILSpy.AssemblyTree.AssemblyTreeModel>(sp => new ICSharpCode.ILSpy.AssemblyTree.AssemblyTreeModel(
+                sp.GetRequiredService<ICSharpCode.ILSpy.Util.SettingsService>(),
+                sp.GetRequiredService<ICSharpCode.ILSpy.LanguageService>(),
+                ProjectRover.App.ExportProvider
+            ))
             .AddSingleton<ISettingsService, SettingsService>()
             .AddSingleton<ICommandCatalog, CommandCatalog>()
             .AddSingleton<ProjectRover.Services.Navigation.INavigationService, ProjectRover.Services.Navigation.NavigationService>()

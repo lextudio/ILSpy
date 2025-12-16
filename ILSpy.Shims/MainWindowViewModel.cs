@@ -16,27 +16,82 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Collections.ObjectModel;
 using System.Composition;
-
+using Avalonia.Styling;
+using CommunityToolkit.Mvvm.Input;
+using ICSharpCode.Decompiler;
+using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Docking;
 using ICSharpCode.ILSpyX;
+using DecompilationLanguage = ProjectRover.Services.DecompilationLanguage;
 
 using TomsToolbox.Wpf;
 
 namespace ICSharpCode.ILSpy
 {
+    public record ThemeOption(string Name, ThemeVariant Variant);
+    public record LanguageOption(string Name, DecompilationLanguage Language);
+
 	[Export]
 	[Shared]
-	public class MainWindowViewModel(SettingsService settingsService, LanguageService languageService, IDockWorkspace dockWorkspace, IPlatformService platformService) : ObservableObject
+	public class MainWindowViewModel : ObservableObject
 	{
-		public IDockWorkspace Workspace { get; } = dockWorkspace;
+        private readonly SettingsService settingsService;
+        private readonly LanguageService languageService;
+        private readonly IDockWorkspace dockWorkspace;
+        private readonly IPlatformService platformService;
+        private readonly AssemblyTreeModel assemblyTreeModel;
 
-		public SessionSettings SessionSettings => settingsService.SessionSettings;
+        public MainWindowViewModel(SettingsService settingsService, LanguageService languageService, IDockWorkspace dockWorkspace, IPlatformService platformService, AssemblyTreeModel assemblyTreeModel)
+        {
+            this.settingsService = settingsService;
+            this.languageService = languageService;
+            this.dockWorkspace = dockWorkspace;
+            this.platformService = platformService;
+            this.assemblyTreeModel = assemblyTreeModel;
+
+            OpenFileCommand = new RelayCommand(OpenFile);
+            ExitCommand = new RelayCommand(Exit);
+
+            Themes = new ObservableCollection<ThemeOption>
+            {
+                new("Light", ThemeVariant.Light),
+                new("Dark", ThemeVariant.Dark)
+            };
+            SelectedTheme = Themes[0];
+        }
+
+		public IDockWorkspace Workspace => dockWorkspace;
+
+        public AssemblyTreeModel AssemblyTreeModel => assemblyTreeModel;
 
 		public LanguageService LanguageService => languageService;
 
 		public AssemblyListManager AssemblyListManager => settingsService.AssemblyListManager;
 
-		public IPlatformService PlatformService { get; } = platformService;
+		public IPlatformService PlatformService => platformService;
+
+        public ObservableCollection<ThemeOption> Themes { get; }
+
+        private ThemeOption selectedTheme;
+        public ThemeOption SelectedTheme
+        {
+            get => selectedTheme;
+            set => SetProperty(ref selectedTheme, value);
+        }
+
+        public IRelayCommand OpenFileCommand { get; }
+        public IRelayCommand ExitCommand { get; }
+
+        private void OpenFile()
+        {
+            // TODO: Implement OpenFile
+        }
+
+        private void Exit()
+        {
+            // TODO: Implement Exit
+        }
 	}
 }

@@ -54,7 +54,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // TODO: desktop.MainWindow = Services.GetRequiredService<MainWindow>();
+            desktop.MainWindow = Services.GetRequiredService<ICSharpCode.ILSpy.Views.MainWindow>();
 
             // Initialize CompositionHost for MEF-style exports (compose ILSpy parts) using ContainerConfiguration
             try
