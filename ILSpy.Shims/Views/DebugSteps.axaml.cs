@@ -34,7 +34,17 @@ namespace ICSharpCode.ILSpy
         ILAstLanguage language;
 #endif
 
-        public DebugSteps(AssemblyTreeModel assemblyTreeModel, SettingsService settingsService, LanguageService languageService, DockWorkspace dockWorkspace)
+        public DebugSteps()
+            : this(
+                ProjectRover.App.ExportProvider.GetExportedValue<AssemblyTreeModel>(),
+                ProjectRover.App.ExportProvider.GetExportedValue<SettingsService>(),
+                ProjectRover.App.ExportProvider.GetExportedValue<LanguageService>(),
+                ProjectRover.App.ExportProvider.GetExportedValue<IDockWorkspace>()
+            )
+        {
+        }
+
+        public DebugSteps(AssemblyTreeModel assemblyTreeModel, SettingsService settingsService, LanguageService languageService, IDockWorkspace dockWorkspace)
         {
             InitializeComponent();
 

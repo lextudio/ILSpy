@@ -24,7 +24,7 @@ namespace TomsToolbox.Wpf
 			return true;
 		}
 
-		protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+		protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
@@ -37,19 +37,17 @@ namespace TomsToolbox.Wpf
 		/// </summary>
 		public System.Windows.Threading.Dispatcher Dispatcher { get; } = new System.Windows.Threading.Dispatcher(); // TODO: further simplify
 
-		public event PropertyChangedEventHandler? PropertyChanged;
-
-		protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+		protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
 		{
 			if (propertyName == null)
 				return;
 
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			base.OnPropertyChanged(propertyName);
 
 			// raise for dependent properties
 			foreach (var dependent in GetDependentProperties(propertyName))
 			{
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(dependent));
+				base.OnPropertyChanged(dependent);
 			}
 		}
 

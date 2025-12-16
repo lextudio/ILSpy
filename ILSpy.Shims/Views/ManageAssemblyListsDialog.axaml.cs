@@ -5,11 +5,17 @@ using System.Windows.Input;
 using Avalonia.Interactivity;
 using Avalonia.Input;
 using System.Linq;
+using TomsToolbox.Composition;
 
 namespace ICSharpCode.ILSpy
 {
     public partial class ManageAssemblyListsDialog : Window
     {
+        public ManageAssemblyListsDialog()
+            : this(ProjectRover.App.ExportProvider.GetExportedValue<SettingsService>())
+        {
+        }
+
         public ManageAssemblyListsDialog(SettingsService settingsService)
         {
             InitializeComponent();
