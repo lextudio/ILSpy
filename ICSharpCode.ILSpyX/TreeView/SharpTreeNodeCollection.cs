@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -29,7 +30,7 @@ namespace ICSharpCode.ILSpyX.TreeView
 	/// <summary>
 	/// Collection that validates that inserted nodes do not have another parent.
 	/// </summary>
-	public sealed class SharpTreeNodeCollection : IList<SharpTreeNode>, INotifyCollectionChanged
+	public sealed class SharpTreeNodeCollection : IList<SharpTreeNode>, System.Collections.IList, INotifyCollectionChanged, INotifyPropertyChanged
 	{
 		readonly SharpTreeNode parent;
 		List<SharpTreeNode> list = new List<SharpTreeNode>();
@@ -41,6 +42,7 @@ namespace ICSharpCode.ILSpyX.TreeView
 		}
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
@@ -49,6 +51,8 @@ namespace ICSharpCode.ILSpyX.TreeView
 			try
 			{
 				parent.OnChildrenChanged(e);
+				OnPropertyChanged(nameof(Count));
+				OnPropertyChanged("Item[]");
 				CollectionChanged?.Invoke(this, e);
 			}
 			finally
@@ -56,6 +60,81 @@ namespace ICSharpCode.ILSpyX.TreeView
 				isRaisingEvent = false;
 			}
 		}
+
+		void OnPropertyChanged(string propertyName)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+
+		#region System.Collections.IList implementation
+		int System.Collections.IList.Add(object value)
+		{
+			Add((SharpTreeNode)value);
+			return Count - 1;
+		}
+
+		void System.Collections.IList.Clear()
+		{
+			Clear();
+		}
+
+		bool System.Collections.IList.Contains(object value)
+		{
+			return Contains((SharpTreeNode)value);
+		}
+
+		int System.Collections.IList.IndexOf(object value)
+		{
+			return IndexOf((SharpTreeNode)value);
+		}
+
+		void System.Collections.IList.Insert(int index, object value)
+		{
+			Insert(index, (SharpTreeNode)value);
+		}
+
+		bool System.Collections.IList.IsFixedSize {
+			get { return false; }
+		}
+
+		bool System.Collections.IList.IsReadOnly {
+			get { return false; }
+		}
+
+		void System.Collections.IList.Remove(object value)
+		{
+			Remove((SharpTreeNode)value);
+		}
+
+		void System.Collections.IList.RemoveAt(int index)
+		{
+			RemoveAt(index);
+		}
+
+		object System.Collections.IList.this[int index] {
+			get {
+				return this[index];
+			}
+			set {
+				this[index] = (SharpTreeNode)value;
+			}
+		}
+
+		void System.Collections.ICollection.CopyTo(Array array, int index)
+		{
+			((System.Collections.ICollection)list).CopyTo(array, index);
+		}
+
+		bool System.Collections.ICollection.IsSynchronized {
+			get { return false; }
+		}
+
+		object System.Collections.ICollection.SyncRoot {
+			get { return this; }
+		}
+		#endregion
+
 
 		void ThrowOnReentrancy()
 		{

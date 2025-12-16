@@ -81,6 +81,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			set => SetProperty(ref root, value);
 		}
 
+
 		public SharpTreeNode? SelectedItem {
 			get => SelectedItems.FirstOrDefault();
 			set => SelectedItems = value is null ? [] : [value];
@@ -95,7 +96,6 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 				var oldSelection = selectedItems;
 				selectedItems = value;
-				Console.WriteLine("selected items changed");
 				OnPropertyChanged();
 				TreeView_SelectionChanged(oldSelection, selectedItems);
 			}
@@ -982,7 +982,6 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		private void ShowAssemblyList(ICSharpCode.ILSpyX.AssemblyList assemblyList)
 		{
-			Console.WriteLine("start to show assembly list.");
 			history.Clear();
 
 			AssemblyList.CollectionChanged -= assemblyList_CollectionChanged;
@@ -1016,7 +1015,6 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		public void Initialize()
 		{
-			Console.WriteLine("enter initialize");
 			AssemblyList = settingsService.LoadInitialAssemblyList();
 
 			HandleCommandLineArguments(App.CommandLineArguments);
