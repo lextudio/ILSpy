@@ -598,22 +598,22 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		/// </summary>
 		public Task<T> RunWithCancellation<T>(Func<CancellationToken, Task<T>> taskCreation, string? progressTitle = null)
 		{
-			// if (waitAdorner.Visibility != Visibility.Visible)
-			// {
-			// 	waitAdorner.Visibility = Visibility.Visible;
-			// 	// Work around a WPF bug by setting IsIndeterminate only while the progress bar is visible.
-			// 	// https://github.com/icsharpcode/ILSpy/issues/593
-			// 	this.progressTitle.Text = progressTitle == null ? Properties.Resources.Decompiling : progressTitle;
-			// 	progressBar.IsIndeterminate = true;
-			// 	progressText.Text = null;
-			// 	progressText.Visibility = Visibility.Collapsed;
-			// 	waitAdorner.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, new Duration(TimeSpan.FromSeconds(0.5)), FillBehavior.Stop));
-			// 	var taskBar = mainWindow.TaskbarItemInfo;
-			// 	if (taskBar != null)
-			// 	{
-			// 		taskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Indeterminate;
-			// 	}
-			// }
+			if (!waitAdorner.IsVisible)
+			{
+				waitAdorner.IsVisible = true;
+				// Work around a WPF bug by setting IsIndeterminate only while the progress bar is visible.
+				// https://github.com/icsharpcode/ILSpy/issues/593
+				this.progressTitle.Text = progressTitle == null ? Properties.Resources.Decompiling : progressTitle;
+				progressBar.IsIndeterminate = true;
+				progressText.Text = null;
+				progressText.IsVisible = false;
+				// waitAdorner.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, new Duration(TimeSpan.FromSeconds(0.5)), FillBehavior.Stop));
+				// var taskBar = mainWindow.TaskbarItemInfo;
+				// if (taskBar != null)
+				// {
+				// 	taskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Indeterminate;
+				// }
+			}
 			CancellationTokenSource? previousCancellationTokenSource = currentCancellationTokenSource;
 			var myCancellationTokenSource = new CancellationTokenSource();
 			currentCancellationTokenSource = myCancellationTokenSource;
@@ -643,10 +643,10 @@ namespace ICSharpCode.ILSpy.TextViewControl
 					if (currentCancellationTokenSource == myCancellationTokenSource)
 					{
 						currentCancellationTokenSource = null;
-						// TODO: waitAdorner.Visibility = Visibility.Collapsed;
+						waitAdorner.IsVisible = false;
 						progressBar.IsIndeterminate = false;
 						progressText.Text = null;
-						//progressText.Visibility = Visibility.Collapsed;
+						progressText.IsVisible = false;
 						//var taskBar = mainWindow.TaskbarItemInfo;
 						//if (taskBar != null)
 						{

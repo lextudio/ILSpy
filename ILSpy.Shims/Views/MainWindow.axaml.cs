@@ -9,6 +9,7 @@ using Dock.Model.Avalonia.Controls;
 using Dock.Model.Core;
 using ICSharpCode.ILSpy.Search;
 using ICSharpCode.ILSpy.Views;
+using ICSharpCode.ILSpy.TextViewControl;
 
 namespace ICSharpCode.ILSpy.Views
 {
@@ -16,7 +17,7 @@ namespace ICSharpCode.ILSpy.Views
     {
         private MainWindowViewModel? viewModel;
         private AssemblyListPane leftDockView = null!;
-        private DecompilerPane centerDockView = null!;
+        private DecompilerTextView centerDockView = null!;
         private SearchPane searchDockView = null!;
         private Document? documentHost;
         private Factory dockFactory = null!;
@@ -49,7 +50,7 @@ namespace ICSharpCode.ILSpy.Views
             if (viewModel == null) return;
 
             leftDockView = new AssemblyListPane { DataContext = viewModel.AssemblyTreeModel };
-            centerDockView = new DecompilerPane { DataContext = viewModel };
+            centerDockView = new DecompilerTextView { DataContext = viewModel };
             searchDockView = new SearchPane { DataContext = viewModel };
 
             documentHost = new Document

@@ -1,6 +1,0 @@
-<UserControl x:Class="ICSharpCode.ILSpy.Views.DecompilerPane"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="clr-namespace:ICSharpCode.ILSpy.TextViewControl">
-  <controls:DecompilerTextView />
-</UserControl>
