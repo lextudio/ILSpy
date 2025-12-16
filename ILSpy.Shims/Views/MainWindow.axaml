@@ -17,6 +17,7 @@
         <DockPanel>
             <!-- Place the MainMenu control (populated from MEF exports) -->
             <controls:MainMenu DockPanel.Dock="Top" />
+            <controls:MainToolBar DockPanel.Dock="Top" />
 
             <dock:DockControl x:Name="DockHost" />
         </DockPanel>
