@@ -60,7 +60,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddViews(this IServiceCollection services) =>
         services
-            .AddSingleton<ICSharpCode.ILSpy.Views.MainWindow>();
+            .AddSingleton<ICSharpCode.ILSpy.MainWindow>();
 
     public static IServiceCollection AddViewModels(this IServiceCollection services) =>
         services

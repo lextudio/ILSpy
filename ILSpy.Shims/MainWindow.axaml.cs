@@ -10,8 +10,9 @@ using Dock.Model.Core;
 using ICSharpCode.ILSpy.Search;
 using ICSharpCode.ILSpy.Views;
 using ICSharpCode.ILSpy.TextViewControl;
+using System.Windows.Threading;
 
-namespace ICSharpCode.ILSpy.Views
+namespace ICSharpCode.ILSpy
 {
     public partial class MainWindow : Window
     {
@@ -28,6 +29,10 @@ namespace ICSharpCode.ILSpy.Views
 #if DEBUG
             this.AttachDevTools();
 #endif
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, () => {
+				viewModel.Workspace.InitializeLayout();
+				MessageBus.Send(this, new MainWindowLoadedEventArgs());
+			});
         }
 
         public MainWindow(MainWindowViewModel viewModel) : this()

@@ -93,7 +93,7 @@ public partial class App : Application
             Console.WriteLine($"ExportProvider initialized: {ExportProvider != null}");
 
             Console.WriteLine("Creating MainWindow...");
-            desktop.MainWindow = Services.GetRequiredService<ICSharpCode.ILSpy.Views.MainWindow>();
+            desktop.MainWindow = Services.GetRequiredService<ICSharpCode.ILSpy.MainWindow>();
             Console.WriteLine("MainWindow created.");
 
             // Register command bindings

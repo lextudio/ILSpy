@@ -95,6 +95,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 				var oldSelection = selectedItems;
 				selectedItems = value;
+				Console.WriteLine("selected items changed");
 				OnPropertyChanged();
 				TreeView_SelectionChanged(oldSelection, selectedItems);
 			}
@@ -194,6 +195,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		private void ShowAssemblyList(string name)
 		{
+			Console.WriteLine("show assembly list for " + name);
 			var list = settingsService.AssemblyListManager.LoadList(name);
 			//Only load a new list when it is a different one
 			if (list.ListName != AssemblyList.ListName)
@@ -762,6 +764,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		private void RefreshInternal()
 		{
+			Console.WriteLine("Enter refresh internal");
 			using (Keyboard.FocusedElement.PreserveFocus())
 			{
 				var path = GetPathForNode(SelectedItem);
@@ -906,6 +909,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		private void LoadAssemblies(IEnumerable<string> fileNames, List<LoadedAssembly>? loadedAssemblies = null, bool focusNode = true)
 		{
+			Console.WriteLine($"LoadAssemblies called with {fileNames.Count()} files");
 			using (Keyboard.FocusedElement.PreserveFocus(!focusNode))
 			{
 				AssemblyTreeNode? lastNode = null;
@@ -914,7 +918,9 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 				foreach (string file in fileNames)
 				{
+					Console.WriteLine($"Loading assembly: {file}");
 					var assembly = assemblyList.OpenAssembly(file);
+					Console.WriteLine($"Assembly loaded: {assembly?.FileName}");
 
 					if (loadedAssemblies != null)
 					{
@@ -922,7 +928,9 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 					}
 					else
 					{
+						Console.WriteLine($"assemblyListTreeNode is null: {assemblyListTreeNode == null}");
 						var node = assemblyListTreeNode?.FindAssemblyNode(assembly);
+						Console.WriteLine($"Found node: {node != null}");
 						if (node != null && focusNode)
 						{
 							lastNode = node;
@@ -974,6 +982,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		private void ShowAssemblyList(ICSharpCode.ILSpyX.AssemblyList assemblyList)
 		{
+			Console.WriteLine("start to show assembly list.");
 			history.Clear();
 
 			AssemblyList.CollectionChanged -= assemblyList_CollectionChanged;
@@ -1007,6 +1016,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		public void Initialize()
 		{
+			Console.WriteLine("enter initialize");
 			AssemblyList = settingsService.LoadInitialAssemblyList();
 
 			HandleCommandLineArguments(App.CommandLineArguments);

@@ -1,4 +1,8 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using System.Linq;
 
 namespace System.Windows.Input
 {
@@ -30,17 +34,42 @@ namespace System.Windows.Input
 
     public class FocusedElement
     {
-		internal IDisposable PreserveFocus()
-		{
-			throw new NotImplementedException();
-		}
+        internal IDisposable PreserveFocus() => PreserveFocus(true);
 
-		internal IDisposable PreserveFocus(bool v)
-		{
-			throw new NotImplementedException();
-		}
+        internal IDisposable PreserveFocus(bool preserve)
+        {
+            if (!preserve)
+                return new DummyDisposable();
+            return new FocusPreserver();
+        }
 
-	}
+        private class DummyDisposable : IDisposable
+        {
+            public void Dispose() { }
+        }
+
+        private class FocusPreserver : IDisposable
+        {
+            private readonly IInputElement? _previousFocus;
+
+            public FocusPreserver()
+            {
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    var window = desktop.Windows.FirstOrDefault(w => w.IsActive) ?? desktop.MainWindow;
+                    if (window != null)
+                    {
+                        _previousFocus = window.FocusManager?.GetFocusedElement();
+                    }
+                }
+            }
+
+            public void Dispose()
+            {
+                _previousFocus?.Focus();
+            }
+        }
+    }
 
     public static class NavigationCommands
     {

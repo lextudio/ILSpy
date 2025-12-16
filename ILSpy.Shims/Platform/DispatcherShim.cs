@@ -22,12 +22,17 @@ namespace System.Windows.Threading
             Avalonia.Threading.Dispatcher.UIThread.Post(callback, Translate(priority));
         }
 
-        // Support Task-returning delegates (async methods) passed to BeginInvoke
-        public void BeginInvoke(DispatcherPriority priority, Func<Task> callback)
+        public void BeginInvoke(DispatcherPriority priority, Delegate method)
         {
-            // Post a fire-and-forget wrapper to the UI thread; preserve priority translation
-            Avalonia.Threading.Dispatcher.UIThread.Post(async () => { await callback().ConfigureAwait(false); }, Translate(priority));
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => method.DynamicInvoke(), Translate(priority));
         }
+
+        // // Support Task-returning delegates (async methods) passed to BeginInvoke
+        // public void BeginInvoke(DispatcherPriority priority, Func<Task> callback)
+        // {
+        //     // Post a fire-and-forget wrapper to the UI thread; preserve priority translation
+        //     Avalonia.Threading.Dispatcher.UIThread.Post(async () => { await callback().ConfigureAwait(false); }, Translate(priority));
+        // }
 
         public static Dispatcher CurrentDispatcher { get; } = new Dispatcher();
 

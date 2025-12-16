@@ -8,7 +8,7 @@
         xmlns:controls="clr-namespace:ICSharpCode.ILSpy.Controls;assembly=ProjectRover"
         xmlns:converters="clr-namespace:ICSharpCode.ILSpy.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="ICSharpCode.ILSpy.Views.MainWindow"
+        x:Class="ICSharpCode.ILSpy.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/projectrover-logo.ico"
         Title="ILSpy">
