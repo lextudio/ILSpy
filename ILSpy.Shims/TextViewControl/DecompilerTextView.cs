@@ -108,6 +108,10 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		readonly List<ITextMarker> localReferenceMarks = new List<ITextMarker>();
 
 		#region Constructor
+		public DecompilerTextView() : this(ProjectRover.App.ExportProvider!)
+		{
+		}
+
 		public DecompilerTextView(IExportProvider exportProvider)
 		{
 			this.exportProvider = exportProvider;

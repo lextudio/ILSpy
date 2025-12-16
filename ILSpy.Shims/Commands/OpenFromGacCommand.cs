@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using ICSharpCode.ILSpy.AppEnv;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Properties;
+using ICSharpCode.ILSpy.Views;
 
 namespace ICSharpCode.ILSpy
 {

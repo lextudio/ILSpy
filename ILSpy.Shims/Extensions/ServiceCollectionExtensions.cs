@@ -30,7 +30,7 @@ using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
 ///using AssemblyTreeModel = ProjectRover.ViewModels.AssemblyTreeModel;
-using SettingsService = ProjectRover.Services.SettingsService;
+//using SettingsService = ProjectRover.Services.SettingsService;
 using ICSharpCode.ILSpy.Views;
 using ICSharpCode.ILSpy.ViewModels;
 
@@ -69,14 +69,14 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddServices(this IServiceCollection services) =>
         services
-            .AddSingleton<IlSpyBackend>()
+            //.AddSingleton<IlSpyBackend>()
             .AddSingleton<ICSharpCode.ILSpy.Docking.IDockWorkspace, AvaloniaDockWorkspace>()
             .AddSingleton<IPlatformService>(sp => new AvaloniaPlatformService(sp.GetRequiredService<ICSharpCode.ILSpy.Docking.IDockWorkspace>()))
-            .AddSingleton<INotificationService, NotificationService>()
-            .AddTransient<IProjectGenerationService, ProjectGenerationService>()
-            .AddTransient<IAutoUpdateService, AutoUpdateService>()
-            .AddTransient<IAnalyticsService, NullAnalyticsService>()
-            .AddTransient<IDialogService, DialogService>()
+            //.AddSingleton<INotificationService, NotificationService>()
+            //.AddTransient<IProjectGenerationService, ProjectGenerationService>()
+            //.AddTransient<IAutoUpdateService, AutoUpdateService>()
+            //.AddTransient<IAnalyticsService, NullAnalyticsService>()
+            //.AddTransient<IDialogService, DialogService>()
             .AddSingleton<ICSharpCode.ILSpy.Util.SettingsService>()
             .AddSingleton<ICSharpCode.ILSpy.LanguageService>(sp => new ICSharpCode.ILSpy.LanguageService(
                 new ICSharpCode.ILSpy.Language[] { new ICSharpCode.ILSpy.CSharpLanguage(), new ICSharpCode.ILSpy.ILLanguage(sp.GetRequiredService<ICSharpCode.ILSpy.Docking.IDockWorkspace>()) },
@@ -88,9 +88,9 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<ICSharpCode.ILSpy.LanguageService>(),
                 ProjectRover.App.ExportProvider
             ))
-            .AddSingleton<ISettingsService, SettingsService>()
-            .AddSingleton<ICommandCatalog, CommandCatalog>()
-            .AddSingleton<ProjectRover.Services.Navigation.INavigationService, ProjectRover.Services.Navigation.NavigationService>()
+            //.AddSingleton<ISettingsService, SettingsService>()
+            //.AddSingleton<ICommandCatalog, CommandCatalog>()
+            //.AddSingleton<ProjectRover.Services.Navigation.INavigationService, ProjectRover.Services.Navigation.NavigationService>()
             .AddSingleton<IDockLayoutDescriptorProvider, DefaultDockLayoutDescriptorProvider>();
 
     public static IServiceCollection AddProviders(this IServiceCollection services) =>
@@ -106,28 +106,28 @@ public static class ServiceCollectionExtensions
             .WaitAndRetryAsync(
                 Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 5));
         
-        services
-            .AddHttpClient<IAutoUpdateService, AutoUpdateService>(httpClient =>
-            {
-                httpClient.BaseAddress = new Uri("https://api.github.com");
+        //services
+            // .AddHttpClient<IAutoUpdateService, AutoUpdateService>(httpClient =>
+            // {
+            //     httpClient.BaseAddress = new Uri("https://api.github.com");
 
-                httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
-                httpClient.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-                // As per https://docs.github.com/en/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28#user-agent-required
-                httpClient.DefaultRequestHeaders.Add("User-Agent", "ProjectRover");
-            })
-            .AddPolicyHandler(policy);
+            //     httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
+            //     httpClient.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+            //     // As per https://docs.github.com/en/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28#user-agent-required
+            //     httpClient.DefaultRequestHeaders.Add("User-Agent", "ProjectRover");
+            // })
+            //.AddPolicyHandler(policy);
 
         if (EnvironmentProvider.Environment == Environment.Production)
         {
-            services
-                .AddHttpClient<IAnalyticsService, MatomoAnalyticsService>((services, httpClient) =>
-                {
-                    var options = services.GetRequiredService<IOptions<MatomoAnalyticsOptions>>();
+            // services
+            //     .AddHttpClient<IAnalyticsService, MatomoAnalyticsService>((services, httpClient) =>
+            //     {
+            //         var options = services.GetRequiredService<IOptions<MatomoAnalyticsOptions>>();
 
-                    httpClient.BaseAddress = new Uri(options.Value.ServerUrl);
-                })
-                .AddPolicyHandler(policy);
+            //         httpClient.BaseAddress = new Uri(options.Value.ServerUrl);
+            //     })
+            //     .AddPolicyHandler(policy);
         }
 
         services

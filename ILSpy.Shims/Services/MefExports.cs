@@ -2,7 +2,7 @@ using System;
 using System.Composition;
 using System.Composition.Convention;
 using ProjectRover.Services;
-using ProjectRover.ViewModels;
+using ICSharpCode.ILSpy;
 
 namespace ProjectRover.Services
 {
@@ -22,17 +22,17 @@ namespace ProjectRover.Services
     }
 
     // Export IlSpyBackend explicitly so MEF can resolve it
-    [Export(typeof(IlSpyBackend))]
-    public class ExportedIlSpyBackend
-    {
-        public IlSpyBackend Backend { get; }
+    // [Export(typeof(IlSpyBackend))]
+    // public class ExportedIlSpyBackend
+    // {
+    //     public IlSpyBackend Backend { get; }
 
-        [ImportingConstructor]
-        public ExportedIlSpyBackend(IlSpyBackend backend)
-        {
-            Backend = backend;
-        }
-    }
+    //     [ImportingConstructor]
+    //     public ExportedIlSpyBackend(IlSpyBackend backend)
+    //     {
+    //         Backend = backend;
+    //     }
+    // }
 
     // Export a few ViewModels so ILSpy parts expecting them over MEF can import them
     [Export(typeof(MainWindowViewModel))]

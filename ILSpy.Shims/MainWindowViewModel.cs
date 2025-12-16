@@ -24,14 +24,13 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Docking;
 using ICSharpCode.ILSpyX;
-using DecompilationLanguage = ProjectRover.Services.DecompilationLanguage;
 
 using TomsToolbox.Wpf;
 
 namespace ICSharpCode.ILSpy
 {
     public record ThemeOption(string Name, ThemeVariant Variant);
-    public record LanguageOption(string Name, DecompilationLanguage Language);
+    public record SearchModeOption(string Name, string IconKey);
 
 	[Export]
 	[Shared]
@@ -60,6 +59,16 @@ namespace ICSharpCode.ILSpy
                 new("Dark", ThemeVariant.Dark)
             };
             SelectedTheme = Themes[0];
+
+            SearchModes = new ObservableCollection<SearchModeOption>
+            {
+                new("Types and Members", "SearchIcon"),
+                new("Types", "SearchIcon"),
+                new("Members", "SearchIcon"),
+                new("Constants", "SearchIcon"),
+                new("Metadata Tokens", "SearchIcon")
+            };
+            SelectedSearchMode = SearchModes[0];
         }
 
 		public IDockWorkspace Workspace => dockWorkspace;
@@ -92,6 +101,44 @@ namespace ICSharpCode.ILSpy
         private void Exit()
         {
             // TODO: Implement Exit
+        }
+
+        // Search Properties
+        private string searchText;
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                if (SetProperty(ref searchText, value))
+                {
+                    IsSearching = !string.IsNullOrEmpty(value);
+                    // TODO: Trigger search
+                }
+            }
+        }
+
+        private bool isSearching;
+        public bool IsSearching
+        {
+            get => isSearching;
+            set => SetProperty(ref isSearching, value);
+        }
+
+        private string numberOfResultsText;
+        public string NumberOfResultsText
+        {
+            get => numberOfResultsText;
+            set => SetProperty(ref numberOfResultsText, value);
+        }
+
+        public ObservableCollection<SearchModeOption> SearchModes { get; }
+
+        private SearchModeOption selectedSearchMode;
+        public SearchModeOption SelectedSearchMode
+        {
+            get => selectedSearchMode;
+            set => SetProperty(ref selectedSearchMode, value);
         }
 	}
 }

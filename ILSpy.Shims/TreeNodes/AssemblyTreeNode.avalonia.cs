@@ -15,7 +15,6 @@ using ICSharpCode.ILSpyX.FileLoaders;
 using ICSharpCode.ILSpyX.PdbProvider;
 using ICSharpCode.ILSpyX.TreeView;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
-using ProjectRover.Nodes;
 
 namespace ICSharpCode.ILSpy.TreeNodes
 {

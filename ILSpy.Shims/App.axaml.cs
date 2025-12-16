@@ -67,7 +67,7 @@ public partial class App : Application
 
                 // Explicitly register our wrapper parts so they are discoverable
                 config = config.WithParts(
-                    typeof(ProjectRover.Services.ExportedIlSpyBackend),
+                    //typeof(ProjectRover.Services.ExportedIlSpyBackend),
                     typeof(ProjectRover.Services.ExportedServiceProvider),
                     typeof(ProjectRover.Services.ExportedMainWindowViewModel),
                     typeof(ProjectRover.Services.ExportedTabPageModel)
@@ -111,21 +111,21 @@ public partial class App : Application
                     {
                         try
                         {
-                            var exportedBackend = ExportProvider.GetExportedValue<ProjectRover.Services.ExportedIlSpyBackend>();
-                            if (exportedBackend != null && exportedBackend.Backend != null)
-                            {
-                                Console.WriteLine("MEF: Resolved ExportedIlSpyBackend via ExportProvider.");
-                                try
-                                {
-                                    // Call a safe method to verify the backend is callable
-                                    exportedBackend.Backend.Clear();
-                                    Console.WriteLine("IlSpyBackend.Clear() invoked successfully.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine("IlSpyBackend.Clear failed: " + ex.Message);
-                                }
-                            }
+                            // var exportedBackend = ExportProvider.GetExportedValue<ProjectRover.Services.ExportedIlSpyBackend>();
+                            // if (exportedBackend != null && exportedBackend.Backend != null)
+                            // {
+                            //     Console.WriteLine("MEF: Resolved ExportedIlSpyBackend via ExportProvider.");
+                            //     try
+                            //     {
+                            //         // Call a safe method to verify the backend is callable
+                            //         exportedBackend.Backend.Clear();
+                            //         Console.WriteLine("IlSpyBackend.Clear() invoked successfully.");
+                            //     }
+                            //     catch (Exception ex)
+                            //     {
+                            //         Console.WriteLine("IlSpyBackend.Clear failed: " + ex.Message);
+                            //     }
+                            // }
                         }
                         catch (Exception ex)
                         {
@@ -140,12 +140,12 @@ public partial class App : Application
 
             desktop.ShutdownRequested += (_, _) =>
             {
-                var analyticsService = Services.GetRequiredService<IAnalyticsService>();
-                try
-                {
-                    analyticsService.TrackEvent(AnalyticsEvents.Shutdown);
-                }
-                catch { }
+                // var analyticsService = Services.GetRequiredService<IAnalyticsService>();
+                // try
+                // {
+                //     analyticsService.TrackEvent(AnalyticsEvents.Shutdown);
+                // }
+                // catch { }
             };
         }
 
@@ -165,7 +165,7 @@ public partial class App : Application
 
     private void About_OnClick(object? sender, EventArgs e)
     {
-        _ = Services.GetRequiredService<IAnalyticsService>().TrackEventAsync(AnalyticsEvents.About);
+        //_ = Services.GetRequiredService<IAnalyticsService>().TrackEventAsync(AnalyticsEvents.About);
         //Services.GetRequiredService<IDialogService>().ShowDialog<AboutDialog>();
     }
 

@@ -18,6 +18,7 @@
 using System.Composition;
 
 using ICSharpCode.ILSpy.Properties;
+using ICSharpCode.ILSpy.Views;
 
 namespace ICSharpCode.ILSpy
 {

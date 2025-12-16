@@ -331,7 +331,7 @@ namespace ProjectRover.Services
                 if (main == null)
                     return;
 
-                if (main.DataContext is ProjectRover.ViewModels.MainWindowViewModel mwvm)
+                if (main.DataContext is ICSharpCode.ILSpy.MainWindowViewModel mwvm)
                 {
                     string? textFallback = null;
                     switch (textOutput)
@@ -347,7 +347,7 @@ namespace ProjectRover.Services
                         {
                             try
                             {
-                                mwvm.Document = new AvaloniaEdit.Document.TextDocument(textFallback);
+                                //mwvm.Document = new AvaloniaEdit.Document.TextDocument(textFallback);
                             }
                             catch
                             {

@@ -1,14 +1,15 @@
 <UserControl x:Class="ICSharpCode.ILSpy.Search.SearchPane"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:ProjectRover.ViewModels"
-             xmlns:searchResults="clr-namespace:ProjectRover.SearchResults"
+             xmlns:vm="clr-namespace:ICSharpCode.ILSpy.Search"
+             xmlns:search="clr-namespace:ICSharpCode.ILSpyX.Search;assembly=ICSharpCode.ILSpyX"
              xmlns:converters="clr-namespace:ProjectRover.Converters"
-             x:DataType="vm:MainWindowViewModel">
+             x:DataType="vm:SearchPaneModel"
+             x:Name="SearchPaneControl">
   <DockPanel>
     <Grid DockPanel.Dock="Top"
           Height="2">
-      <ProgressBar IsVisible="{Binding IsSearching}"
+      <ProgressBar IsVisible="{Binding #SearchPaneControl.IsSearching}"
                    IsIndeterminate="True"
                    Height="2"
                    MinHeight="2"
@@ -18,7 +19,7 @@
     <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="5">
       <TextBox x:Name="SearchTextBox"
                Watermark="Search..."
-               Text="{Binding SearchText}"
+               Text="{Binding SearchTerm}"
                Margin="0,0,8,0">
         <TextBox.InnerRightContent>
           <Panel Margin="0,0,5,0">
@@ -26,14 +27,14 @@
                     BorderBrush="{x:Null}"
                     Padding="2"
                     Click="OnClearSearchClick"
-                    IsVisible="{Binding SearchText, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}"
+                    IsVisible="{Binding SearchTerm, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}"
                     Cursor="Hand">
               <Svg Path="{DynamicResource CloseIcon}" Width="14" Height="14" />
             </Button>
             <Svg Path="{DynamicResource SearchIcon}"
                  Width="14"
                  Height="14"
-                 IsVisible="{Binding SearchText, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}" />
+                 IsVisible="{Binding SearchTerm, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}" />
           </Panel>
         </TextBox.InnerRightContent>
       </TextBox>
@@ -44,9 +45,9 @@
                   SelectedItem="{Binding SelectedSearchMode}"
                   VerticalAlignment="Center">
           <ComboBox.ItemTemplate>
-            <DataTemplate DataType="vm:SearchMode">
+            <DataTemplate DataType="vm:SearchModeModel">
               <StackPanel Orientation="Horizontal" Spacing="6">
-                <Svg Width="16" Height="16" Path="{Binding IconKey, Converter={StaticResource IconKeyToPathConverter}}" />
+                <Image Width="16" Height="16" Source="{Binding Image}" />
                 <TextBlock Text="{Binding Name}" />
               </StackPanel>
             </DataTemplate>
@@ -55,8 +56,8 @@
       </StackPanel>
     </Grid>
     <TextBlock DockPanel.Dock="Top"
-               Text="{Binding NumberOfResultsText}"
-               IsVisible="{Binding NumberOfResultsText, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}"
+               Text="{Binding #SearchPaneControl.NumberOfResultsText}"
+               IsVisible="{Binding #SearchPaneControl.NumberOfResultsText, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}"
                Margin="10 5 0 5"
                Foreground="#919191"
                FontSize="12"/>
@@ -80,8 +81,8 @@
       <Rectangle Grid.Column="5" Fill="{DynamicResource ThemeForegroundLowBrush}" Width="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
       <GridSplitter Grid.Column="5" Background="{DynamicResource ThemeForegroundLowBrush}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" />
     </Grid>
-    <ListBox ItemsSource="{Binding SearchResults}"
-             SelectedItem="{Binding SelectedSearchResult}"
+    <ListBox ItemsSource="{Binding #SearchPaneControl.Results}"
+             SelectedItem="{Binding #SearchPaneControl.SelectedSearchResult}"
              Background="Transparent"
              BorderThickness="0"
              Margin="5,0,5,0"
@@ -94,7 +95,7 @@
         </Style>
       </ListBox.Styles>
       <ListBox.ItemTemplate>
-        <DataTemplate DataType="searchResults:BasicSearchResult">
+        <DataTemplate DataType="search:SearchResult">
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="{Binding #HeaderGrid.ColumnDefinitions[0].Width}" />
@@ -106,17 +107,17 @@
               <ColumnDefinition Width="{Binding #HeaderGrid.ColumnDefinitions[6].Width}" />
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" ColumnDefinitions="Auto,*">
-               <Svg Width="16" Height="16" Path="{Binding IconPath, Converter={StaticResource IconKeyToPathConverter}}" Margin="0,0,6,0" />
+               <Image Width="16" Height="16" Source="{Binding Image}" Margin="0,0,6,0" />
                <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Name}" VerticalAlignment="Center" />
             </Grid>
             <Rectangle Grid.Column="1" Fill="{DynamicResource ThemeForegroundLowBrush}" Width="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <Grid Grid.Column="2" ColumnDefinitions="Auto,*">
-               <Svg Width="16" Height="16" Path="{Binding LocationIconPath, Converter={StaticResource IconKeyToPathConverter}}" Margin="0,0,6,0" />
+               <Image Width="16" Height="16" Source="{Binding LocationImage}" Margin="0,0,6,0" />
                <TextBlock Grid.Column="1" Text="{Binding Location}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Location}" VerticalAlignment="Center" />
             </Grid>
             <Rectangle Grid.Column="3" Fill="{DynamicResource ThemeForegroundLowBrush}" Width="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <Grid Grid.Column="4" ColumnDefinitions="Auto,*">
-               <Svg Width="16" Height="16" Path="{Binding AssemblyIconPath, Converter={StaticResource IconKeyToPathConverter}}" Margin="0,0,6,0" />
+               <Image Width="16" Height="16" Source="{Binding AssemblyImage}" Margin="0,0,6,0" />
                <TextBlock Grid.Column="1" Text="{Binding Assembly}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Assembly}" VerticalAlignment="Center" />
             </Grid>
             <Rectangle Grid.Column="5" Fill="{DynamicResource ThemeForegroundLowBrush}" Width="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
