@@ -42,12 +42,39 @@ namespace ICSharpCode.ILSpy
 		private readonly ICommand wrappedCommand;
 
 		private static List<CommandBinding> commandBindings = new();
+		private static Window? targetWindow;
 
 		protected CommandWrapper(ICommand wrappedCommand)
 		{
+			Console.WriteLine($"CommandWrapper created for {wrappedCommand}. targetWindow is {(targetWindow == null ? "null" : "set")}");
 			this.wrappedCommand = wrappedCommand;
-			commandBindings.Add(new CommandBinding(wrappedCommand, OnExecute, OnCanExecute));
-			// TODO: Avalonia.Labs.Input.CommandManager.RegisterCommandBindings(window, commandBindings);
+			var binding = new CommandBinding(wrappedCommand, OnExecute, OnCanExecute);
+			commandBindings.Add(binding);
+
+			if (targetWindow != null)
+			{
+				Console.WriteLine($"Late registering binding for {wrappedCommand}");
+				var windowBindings = Avalonia.Labs.Input.CommandManager.GetCommandBindings(targetWindow);
+				windowBindings.Add(binding);
+			}
+            else
+            {
+                Console.WriteLine("WARNING: targetWindow is null, binding not registered!");
+            }
+		}
+
+		public static void RegisterBindings(Window window)
+		{
+			targetWindow = window;
+			Console.WriteLine($"Registering {commandBindings.Count} bindings to window {window.GetHashCode()}");
+			var windowBindings = Avalonia.Labs.Input.CommandManager.GetCommandBindings(window);
+			foreach (var binding in commandBindings)
+			{
+				if (!windowBindings.Contains(binding))
+				{
+					windowBindings.Add(binding);
+				}
+			}
 		}
 
 		public static ICommand Unwrap(ICommand command)
@@ -65,11 +92,23 @@ namespace ICSharpCode.ILSpy
 
 		public void Execute(object parameter)
 		{
+			Console.WriteLine($"CommandWrapper.Execute called for {wrappedCommand}");
+			if (targetWindow != null && wrappedCommand is Avalonia.Labs.Input.RoutedCommand rc)
+			{
+				Console.WriteLine($"Executing with targetWindow: {targetWindow}");
+				rc.Execute(parameter, targetWindow);
+				return;
+			}
 			wrappedCommand.Execute(parameter);
 		}
 
 		public bool CanExecute(object parameter)
 		{
+			if (targetWindow != null && wrappedCommand is Avalonia.Labs.Input.RoutedCommand rc)
+			{
+				if (rc.CanExecute(parameter, targetWindow))
+					return true;
+			}
 			return wrappedCommand.CanExecute(parameter);
 		}
 

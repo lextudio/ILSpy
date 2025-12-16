@@ -96,6 +96,9 @@ public partial class App : Application
             desktop.MainWindow = Services.GetRequiredService<ICSharpCode.ILSpy.Views.MainWindow>();
             Console.WriteLine("MainWindow created.");
 
+            // Register command bindings
+            ICSharpCode.ILSpy.CommandWrapper.RegisterBindings(desktop.MainWindow);
+
             // Exercise docking workspace once at startup (diagnostic)
             try
             {
