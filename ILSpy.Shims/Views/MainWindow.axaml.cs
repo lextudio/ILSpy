@@ -30,19 +30,16 @@ namespace ICSharpCode.ILSpy.Views
 #endif
         }
 
+        public MainWindow(MainWindowViewModel viewModel) : this()
+        {
+            this.viewModel = viewModel;
+            DataContext = viewModel;
+            ConfigureDockLayout();
+        }
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-        }
-
-        protected override void OnDataContextChanged(EventArgs e)
-        {
-            base.OnDataContextChanged(e);
-            viewModel = DataContext as MainWindowViewModel;
-            if (viewModel != null)
-            {
-                ConfigureDockLayout();
-            }
         }
 
         private void ConfigureDockLayout()
@@ -164,8 +161,6 @@ namespace ICSharpCode.ILSpy.Views
             {
                 dockHost.Factory = dockFactory;
                 dockHost.Layout = rootDock;
-                dockHost.InitializeFactory = true;
-                dockHost.InitializeLayout = true;
             }
         }
     }

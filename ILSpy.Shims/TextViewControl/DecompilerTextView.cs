@@ -87,7 +87,8 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		readonly IExportProvider exportProvider;
 		readonly SettingsService settingsService;
 		readonly LanguageService languageService;
-		readonly MainWindow mainWindow;
+		// readonly MainWindow mainWindow;
+        MainWindow MainWindowInstance => exportProvider.GetExportedValue<MainWindow>();
 		readonly ReferenceElementGenerator referenceElementGenerator;
 		readonly UIElementGenerator uiElementGenerator;
 		readonly List<VisualLineElementGenerator?> activeCustomElementGenerators = new List<VisualLineElementGenerator?>();
@@ -110,18 +111,30 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		#region Constructor
 		public DecompilerTextView() : this(ProjectRover.App.ExportProvider!)
 		{
+			System.Console.WriteLine($"DecompilerTextView parameterless ctor called. App.ExportProvider is {(ProjectRover.App.ExportProvider == null ? "null" : "set")}");
 		}
 
 		public DecompilerTextView(IExportProvider exportProvider)
 		{
+			System.Console.WriteLine($"DecompilerTextView ctor called with exportProvider: {(exportProvider == null ? "null" : "set")}");
 			this.exportProvider = exportProvider;
 			settingsService = exportProvider.GetExportedValue<SettingsService>();
 			languageService = exportProvider.GetExportedValue<LanguageService>();
-			mainWindow = exportProvider.GetExportedValue<MainWindow>();
+			// mainWindow = exportProvider.GetExportedValue<MainWindow>();
 
 			RegisterHighlighting();
 
 			InitializeComponent();
+
+            // Ensure resources are available for BracketHighlightRenderer
+            if (!this.Resources.ContainsKey("BracketHighlightBorderPen"))
+            {
+                this.Resources.Add("BracketHighlightBorderPen", new Avalonia.Media.Pen(new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#800000FF")), 1));
+            }
+            if (!this.Resources.ContainsKey("BracketHighlightBackgroundBrush"))
+            {
+                this.Resources.Add("BracketHighlightBackgroundBrush", new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#280000FF")));
+            }
 
 			this.referenceElementGenerator = new ReferenceElementGenerator(this.IsLink);
 			textEditor.TextArea.TextView.ElementGenerators.Add(referenceElementGenerator);
@@ -430,7 +443,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 			if (segment.Reference is ICSharpCode.Decompiler.Disassembler.OpCodeInfo code)
 			{
 				XmlDocumentationProvider docProvider = XmlDocLoader.MscorlibDocumentation;
-				DocumentationUIBuilder renderer = new DocumentationUIBuilder(new CSharpAmbience(), languageService.Language.SyntaxHighlighting, settingsService.DisplaySettings, mainWindow);
+				DocumentationUIBuilder renderer = new DocumentationUIBuilder(new CSharpAmbience(), languageService.Language.SyntaxHighlighting, settingsService.DisplaySettings, MainWindowInstance);
 				renderer.AddSignatureBlock($"{code.Name} (0x{code.Code:x})");
 				if (docProvider != null)
 				{
@@ -440,14 +453,14 @@ namespace ICSharpCode.ILSpy.TextViewControl
 						renderer.AddXmlDocumentation(documentation, null, null);
 					}
 				}
-				return new FlowDocumentTooltip(renderer.CreateDocument(), fontSize, mainWindow.Width);
+				return new FlowDocumentTooltip(renderer.CreateDocument(), fontSize, MainWindowInstance.Width);
 			}
 			else if (segment.Reference is IEntity entity)
 			{
 				var documentControl = CreateTooltipForEntity(entity);
 					if (documentControl == null)
 						return null;
-					return new FlowDocumentTooltip(documentControl, fontSize, mainWindow.Width);
+					return new FlowDocumentTooltip(documentControl, fontSize, MainWindowInstance.Width);
 			}
 			else if (segment.Reference is EntityReference unresolvedEntity)
 			{
@@ -469,7 +482,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 					var documentControl = CreateTooltipForEntity(resolved);
 						if (documentControl == null)
 							return null;
-						return new FlowDocumentTooltip(documentControl, fontSize, mainWindow.Width);
+						return new FlowDocumentTooltip(documentControl, fontSize, MainWindowInstance.Width);
 				}
 				catch (BadImageFormatException)
 				{
@@ -482,7 +495,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		Control? CreateTooltipForEntity(IEntity resolved)
 		{
 			Language currentLanguage = languageService.Language;
-			DocumentationUIBuilder renderer = new DocumentationUIBuilder(new CSharpAmbience(), currentLanguage.SyntaxHighlighting, settingsService.DisplaySettings, mainWindow);
+			DocumentationUIBuilder renderer = new DocumentationUIBuilder(new CSharpAmbience(), currentLanguage.SyntaxHighlighting, settingsService.DisplaySettings, MainWindowInstance);
 			RichText richText = currentLanguage.GetRichTextTooltip(resolved);
 			if (richText == null)
 			{

@@ -27,7 +27,12 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Composition.Hosting;
+using System.Composition.Convention;
 using TomsToolbox.Composition;
+using TomsToolbox.Composition.MicrosoftExtensions;
+using ICSharpCode.ILSpyX.Analyzers;
+using TomsToolbox.Composition;
+using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using ICSharpCode.ILSpy.Views;
 using ICSharpCode.ILSpy.AppEnv;
@@ -38,7 +43,7 @@ public partial class App : Application
 {
     public new static App Current => (App)Application.Current!;
     
-    public IServiceProvider Services { get; } = ConfigureServices();
+    public IServiceProvider Services { get; private set; } = null!;
     public object? CompositionHost { get; private set; }
     public static IExportProvider? ExportProvider { get; private set; }
 
@@ -54,39 +59,39 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            var services = CreateServiceCollection();
+
+            // Initialize SettingsService
+            var settingsService = new ICSharpCode.ILSpy.Util.SettingsService();
+            services.AddSingleton(settingsService);
+
+            // Bind exports from assemblies
+            // ILSpyX
+            Console.WriteLine("Binding exports from ILSpyX...");
+            services.BindExports(typeof(IAnalyzer).Assembly);
+            // ILSpy (Original)
+            Console.WriteLine("Binding exports from ILSpy...");
+            services.BindExports(typeof(ICSharpCode.ILSpy.Views.MainWindow).Assembly);
+            // ILSpy.Shims (Rover)
+            Console.WriteLine("Binding exports from ILSpy.Shims...");
+            services.BindExports(Assembly.GetExecutingAssembly());
+
+            // Add the export provider (circular dependency resolution via factory)
+            services.AddSingleton<IExportProvider>(sp => ExportProvider!);
+
+            Console.WriteLine("Building ServiceProvider...");
+            var serviceProvider = services.BuildServiceProvider();
+            Services = serviceProvider;
+
+            // Create the adapter
+            Console.WriteLine("Creating ExportProviderAdapter...");
+            ExportProvider = new ExportProviderAdapter(serviceProvider);
+            
+            Console.WriteLine($"ExportProvider initialized: {ExportProvider != null}");
+
+            Console.WriteLine("Creating MainWindow...");
             desktop.MainWindow = Services.GetRequiredService<ICSharpCode.ILSpy.Views.MainWindow>();
-
-            // Initialize CompositionHost for MEF-style exports (compose ILSpy parts) using ContainerConfiguration
-            try
-            {
-                var assemblies = new List<Assembly> { Assembly.GetExecutingAssembly() };
-                try { assemblies.Add(Assembly.Load("ICSharpCode.ILSpyX")); } catch { }
-
-                var config = new System.Composition.Hosting.ContainerConfiguration()
-                    .WithAssemblies(assemblies);
-
-                // Explicitly register our wrapper parts so they are discoverable
-                config = config.WithParts(
-                    //typeof(ProjectRover.Services.ExportedIlSpyBackend),
-                    typeof(ProjectRover.Services.ExportedServiceProvider),
-                    typeof(ProjectRover.Services.ExportedMainWindowViewModel),
-                    typeof(ProjectRover.Services.ExportedTabPageModel)
-                );
-                // Register language and settings shims
-                config = config.WithParts(
-                    typeof(ICSharpCode.ILSpy.LanguageService),
-                    typeof(ICSharpCode.ILSpy.Util.SettingsService)
-                );
-
-                var container = config.CreateContainer();
-                CompositionHost = container;
-                ExportProvider = new CompositionHostExportProvider(container, Services);
-            }
-            catch
-            {
-                CompositionHost = null;
-                ExportProvider = null;
-            }
+            Console.WriteLine("MainWindow created.");
 
             // Exercise docking workspace once at startup (diagnostic)
             try
@@ -152,7 +157,7 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
     
-    private static IServiceProvider ConfigureServices() =>
+    private static IServiceCollection CreateServiceCollection() =>
         new ServiceCollection()
             .ConfigureOptions()
             .ConfigureLogging()
@@ -160,8 +165,7 @@ public partial class App : Application
             .AddViewModels()
             .AddServices()
             .AddProviders()
-            .AddHttpClients()
-            .BuildServiceProvider();
+            .AddHttpClients();
 
     private void About_OnClick(object? sender, EventArgs e)
     {
@@ -172,10 +176,10 @@ public partial class App : Application
     // Small adapter so existing ILSpy code can call GetExportedValue<T>() against a provider.
     class CompositionHostExportProvider : IExportProvider
     {
-        private readonly object _host;
+        private readonly CompositionHost _host;
         private readonly IServiceProvider _services;
 
-        public CompositionHostExportProvider(object host, IServiceProvider services)
+        public CompositionHostExportProvider(CompositionHost host, IServiceProvider services)
         {
             _host = host;
             _services = services;
@@ -185,20 +189,8 @@ public partial class App : Application
 
 		public T GetExportedValue<T>()
         {
-            try
-            {
-                // Prefer composition host via reflection
-                var hgType = _host.GetType();
-                var getExport = hgType.GetMethod("GetExport", BindingFlags.Instance | BindingFlags.Public);
-                if (getExport != null && getExport.IsGenericMethodDefinition)
-                {
-                    var generic = getExport.MakeGenericMethod(typeof(T));
-                    var result = generic.Invoke(_host, null);
-                    if (result is T t)
-                        return t;
-                }
-            }
-            catch { }
+            if (_host.TryGetExport<T>(out var export))
+                return export;
 
             // Fallback to service provider
             var svc = (T?)_services.GetService(typeof(T));
@@ -209,41 +201,39 @@ public partial class App : Application
 
 		public T GetExportedValue<T>(string? contractName = null) where T : class
 		{
-			throw new NotImplementedException();
+            if (_host.TryGetExport<T>(contractName, out var export))
+                return export;
+
+            if (contractName == null)
+            {
+                var svc = (T?)_services.GetService(typeof(T));
+                if (svc != null)
+                    return svc;
+            }
+            throw new InvalidOperationException($"Export not found: {typeof(T).FullName} (contract: {contractName})");
 		}
 
 		public T? GetExportedValueOrDefault<T>(string? contractName = null) where T : class
 		{
-			throw new NotImplementedException();
+            if (_host.TryGetExport<T>(contractName, out var export))
+                return export;
+
+            if (contractName == null)
+            {
+                var svc = (T?)_services.GetService(typeof(T));
+                if (svc != null) return svc;
+            }
+            return default;
 		}
 
 		public T[] GetExportedValues<T>()
         {
-            try
-            {
-                // Prefer composition host via reflection
-                var hgType = _host.GetType();
-                var getExports = hgType.GetMethod("GetExports", BindingFlags.Instance | BindingFlags.Public);
-                if (getExports != null && getExports.IsGenericMethodDefinition)
-                {
-                    var generic = getExports.MakeGenericMethod(typeof(T));
-                    var result = generic.Invoke(_host, null);
-                    if (result is IEnumerable<T> enumerable)
-                        return System.Linq.Enumerable.ToArray(enumerable);
-                }
-            }
-            catch { }
-
-            // Fallback to service provider
-            var svcs = (IEnumerable<T>?)_services.GetService(typeof(IEnumerable<T>));
-            if (svcs != null)
-                return System.Linq.Enumerable.ToArray(svcs);
-            return Array.Empty<T>();
+            return System.Linq.Enumerable.ToArray(_host.GetExports<T>());
         }
 
 		public IEnumerable<T> GetExportedValues<T>(string? contractName = null) where T : class
 		{
-			throw new NotImplementedException();
+			return _host.GetExports<T>(contractName);
 		}
 
 		public IEnumerable<object> GetExportedValues(Type contractType, string? contractName = null)

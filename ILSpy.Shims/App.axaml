@@ -26,6 +26,14 @@
              RequestedThemeVariant="Light"
              Name="ProjectRover">
 
+    <Application.Resources>
+        <SolidColorBrush x:Key="BracketHighlightBackgroundBrush" Color="#280000FF" />
+        <Pen x:Key="BracketHighlightBorderPen" Brush="#800000FF" Thickness="1" />
+        <SolidColorBrush x:Key="LinkTextForegroundBrush" Color="Blue" />
+        <SolidColorBrush x:Key="CurrentLineBackgroundBrush" Color="#1614DCE0" />
+        <Pen x:Key="CurrentLineBorderPen" Brush="#3400FF6E" Thickness="1" />
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
         <dockThemes:DockFluentTheme />
