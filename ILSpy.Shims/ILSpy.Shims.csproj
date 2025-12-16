@@ -517,6 +517,10 @@
       <Link>TreeNodes\AssemblyReferenceTreeNode.cs</Link>
     </Compile>
 
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\BaseTypesTreeNode.cs">
+      <Link>TreeNodes\BaseTypesTreeNode.cs</Link>
+    </Compile>
+
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\TreeNodes\BaseTypesEntryNode.cs">
       <Link>TreeNodes\BaseTypesEntryNode.cs</Link>
     </Compile>

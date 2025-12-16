@@ -48,27 +48,65 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
 		public override object Icon => Images.SuperTypes;
 
+		class ErrorTreeNode : SharpTreeNode
+		{
+			readonly string text;
+			public ErrorTreeNode(string text) { this.text = text; }
+			public override object Text => text;
+		}
+
 		protected override void LoadChildren()
 		{
-			AddBaseTypes(this.Children, module, type);
+			try
+			{
+				if (module == null)
+				{
+					this.Children.Add(new ErrorTreeNode("Error: Module is null"));
+					return;
+				}
+				AddBaseTypes(this.Children, module, type);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"BaseTypesTreeNode.LoadChildren failed: {ex}");
+				this.Children.Add(new ErrorTreeNode("Error: " + ex.Message));
+			}
 		}
 
 		internal static void AddBaseTypes(SharpTreeNodeCollection children, MetadataFile module, ITypeDefinition typeDefinition)
 		{
-			TypeDefinitionHandle handle = (TypeDefinitionHandle)typeDefinition.MetadataToken;
-			DecompilerTypeSystem typeSystem = new DecompilerTypeSystem(module, module.GetAssemblyResolver(),
-				TypeSystemOptions.Default | TypeSystemOptions.Uncached);
-			var t = typeSystem.MainModule.ResolveEntity(handle) as ITypeDefinition;
-			foreach (var td in t.GetAllBaseTypeDefinitions().Reverse().Skip(1))
+			try 
 			{
-				if (t.Kind != TypeKind.Interface || t.Kind == td.Kind)
-					children.Add(new BaseTypesEntryNode(td));
+				TypeDefinitionHandle handle = (TypeDefinitionHandle)typeDefinition.MetadataToken;
+				DecompilerTypeSystem typeSystem = new DecompilerTypeSystem(module, module.GetAssemblyResolver(),
+					TypeSystemOptions.Default | TypeSystemOptions.Uncached);
+				var t = typeSystem.MainModule.ResolveEntity(handle) as ITypeDefinition;
+				if (t == null)
+				{
+					children.Add(new ErrorTreeNode("Error: Failed to resolve type"));
+					return;
+				}
+				
+				var baseTypes = t.GetAllBaseTypeDefinitions().ToList();
+				
+				foreach (var td in baseTypes.Skip(1).Reverse())
+				{
+					if (t.Kind != TypeKind.Interface || t.Kind == td.Kind)
+					{
+						children.Add(new BaseTypesEntryNode(td));
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"BaseTypesTreeNode.AddBaseTypes failed: {ex}");
+				throw;
 			}
 		}
 
 		public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
 		{
-			App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(EnsureLazyChildren));
+			App.Current.Dispatcher.Invoke(new Action(EnsureLazyChildren));
 			foreach (ILSpyTreeNode child in this.Children)
 			{
 				child.Decompile(language, output, options);
