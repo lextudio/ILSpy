@@ -7,7 +7,7 @@ using ICSharpCode.ILSpy.TreeNodes;
 
 using ICSharpCode.ILSpyX.TreeView;
 
-namespace ICSharpCode.ILSpy.Views;
+namespace ProjectRover.Views;
 
 public partial class AssemblyListPane : UserControl
 {
