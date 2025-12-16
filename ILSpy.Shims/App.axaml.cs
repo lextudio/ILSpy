@@ -70,8 +70,11 @@ public partial class App : Application
             Console.WriteLine("Binding exports from ILSpyX...");
             services.BindExports(typeof(IAnalyzer).Assembly);
             // ILSpy (Original)
-            Console.WriteLine("Binding exports from ILSpy...");
-            services.BindExports(typeof(ICSharpCode.ILSpy.Views.MainWindow).Assembly);
+            // NOTE: Do not bind the original ILSpy assembly here. Many ILSpy source files
+            // are linked into the shim (executing) assembly; binding both the original
+            // ILSpy assembly and the shim causes duplicate MEF exports and duplicate
+            // menu entries. The shim's executing assembly is bound below.
+            Console.WriteLine("Skipping binding of the original ILSpy assembly to avoid duplicate exports.");
             // ILSpy.Shims (Rover)
             Console.WriteLine("Binding exports from ILSpy.Shims...");
             services.BindExports(Assembly.GetExecutingAssembly());

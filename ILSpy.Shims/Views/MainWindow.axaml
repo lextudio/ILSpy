@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dock="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
         xmlns:views="clr-namespace:ICSharpCode.ILSpy.Views"
+        xmlns:controls="clr-namespace:ICSharpCode.ILSpy.Controls;assembly=ProjectRover"
         xmlns:converters="clr-namespace:ICSharpCode.ILSpy.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ICSharpCode.ILSpy.Views.MainWindow"
@@ -14,14 +15,9 @@
 
     <Grid>
         <DockPanel>
-            <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_File">
-                    <MenuItem Header="_Open..." Command="{Binding OpenFileCommand}" />
-                    <Separator />
-                    <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
-                </MenuItem>
-            </Menu>
-            
+            <!-- Place the MainMenu control (populated from MEF exports) -->
+            <controls:MainMenu DockPanel.Dock="Top" />
+
             <dock:DockControl x:Name="DockHost" />
         </DockPanel>
     </Grid>
