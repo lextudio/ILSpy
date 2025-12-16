@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -139,6 +140,25 @@ namespace ICSharpCode.ILSpy.Docking
         }
     }
 
+    private Dictionary<string, Dock.Model.Controls.ITool> _registeredTools = new();
+    private Dictionary<string, Dock.Model.Core.IDockable> _registeredDockables = new();
+
+    public void RegisterTool(Dock.Model.Controls.ITool tool)
+    {
+        if (tool.Id != null)
+        {
+            _registeredTools[tool.Id] = tool;
+        }
+    }
+
+    public void RegisterDockable(Dock.Model.Core.IDockable dockable)
+    {
+        if (dockable.Id != null)
+        {
+            _registeredDockables[dockable.Id] = dockable;
+        }
+    }
+
     private void ActivateTool(DockControl dockHost, string contentId)
     {
         try
@@ -156,6 +176,42 @@ namespace ICSharpCode.ILSpy.Docking
             }
             else
             {
+                // Try to find in registered tools
+                if (_registeredTools.TryGetValue(contentId, out var registeredTool))
+                {
+                    // Determine target dock
+                    string targetDockId = contentId == SearchPaneModel.PaneContentId ? "SearchDock" : "LeftDock";
+                    var targetDock = FindDockById(layout, targetDockId);
+                    
+                    // If target dock not found in layout, try to find in registered dockables and insert it
+                    if (targetDock == null && targetDockId == "SearchDock")
+                    {
+                        var rightDock = FindDockById(layout, "RightDock");
+                        if (rightDock != null && rightDock.VisibleDockables != null)
+                        {
+                             if (_registeredDockables.TryGetValue("SearchDock", out var searchDock) && searchDock is Dock.Model.Controls.IToolDock sd)
+                             {
+                                 rightDock.VisibleDockables.Insert(0, sd);
+                                 targetDock = sd;
+
+                                 if (_registeredDockables.TryGetValue("SearchSplitter", out var splitter))
+                                 {
+                                     rightDock.VisibleDockables.Insert(1, splitter);
+                                 }
+                             }
+                        }
+                    }
+
+                    if (targetDock is Dock.Model.Controls.IToolDock toolDock)
+                    {
+                        factory.AddDockable(toolDock, registeredTool);
+                        factory.SetActiveDockable(registeredTool);
+                        factory.SetFocusedDockable(layout, registeredTool);
+                        Console.WriteLine($"DockWorkspace: Restored and activated tool {contentId} in {targetDockId}");
+                        return;
+                    }
+                }
+
                 Console.WriteLine($"DockWorkspace: Tool {contentId} not found for activation");
             }
         }
@@ -178,6 +234,25 @@ namespace ICSharpCode.ILSpy.Docking
           if (found != null)
             return found;
         }
+      }
+      return null;
+    }
+
+    private static Dock.Model.Core.IDock? FindDockById(Dock.Model.Core.IDockable root, string id)
+    {
+      if (root is Dock.Model.Core.IDock dock)
+      {
+          if (dock.Id == id) return dock;
+          
+          if (dock.VisibleDockables != null)
+          {
+            foreach (var dockable in dock.VisibleDockables)
+            {
+              var found = FindDockById(dockable, id);
+              if (found != null)
+                return found;
+            }
+          }
       }
       return null;
     }

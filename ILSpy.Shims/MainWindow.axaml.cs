@@ -87,6 +87,8 @@ namespace ICSharpCode.ILSpy
                 CanPin = false
             };
 
+            (viewModel.Workspace as ICSharpCode.ILSpy.Docking.DockWorkspace)?.RegisterTool(tool);
+
             var toolDock = new ToolDock
             {
                 Id = "LeftDock",
@@ -99,6 +101,31 @@ namespace ICSharpCode.ILSpy
             toolDock.Proportion = 0.3;
             documentDock.Proportion = 0.7;
 
+            var searchTool = new Tool
+            {
+                Id = ICSharpCode.ILSpy.Search.SearchPaneModel.PaneContentId,
+                Title = "Search",
+                Content = searchDockView,
+                Context = viewModel,
+                CanClose = true,
+                CanFloat = false,
+                CanPin = false
+            };
+
+            (viewModel.Workspace as ICSharpCode.ILSpy.Docking.DockWorkspace)?.RegisterTool(searchTool);
+
+            searchDock = new ToolDock
+            {
+                Id = "SearchDock",
+                Title = "Search",
+                Alignment = Alignment.Top,
+                VisibleDockables = new ObservableCollection<IDockable>(),
+                ActiveDockable = null
+            };
+            searchDock.Proportion = 0.25;
+
+            searchSplitter = new ProportionalDockSplitter { Id = "SearchSplitter", CanResize = true };
+
             var rightDock = new ProportionalDock
             {
                 Id = "RightDock",
@@ -109,6 +136,12 @@ namespace ICSharpCode.ILSpy
                 },
                 ActiveDockable = documentDock
             };
+
+            if (viewModel.Workspace is ICSharpCode.ILSpy.Docking.DockWorkspace dw)
+            {
+                dw.RegisterDockable(searchDock);
+                dw.RegisterDockable(searchSplitter);
+            }
 
             var mainLayout = new ProportionalDock
             {
@@ -123,48 +156,12 @@ namespace ICSharpCode.ILSpy
                 ActiveDockable = rightDock
             };
 
-            var searchTool = new Tool
-            {
-                Id = ICSharpCode.ILSpy.Search.SearchPaneModel.PaneContentId,
-                Title = "Search",
-                Content = searchDockView,
-                Context = viewModel,
-                CanClose = false,
-                CanFloat = false,
-                CanPin = false
-            };
-
-            searchDock = new ToolDock
-            {
-                Id = "SearchDock",
-                Title = "Search",
-                Alignment = Alignment.Top,
-                VisibleDockables = new ObservableCollection<IDockable> { searchTool },
-                ActiveDockable = searchTool
-            };
-            searchDock.Proportion = 0.25;
-
-            searchSplitter = new ProportionalDockSplitter { CanResize = true };
-
-            verticalLayout = new ProportionalDock
-            {
-                Id = "VerticalLayout",
-                Orientation = Dock.Model.Core.Orientation.Vertical,
-                VisibleDockables = new ObservableCollection<IDockable>
-                {
-                    mainLayout,
-                    searchSplitter,
-                    searchDock
-                },
-                ActiveDockable = mainLayout
-            };
-
             var rootDock = new RootDock
             {
                 Id = "Root",
                 Title = "Root",
-                VisibleDockables = new ObservableCollection<IDockable> { verticalLayout },
-                ActiveDockable = verticalLayout
+                VisibleDockables = new ObservableCollection<IDockable> { mainLayout },
+                ActiveDockable = mainLayout
             };
 
             dockFactory = new Factory();
