@@ -2064,8 +2064,8 @@ public partial class MainWindowViewModel : ObservableObject
             if (candidates.Count > 1)
         {
             // Present chooser dialog to the user for explicit selection
-            var chooserVm = new AssemblyCandidateChooserViewModel(candidates);
-            var owner = App.Current.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null;
+            //var chooserVm = new AssemblyCandidateChooserViewModel(candidates);
+            //var owner = App.Current.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null;
             return;
         }
 

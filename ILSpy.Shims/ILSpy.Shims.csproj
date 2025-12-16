@@ -664,6 +664,10 @@
       <Link>Util\WrappedEventArgs.cs</Link>
     </Compile>
 
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\CompareViewModel.cs">
+      <Link>ViewModels\CompareViewModel.cs</Link>
+    </Compile>
+
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\DebugStepsPaneModel.cs">
       <Link>ViewModels\DebugStepsPaneModel.cs</Link>
     </Compile>
@@ -690,6 +694,10 @@
 
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\TabPageModelExtensions.cs">
       <Link>ViewModels\TabPageModelExtensions.cs</Link>
+    </Compile>
+
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\ViewModels\ManageAssemblyListsViewModel.cs">
+      <Link>ViewModels\ManageAssemblyListsViewModel.cs</Link>
     </Compile>
 
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Views\GacEntry.cs">

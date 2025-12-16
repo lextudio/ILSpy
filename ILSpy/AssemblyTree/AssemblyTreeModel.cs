@@ -533,7 +533,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			}
 			else
 			{
-				// TODO: NavigateTo(new(state.ViewedUri, null));
+				NavigateTo(new(state.ViewedUri, null));
 			}
 		}
 
