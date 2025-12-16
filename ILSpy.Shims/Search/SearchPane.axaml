@@ -6,6 +6,9 @@
              xmlns:converters="clr-namespace:ICSharpCode.ILSpy.Converters;assembly=ProjectRover"
              x:DataType="vm:SearchPaneModel"
              x:Name="SearchPaneControl">
+  <UserControl.Resources>
+    <converters:IconToImageConverter x:Key="IconToImageConverter" />
+  </UserControl.Resources>
   <DockPanel>
     <Grid DockPanel.Dock="Top"
           Height="2">
@@ -47,7 +50,7 @@
           <ComboBox.ItemTemplate>
             <DataTemplate DataType="vm:SearchModeModel">
               <StackPanel Orientation="Horizontal" Spacing="6">
-                <Image Width="16" Height="16" Source="{Binding Image}" />
+                <Image Width="16" Height="16" Source="{Binding Image, Converter={StaticResource IconToImageConverter}}" />
                 <TextBlock Text="{Binding Name}" />
               </StackPanel>
             </DataTemplate>
@@ -107,17 +110,17 @@
               <ColumnDefinition Width="{Binding #HeaderGrid.ColumnDefinitions[6].Width}" />
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" ColumnDefinitions="Auto,*">
-               <Image Width="16" Height="16" Source="{Binding Image}" Margin="0,0,6,0" />
+               <Image Width="16" Height="16" Source="{Binding Image, Converter={StaticResource IconToImageConverter}}" Margin="0,0,6,0" />
                <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Name}" VerticalAlignment="Center" />
             </Grid>
             <Rectangle Grid.Column="1" Fill="{DynamicResource ThemeForegroundLowBrush}" Width="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <Grid Grid.Column="2" ColumnDefinitions="Auto,*">
-               <Image Width="16" Height="16" Source="{Binding LocationImage}" Margin="0,0,6,0" />
+               <Image Width="16" Height="16" Source="{Binding LocationImage, Converter={StaticResource IconToImageConverter}}" Margin="0,0,6,0" />
                <TextBlock Grid.Column="1" Text="{Binding Location}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Location}" VerticalAlignment="Center" />
             </Grid>
             <Rectangle Grid.Column="3" Fill="{DynamicResource ThemeForegroundLowBrush}" Width="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <Grid Grid.Column="4" ColumnDefinitions="Auto,*">
-               <Image Width="16" Height="16" Source="{Binding AssemblyImage}" Margin="0,0,6,0" />
+               <Image Width="16" Height="16" Source="{Binding AssemblyImage, Converter={StaticResource IconToImageConverter}}" Margin="0,0,6,0" />
                <TextBlock Grid.Column="1" Text="{Binding Assembly}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Assembly}" VerticalAlignment="Center" />
             </Grid>
             <Rectangle Grid.Column="5" Fill="{DynamicResource ThemeForegroundLowBrush}" Width="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />

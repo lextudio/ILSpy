@@ -87,8 +87,8 @@ namespace System.Windows.Input
         // Expose an InputGestures collection to match WPF's RoutedCommand API
         public IList<KeyGesture> InputGestures { get; } = new List<KeyGesture>();
 
-        public RoutedCommand() : base(string.Empty, (KeyGesture)null) { }
-        public RoutedCommand(string name) : base(name, (KeyGesture)null) { }
+        public RoutedCommand() : base(string.Empty, new KeyGesture(Key.None)) { }
+        public RoutedCommand(string name) : base(name, new KeyGesture(Key.None)) { }
     }
 
     // Minimal RoutedUICommand shim (WPF provides text/name/owner type overloads)
@@ -99,8 +99,8 @@ namespace System.Windows.Input
         // WPF provides InputGestures on RoutedUICommand as well
         public IList<KeyGesture> InputGestures { get; } = new List<KeyGesture>();
 
-        public RoutedUICommand() : base(string.Empty, (KeyGesture)null) { }
-        public RoutedUICommand(string text, string name, Type ownerType) : base(name, (KeyGesture)null)
+        public RoutedUICommand() : base(string.Empty, new KeyGesture(Key.None)) { }
+        public RoutedUICommand(string text, string name, Type ownerType) : base(name, new KeyGesture(Key.None))
         {
             Text = text;
         }

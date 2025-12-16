@@ -39,11 +39,21 @@ namespace ICSharpCode.ILSpy
             string? path = ResolveIcon(icon);
             if (path == null) return null;
             
+            if (path.StartsWith("/"))
+            {
+                path = $"avares://ProjectRover{path}";
+            }
+
             if (path.EndsWith(".svg"))
             {
                 try
                 {
-                    return new SvgImage { Source = SvgSource.Load(path) };
+                    // Ensure we have a valid URI
+                    if (!path.Contains("://"))
+                    {
+                         path = $"avares://ProjectRover/Assets/{path}";
+                    }
+                    return new SvgImage { Source = SvgSource.Load(path, null) };
                 }
                 catch
                 {

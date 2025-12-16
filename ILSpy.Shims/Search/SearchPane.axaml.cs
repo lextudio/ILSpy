@@ -79,20 +79,8 @@ public partial class SearchPane : UserControl
             assemblyTreeModel = ProjectRover.App.ExportProvider.GetExportedValue<AssemblyTreeModel>();
             settingsService = ProjectRover.App.ExportProvider.GetExportedValue<SettingsService>();
             treeNodeFactory = ProjectRover.App.ExportProvider.GetExportedValue<ITreeNodeFactory>();
-            // treeNodeFactory is usually created per assembly or context, but here we might need a global one or create one.
-            // In WPF SearchPane, it is passed in.
-            // For now, we might need to find where to get ITreeNodeFactory.
-            // Actually, in WPF it is passed to constructor.
-            // We can try to get it from ExportProvider if exported.
-            // Or create a dummy one if needed, but that breaks functionality.
-            // Let's assume we can get it.
-            // treeNodeFactory = ProjectRover.App.ExportProvider.GetExportedValue<ITreeNodeFactory>(); 
         }
-        
-        // If we can't get dependencies, we might be in trouble.
-        // But let's proceed with what we have.
-        
-        // Hook up rendering for updates
+
         // Avalonia doesn't have CompositionTarget.Rendering in the same way, but we can use DispatcherTimer or similar.
         // Or TopLevel.RequestAnimationFrame.
         // For simplicity, let's use a DispatcherTimer for now, or just async updates.
