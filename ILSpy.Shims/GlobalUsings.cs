@@ -46,6 +46,7 @@ global using IBackgroundRenderer = AvaloniaEdit.Rendering.IBackgroundRenderer;
 global using IVisualLineTransformer = AvaloniaEdit.Rendering.IVisualLineTransformer;
 global using IDocument = AvaloniaEdit.Document.IDocument;
 global using UIElement = Avalonia.Controls.Control;
+global using FrameworkElement = Avalonia.Controls.Control;
 global using Rect = Avalonia.Rect;
 global using TextArea = AvaloniaEdit.Editing.TextArea;
 global using Pen = Avalonia.Media.Pen;

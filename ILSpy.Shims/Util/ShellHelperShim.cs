@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.Util
 {
     public static class ShellHelper
     {

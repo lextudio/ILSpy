@@ -16,15 +16,14 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-
-using System.Composition;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
-
+using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.TextViewControl;
 
-using TomsToolbox.Composition;
 using TomsToolbox.Wpf;
 
 #nullable enable
@@ -32,47 +31,19 @@ using TomsToolbox.Wpf;
 
 namespace ICSharpCode.ILSpy.ViewModels
 {
-	[Export]
-	[NonShared]
-	public class TabPageModel : PaneModel
+	public static partial class TabPageModelExtensions
 	{
-		public IExportProvider ExportProvider { get; }
-
-		public TabPageModel(IExportProvider exportProvider)
+		public static void Focus(this TabPageModel tabPage)
 		{
-			ExportProvider = exportProvider;
-			Title = Properties.Resources.NewTab;
+			if (tabPage.Content is not FrameworkElement content)
+				return;
+
+			var focusable = content
+				.VisualDescendantsAndSelf()
+				.OfType<FrameworkElement>()
+				.FirstOrDefault(item => item.Focusable);
+
+			focusable?.Focus();
 		}
-
-		private bool supportsLanguageSwitching = true;
-
-		public bool SupportsLanguageSwitching {
-			get => supportsLanguageSwitching;
-			set => SetProperty(ref supportsLanguageSwitching, value);
-		}
-
-		private bool frozenContent;
-
-		public bool FrozenContent {
-			get => frozenContent;
-			set => SetProperty(ref frozenContent, value);
-		}
-
-		private object? content;
-
-		public object? Content {
-			get => content;
-			set => SetProperty(ref content, value);
-		}
-
-		public ViewState? GetState()
-		{
-			return (Content as IHaveState)?.GetState();
-		}
-	}
-
-	public interface IHaveState
-	{
-		ViewState? GetState();
-	}
+    }
 }

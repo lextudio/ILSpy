@@ -17,66 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Composition;
-using System.Linq;
 using System.Threading.Tasks;
-
-using Avalonia;
-
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.VisualTree;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.TextViewControl;
-
-using TomsToolbox.Composition;
-using TomsToolbox.Wpf;
 
 #nullable enable
 
 namespace ICSharpCode.ILSpy.ViewModels
 {
-	[Export]
-	[NonShared]
-	public class TabPageModel : PaneModel
-	{
-		public IExportProvider ExportProvider { get; }
-
-		public TabPageModel(IExportProvider exportProvider)
-		{
-			ExportProvider = exportProvider;
-			Title = Properties.Resources.NewTab;
-		}
-
-		private bool supportsLanguageSwitching = true;
-
-		public bool SupportsLanguageSwitching {
-			get => supportsLanguageSwitching;
-			set => SetProperty(ref supportsLanguageSwitching, value);
-		}
-
-		private bool frozenContent;
-
-		public bool FrozenContent {
-			get => frozenContent;
-			set => SetProperty(ref frozenContent, value);
-		}
-
-		private object? content;
-
-		public object? Content {
-			get => content;
-			set => SetProperty(ref content, value);
-		}
-
-		public ViewState? GetState()
-		{
-			return (Content as IHaveState)?.GetState();
-		}
-	}
-
-	public static class TabPageModelExtensions
+	public static partial class TabPageModelExtensions
 	{
 		public static Task<T> ShowTextViewAsync<T>(this TabPageModel tabPage, Func<DecompilerTextView, Task<T>> action)
 		{
@@ -127,22 +77,6 @@ namespace ICSharpCode.ILSpy.ViewModels
 			}
 		}
 
-		public static void Focus(this TabPageModel tabPage)
-		{
-			if (tabPage.Content is not Control content)
-				return;
-
-			var focusable = content
-				.GetSelfAndVisualDescendants()          // Avalonia.VisualTree.VisualExtensions
-				.OfType<IInputElement>()                // or OfType<Control>()
-				.FirstOrDefault(item =>
-					item.Focusable
-					&& item is Visual v
-					&& v.IsEffectivelyVisible);
-
-			focusable?.Focus();
-		}
-
 		public static DecompilationOptions CreateDecompilationOptions(this TabPageModel tabPage)
 		{
 			var exportProvider = tabPage.ExportProvider;
@@ -151,10 +85,5 @@ namespace ICSharpCode.ILSpy.ViewModels
 
 			return new(languageService.LanguageVersion, settingsService.DecompilerSettings, settingsService.DisplaySettings) { Progress = tabPage.Content as IProgress<DecompilationProgress> };
 		}
-	}
-
-	public interface IHaveState
-	{
-		ViewState? GetState();
 	}
 }

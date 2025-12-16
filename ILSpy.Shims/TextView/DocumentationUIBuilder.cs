@@ -47,7 +47,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
             this.displaySettings = displaySettings;
             this.mainWindow = mainWindow;
 
-            blockContainer = new StackPanel();// { Orientation = Orientation.Vertical };
+            blockContainer = new StackPanel() { Orientation = Orientation.Vertical };
             scrollViewer = new ScrollViewer { Content = blockContainer };
 
             this.ShowSummary = true;
