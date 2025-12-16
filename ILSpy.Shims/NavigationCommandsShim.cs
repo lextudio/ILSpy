@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace System.Windows.Input
 {
@@ -77,11 +78,15 @@ namespace System.Windows.Input
         public static readonly RoutedCommand BrowseForward = new RoutedCommand();
 
         public static readonly RoutedCommand Refresh = new RoutedCommand();
+        public static readonly RoutedCommand Search = new RoutedCommand();
     }
 
     // Very small RoutedCommand implementation for shimming purposes
     public class RoutedCommand : Avalonia.Labs.Input.RoutedCommand
     {
+        // Expose an InputGestures collection to match WPF's RoutedCommand API
+        public IList<KeyGesture> InputGestures { get; } = new List<KeyGesture>();
+
         public RoutedCommand() : base(string.Empty, (KeyGesture)null) { }
         public RoutedCommand(string name) : base(name, (KeyGesture)null) { }
     }
@@ -91,8 +96,11 @@ namespace System.Windows.Input
     {
         public string Text { get; set; }
 
+        // WPF provides InputGestures on RoutedUICommand as well
+        public IList<KeyGesture> InputGestures { get; } = new List<KeyGesture>();
+
         public RoutedUICommand() : base(string.Empty, (KeyGesture)null) { }
-        public RoutedUICommand(string text, string name, Type ownerType) : base(name, (KeyGesture)null) 
+        public RoutedUICommand(string text, string name, Type ownerType) : base(name, (KeyGesture)null)
         {
             Text = text;
         }

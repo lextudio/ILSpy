@@ -401,6 +401,10 @@
       <Link>Metadata\Heaps\StringHeapTreeNode.cs</Link>
     </Compile>
 
+    <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Search\ShowSearchCommand.cs">
+      <Link>Search\ShowSearchCommand.cs</Link>
+    </Compile>
+
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Metadata\Heaps\UserStringHeapTreeNode.cs">
       <Link>Metadata\Heaps\UserStringHeapTreeNode.cs</Link>
     </Compile>
