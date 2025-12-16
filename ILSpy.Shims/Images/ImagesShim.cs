@@ -39,12 +39,34 @@ namespace ICSharpCode.ILSpy
 
 		internal static ImageSource GetIcon(object @event, object value, bool isStatic)
 		{
-            // TODO: Implement dynamic icon selection
-			return null;
+			// Simplified mapping: return class/interface/enum icons based on value or event when available
+			try
+			{
+				if (value is ICSharpCode.Decompiler.TypeSystem.IType t)
+				{
+					var kind = t.Kind;
+					switch (kind)
+					{
+						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Interface:
+							return Interface as ImageSource;
+						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Enum:
+							return Class as ImageSource; // fallback
+						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Struct:
+							return Class as ImageSource;
+						case ICSharpCode.Decompiler.TypeSystem.TypeKind.Delegate:
+							return Class as ImageSource;
+						default:
+							return Class as ImageSource;
+					}
+				}
+			}
+			catch { }
+			return Class as ImageSource;
 		}
 
 		internal static object GetOverlayIcon(Accessibility accessibility)
 		{
+			// Return null for now (overlays not implemented in this shim)
 			return null;
 		}
 
