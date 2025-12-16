@@ -38,6 +38,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
             this.LoadedAssembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
             this.LazyLoading = true;
             this.PackageEntry = packageEntry;
+            this.Children.Add(new DummyTreeNode());
             Init();
         }
 
@@ -151,6 +152,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
         protected override void LoadChildren()
         {
+            this.Children.Clear();
             LoadResult loadResult;
             try
             {
@@ -188,14 +190,13 @@ namespace ICSharpCode.ILSpy.TreeNodes
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"LoadChildren failed: {ex}");
                 // TODO: App.UnhandledException(ex);
             }
         }
 
         void LoadChildrenForExecutableFile(MetadataFile module)
         {
-            typeSystem = LoadedAssembly.GetTypeSystemOrNull();
-            var assembly = (MetadataModule)typeSystem.MainModule;
             this.Children.Add(new MetadataTreeNode(module, Properties.Resources.Metadata));
             Decompiler.DebugInfo.IDebugInfoProvider debugInfo = LoadedAssembly.GetDebugInfoOrNull();
             if (debugInfo is PortableDebugInfoProvider ppdb
@@ -206,12 +207,17 @@ namespace ICSharpCode.ILSpy.TreeNodes
             this.Children.Add(new ReferenceFolderTreeNode(module, this));
             if (module.Resources.Any())
                 this.Children.Add(new ResourceListTreeNode(module));
+            
+            typeSystem = LoadedAssembly.GetTypeSystemOrNull();
+            if (typeSystem == null) return;
+            var assembly = (MetadataModule)typeSystem.MainModule;
+
             foreach (NamespaceTreeNode ns in namespaces.Values)
             {
                 ns.Children.Clear();
             }
             namespaces.Clear();
-            bool useNestedStructure = SettingsService.DisplaySettings.UseNestedNamespaceNodes;
+            bool useNestedStructure = SettingsService?.DisplaySettings.UseNestedNamespaceNodes ?? false;
             foreach (var type in assembly.TopLevelTypeDefinitions.OrderBy(t => t.ReflectionName, NaturalStringComparer.Instance))
             {
                 var ns = GetOrCreateNamespaceTreeNode(type.Namespace);
