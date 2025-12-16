@@ -42,9 +42,21 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
 		public override object Text => Resources._Resources;
 
-		public override object Icon => Images.FolderClosed;
+		public override object Icon => IsExpanded ? Images.FolderOpen : Images.FolderClosed;
 
 		public override object ExpandedIcon => Images.FolderOpen;
+
+		protected override void OnExpanding()
+		{
+			base.OnExpanding();
+			RaisePropertyChanged(nameof(Icon));
+		}
+
+		protected override void OnCollapsing()
+		{
+			base.OnCollapsing();
+			RaisePropertyChanged(nameof(Icon));
+		}
 
 		protected override void LoadChildren()
 		{

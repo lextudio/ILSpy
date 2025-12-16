@@ -7,7 +7,7 @@ global using ICSharpCode.ILSpy.Docking;
 global using Avalonia.Labs.Input;
 global using Avalonia.Controls;
 global using Avalonia.Data;
-global using ImageSource = Avalonia.Media.IImage;
+global using ImageSource = System.Object;
 global using IHighlightingDefinition = AvaloniaEdit.Highlighting.IHighlightingDefinition;
 global using HighlightingColor = AvaloniaEdit.Highlighting.HighlightingColor;
 global using HighlightingManager = AvaloniaEdit.Highlighting.HighlightingManager;

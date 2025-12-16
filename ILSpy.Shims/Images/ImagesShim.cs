@@ -9,35 +9,51 @@ namespace ICSharpCode.ILSpy
 {
     internal static class Images
     {
-        private static IImage Load(string path)
+        private static string GetUri(string path) => $"avares://ProjectRover/Assets/{path}";
+
+        public static object OK => GetUri("StatusOKOutline.svg");
+        
+        public static object Load(object owner, string path)
         {
-            try
+             if (string.IsNullOrEmpty(path)) return null;
+             if (path == "Images/Warning") return GetUri("StatusWarningOutline.svg");
+             if (path.EndsWith(".svg")) return GetUri(path);
+             return path;
+        }
+
+        public static string? ResolveIcon(object? icon)
+        {
+            if (icon is string s)
             {
-                var uri = new Uri($"avares://ProjectRover/Assets/{path}");
-                if (AssetLoader.Exists(uri))
+                if (s.StartsWith("avares://") || s.StartsWith("/")) return s;
+                if (App.Current.TryGetResource(s, App.Current.ActualThemeVariant, out var res) && res is string p)
                 {
-                    var source = SvgSource.Load(uri.ToString(), uri);
-                    return new SvgImage { Source = source };
+                    return p;
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to load image {path}: {ex}");
             }
             return null;
         }
 
-        public static IImage OK => Load("StatusOKOutline.svg");
-        
-        public static IImage Load(object owner, string path)
+        public static IImage? LoadImage(object? icon)
         {
-             if (string.IsNullOrEmpty(path)) return null;
-             if (path == "Images/Warning") return Load("StatusWarningOutline.svg");
-             if (path.EndsWith(".svg")) return Load(path);
-             return null;
+            string? path = ResolveIcon(icon);
+            if (path == null) return null;
+            
+            if (path.EndsWith(".svg"))
+            {
+                try
+                {
+                    return new SvgImage { Source = SvgSource.Load(path) };
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
-		internal static ImageSource GetIcon(object icon, object overlay, bool isStatic)
+		internal static object GetIcon(object icon, object overlay, bool isStatic)
 		{
 			string name = null;
 			string access = "Public";
@@ -61,7 +77,7 @@ namespace ICSharpCode.ILSpy
 				switch (typeIcon)
 				{
 					case TypeIcon.Class: name = "Class"; break;
-					case TypeIcon.Struct: name = "Structure"; break;
+					case TypeIcon.Struct: name = "Struct"; break;
 					case TypeIcon.Interface: name = "Interface"; break;
 					case TypeIcon.Delegate: name = "Delegate"; break;
 					case TypeIcon.Enum: name = "Enum"; break;
@@ -78,8 +94,8 @@ namespace ICSharpCode.ILSpy
 					case MemberIcon.Property: name = "Property"; break;
 					case MemberIcon.Method: name = "Method"; break;
 					case MemberIcon.Event: name = "Event"; break;
-					case MemberIcon.EnumValue: name = "EnumerationItem"; break;
-					case MemberIcon.Constructor: name = "Method"; break;
+					case MemberIcon.EnumValue: name = "Enum"; break;
+					case MemberIcon.Constructor: name = "Constructor"; break;
 					case MemberIcon.VirtualMethod: name = "Method"; break;
 					case MemberIcon.Operator: name = "Method"; break;
 					case MemberIcon.ExtensionMethod: name = "Method"; break;
@@ -91,15 +107,32 @@ namespace ICSharpCode.ILSpy
 
 			if (name != null)
 			{
-				var image = Load($"{name}{access}.svg");
-				if (image != null) return image as ImageSource;
-				
-				// Fallback to Public
-				image = Load($"{name}Public.svg");
-				if (image != null) return image as ImageSource;
+                // Construct key like "ClassPublicIcon" or "MethodIconPublic"
+                // App.axaml keys are like "ClassIcon", "ClassInternalIcon" or "MethodIconPublic"
+                // Let's try to match the pattern in App.axaml
+                
+                // Pattern 1: {Name}Icon{Access} (e.g. PropertyIconPublic)
+                // Pattern 2: {Name}{Access}Icon (e.g. ClassInternalIcon)
+                
+                // Let's check App.axaml again.
+                // ClassIcon (Public), ClassInternalIcon, ClassProtectedIcon...
+                // PropertyIconPublic, PropertyIconProtected...
+                // MethodIconPublic...
+                // FieldIconPublic...
+                // EventIconPublic...
+                
+                if (name == "Class" || name == "Struct" || name == "Interface" || name == "Enum" || name == "Delegate")
+                {
+                    if (access == "Public") return $"{name}Icon";
+                    return $"{name}{access}Icon";
+                }
+                else
+                {
+                    return $"{name}Icon{access}";
+                }
 			}
 
-			return Class as ImageSource;
+			return "ClassIcon";
 		}
 
 		internal static object GetOverlayIcon(Accessibility accessibility)
@@ -108,46 +141,46 @@ namespace ICSharpCode.ILSpy
 			return null;
 		}
 
-		public static IImage SubTypes => Load("SubTypes.svg");
+		public static object SubTypes => "SubTypesIcon"; // Missing in App.axaml?
 
-		public static IImage ListFolder => Load("FolderClosed.svg");
-		public static IImage ListFolderOpen => Load("FolderOpened.svg");
+		public static object ListFolder => "ResourcesIconClosed";
+		public static object ListFolderOpen => "ResourcesIconOpen";
 
-		public static IImage Header => Load("Header.svg");
-		public static IImage MetadataTableGroup => Load("Tables.svg");
-		public static IImage Library => Load("Assembly.svg");
-		public static IImage Namespace => Load("Namespace.svg");
-		public static IImage FolderClosed => Load("FolderClosed.svg");
-		public static IImage FolderOpen => Load("FolderOpened.svg");
-		public static IImage MetadataTable => Load("DataTable.svg");
-		public static IImage ExportedType => Load("ClassPublic.svg");
-		public static IImage TypeReference => Load("ClassPublic.svg");
-		public static IImage MethodReference => Load("MethodPublic.svg");
-		public static IImage FieldReference => Load("FieldPublic.svg");
-		public static IImage Interface => Load("InterfacePublic.svg");
-		public static IImage Class => Load("ClassPublic.svg");
-		public static IImage Field => Load("FieldPublic.svg");
-		public static IImage Method => Load("MethodPublic.svg");
-		public static IImage Property => Load("PropertyPublic.svg");
-		public static IImage Event => Load("EventPublic.svg");
-		public static IImage Literal => Load("ConstantPublic.svg");
-		public static IImage Save => Load("Save.svg");
-		public static IImage Assembly => Load("Assembly.svg");
-		public static IImage ViewCode => Load("ViewCode.svg");
-		public static IImage AssemblyWarning => Load("ReferenceWarning.svg");
-		public static IImage MetadataFile => Load("Metadata.svg");
-		public static IImage FindAssembly => Load("Open.svg");
-		public static IImage SuperTypes => Load("SuperTypes.svg");
-		public static IImage ReferenceFolder => Load("ReferenceGroup.svg");
-		public static IImage ResourceImage => Load("Resource.svg");
-		public static IImage Resource => Load("Resources.svg");
-		public static IImage ResourceResourcesFile => Load("ResourceFile.svg");
-		public static IImage ResourceXml => Load("ResourceFile.svg");
-		public static IImage ResourceXsd => Load("ResourceFile.svg");
-		public static IImage ResourceXslt => Load("ResourceFile.svg");
-		public static IImage Heap => Load("Heap.svg");
-		public static IImage Metadata => Load("Metadata.svg");
+		public static object Header => "HeaderIcon";
+		public static object MetadataTableGroup => "TablesIcon";
+		public static object Library => "AssemblyIcon";
+		public static object Namespace => "NamespaceIcon";
+		public static object FolderClosed => "ResourcesIconClosed";
+		public static object FolderOpen => "ResourcesIconOpen";
+		public static object MetadataTable => "DataTableIcon";
+		public static object ExportedType => "ClassIcon";
+		public static object TypeReference => "ClassIcon";
+		public static object MethodReference => "MethodIcon";
+		public static object FieldReference => "FieldIcon";
+		public static object Interface => "InterfaceIcon";
+		public static object Class => "ClassIcon";
+		public static object Field => "FieldIcon";
+		public static object Method => "MethodIcon";
+		public static object Property => "PropertyIcon";
+		public static object Event => "EventIcon";
+		public static object Literal => "ConstantIcon";
+		public static object Save => "SaveIcon"; // Missing?
+		public static object Assembly => "AssemblyIcon";
+		public static object ViewCode => "ViewCodeIcon"; // Missing?
+		public static object AssemblyWarning => "ReferenceWarningIcon";
+		public static object MetadataFile => "MetadataIcon";
+		public static object FindAssembly => "OpenIcon";
+		public static object SuperTypes => "SuperTypesIcon"; // Missing?
+		public static object ReferenceFolder => "ReferenceGroupIcon";
+		public static object ResourceImage => "ResourceIcon"; // Missing?
+		public static object Resource => "ResourcesIcon";
+		public static object ResourceResourcesFile => "ResourceFileIcon";
+		public static object ResourceXml => "ResourceFileIcon";
+		public static object ResourceXsd => "ResourceFileIcon";
+		public static object ResourceXslt => "ResourceFileIcon";
+		public static object Heap => "HeapIcon";
+		public static object Metadata => "MetadataIcon";
 
-		public static IImage Search => Load("Search.svg");
+		public static object Search => "SearchIcon";
 	}
 }

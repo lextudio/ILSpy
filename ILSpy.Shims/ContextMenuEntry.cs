@@ -344,7 +344,7 @@ namespace ICSharpCode.ILSpy
 								menuItem.Icon = new Image {
 									Width = 16,
 									Height = 16,
-									Source = Images.Load(entryPair.Value, entryPair.Metadata.Icon)
+									Source = Images.LoadImage(Images.Load(entryPair.Value, entryPair.Metadata.Icon))
 								};
 							}
 							if (entryPair.Value.IsEnabled(context))

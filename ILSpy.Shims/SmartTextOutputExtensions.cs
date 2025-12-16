@@ -17,33 +17,49 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
 using ICSharpCode.ILSpy.Themes;
 
 namespace ICSharpCode.ILSpy
 {
-	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
-	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	public static class SmartTextOutputExtensions
 	{
 		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
+		/// Creates a button.
 		/// </summary>
-		void AddUIElement(Func<UIElement> element);
+		public static void AddButton(this ISmartTextOutput output, object icon, string text, EventHandler<RoutedEventArgs> click)
+		{
+			output.AddUIElement(
+				delegate {
+					Button button = ThemeManager.Current.CreateButton();
+					button.Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Arrow);
+					button.Margin = new Thickness(2);
+					button.Padding = new Thickness(9, 1, 9, 1);
+					button.MinWidth = 73;
+                    
+                    var image = Images.LoadImage(icon);
 
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
-
-		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
-		/// </summary>
-		string Title { get; set; }
+					if (image != null)
+					{
+						button.Content = new StackPanel {
+							Orientation = Orientation.Horizontal,
+							Children = {
+								new Image { Width = 16, Height = 16, Source = image, Margin = new Thickness(0, 0, 4, 0) },
+								new TextBlock { Text = text, VerticalAlignment = VerticalAlignment.Center }
+							}
+						};
+					}
+					else
+					{
+						button.Content = text;
+					}
+					button.Click += click;
+					return button;
+				});
+		}
 	}
 }

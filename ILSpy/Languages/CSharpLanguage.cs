@@ -57,7 +57,7 @@ namespace ICSharpCode.ILSpy
 	/// </summary>
 	[Export(typeof(Language))]
 	[Shared]
-	public class CSharpLanguage : Language
+	public partial class CSharpLanguage : Language
 	{
 		string name = "C#";
 		bool showAllMembers = false;
@@ -760,46 +760,7 @@ namespace ICSharpCode.ILSpy
 
 		public override IBracketSearcher BracketSearcher => bracketSearcher;
 
-
-        void AddWarningMessage(MetadataFile module, ITextOutput output, string line1, string line2 = null,
-        string buttonText = null, ImageSource buttonImage = null, RoutedEventHandler buttonClickHandler = null)
-        {
-            if (output is ISmartTextOutput fancyOutput)
-            {
-                string text = line1;
-                if (!string.IsNullOrEmpty(line2))
-                    text += Environment.NewLine + line2;
-                fancyOutput.AddUIElement(() => new StackPanel {
-                    Margin = new Thickness(5),
-                    Orientation = Orientation.Horizontal,
-                    Children = {
-                        new Image {
-                            Width = 32,
-                            Height = 32,
-                            Source = Images.Load(this, "Images/Warning")
-                        },
-                        new TextBlock {
-                            Margin = new Thickness(5, 0, 0, 0),
-                            Text = text
-                        }
-                    }
-                });
-                fancyOutput.WriteLine();
-                if (buttonText != null && buttonClickHandler != null)
-                {
-                    fancyOutput.AddButton(buttonImage, buttonText, buttonClickHandler);
-                    fancyOutput.WriteLine();
-                }
-            }
-            else
-            {
-                WriteCommentLine(output, line1);
-                if (!string.IsNullOrEmpty(line2))
-                    WriteCommentLine(output, line2);
-            }
-        }
-
-        void AddReferenceWarningMessage(MetadataFile module, ITextOutput output)
+		void AddReferenceWarningMessage(MetadataFile module, ITextOutput output)
 		{
 			var loadedAssembly = AssemblyTreeModel.AssemblyList.GetAssemblies().FirstOrDefault(la => la.GetMetadataFileOrNull() == module);
 			if (loadedAssembly == null || !loadedAssembly.LoadedAssemblyReferencesInfo.HasErrors)
@@ -813,7 +774,7 @@ namespace ICSharpCode.ILSpy
 			});
 		}
 
-        public override RichText GetRichTextTooltip(IEntity entity)
+		public override RichText GetRichTextTooltip(IEntity entity)
 		{
 			var flags = ConversionFlags.All & ~(ConversionFlags.ShowBody | ConversionFlags.PlaceReturnTypeAfterParameterList);
 			var output = new StringWriter();
