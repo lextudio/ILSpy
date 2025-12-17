@@ -119,7 +119,7 @@ public partial class SearchPane : UserControl
             return;
 
         listBox.SelectedItem = result;
-        MessageBus.Send(this, new NavigateToReferenceEventArgs(result.Reference));
+        MessageBus.Send(this, new NavigateToReferenceEventArgs(result.Reference)); // TODO: known issue is that first click might not land on the right node as the list is expanding.
         Console.WriteLine("send selection changed message from SearchPane");
         e.Handled = true;
     }

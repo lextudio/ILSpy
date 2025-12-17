@@ -8,6 +8,7 @@ using Dock.Avalonia.Controls;
 using Dock.Model.Avalonia;
 using Dock.Model.Avalonia.Controls;
 using Dock.Model.Core;
+using Dock.Model.Core.Events;
 using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpy.Search;
 
@@ -18,6 +19,8 @@ namespace ICSharpCode.ILSpy.Docking
   /// </summary>
   public partial class DockWorkspace
   {
+    private IFactory? currentFactory;
+
     public void InitializeLayout()
     {
       try
@@ -120,6 +123,8 @@ namespace ICSharpCode.ILSpy.Docking
 
     private void HookUpToolListeners(DockControl dockHost)
     {
+        HookUpFactoryListeners(dockHost.Factory);
+
         foreach (var toolModel in this.ToolPanes)
         {
             // Note: We are not unsubscribing here because we don't have the previous handler instance.
@@ -137,6 +142,36 @@ namespace ICSharpCode.ILSpy.Docking
                     }
                 }
             };
+        }
+    }
+
+    private void HookUpFactoryListeners(IFactory? factory)
+    {
+        if (ReferenceEquals(currentFactory, factory))
+            return;
+
+        if (currentFactory != null)
+        {
+            currentFactory.DockableClosed -= OnDockableClosed;
+        }
+
+        currentFactory = factory;
+
+        if (currentFactory != null)
+        {
+            currentFactory.DockableClosed += OnDockableClosed;
+        }
+    }
+
+    private void OnDockableClosed(object? sender, DockableClosedEventArgs e)
+    {
+        var pane = e?.Dockable?.Id is { } dockableId
+            ? this.ToolPanes.FirstOrDefault(p => p.ContentId == dockableId)
+            : null;
+
+        if (pane != null)
+        {
+            pane.IsVisible = false;
         }
     }
 
@@ -191,11 +226,15 @@ namespace ICSharpCode.ILSpy.Docking
                         {
                              if (_registeredDockables.TryGetValue("SearchDock", out var searchDock) && searchDock is Dock.Model.Controls.IToolDock sd)
                              {
+                                 sd.Owner = rightDock;
+                                 sd.Factory = factory;
                                  rightDock.VisibleDockables.Insert(0, sd);
                                  targetDock = sd;
 
                                  if (_registeredDockables.TryGetValue("SearchSplitter", out var splitter))
                                  {
+                                     splitter.Owner = rightDock;
+                                     splitter.Factory = factory;
                                      rightDock.VisibleDockables.Insert(1, splitter);
                                  }
                              }

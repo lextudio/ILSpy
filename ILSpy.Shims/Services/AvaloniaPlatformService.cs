@@ -13,7 +13,7 @@ namespace ProjectRover.Services
 {
     public class AvaloniaPlatformService : IPlatformService
     {
-        public ICSharpCode.ILSpy.Docking.DockWorkspace? DockWorkspace { get; private set; }
+        public DockWorkspace? DockWorkspace { get; private set; }
 
         public AvaloniaPlatformService()
         {

@@ -131,7 +131,8 @@ namespace ICSharpCode.ILSpy
                 Title = "Search",
                 Alignment = Alignment.Top,
                 VisibleDockables = new ObservableCollection<IDockable>(),
-                ActiveDockable = null
+                ActiveDockable = null,
+                CanCloseLastDockable = true
             };
             searchDock.Proportion = 0.25;
 
