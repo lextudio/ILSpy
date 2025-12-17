@@ -16,30 +16,23 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Windows;
+using System.Windows.Input;
 
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
+using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
 	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
+	/// VisualLineElement that represents a piece of text and is a clickable link.
 	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	partial class VisualLineReferenceText
 	{
-		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
-		/// </summary>
-		void AddUIElement(Func<UIElement> element);
-
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
-
-		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
-		/// </summary>
-		string Title { get; set; }
+		/// <inheritdoc/>
+		protected override void OnQueryCursor(QueryCursorEventArgs e)
+		{
+			// IMPORTANT: not ported to AvaloniaEdit
+			e.Handled = true;
+			e.Cursor = referenceSegment.IsLocal ? Cursors.Arrow : Cursors.Hand;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2019 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,30 +16,29 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
+using System.Linq;
 using System.Windows;
 
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
+using TomsToolbox.Wpf;
 
-namespace ICSharpCode.ILSpy
+#nullable enable
+
+
+namespace ICSharpCode.ILSpy.ViewModels
 {
-	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
-	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	public static partial class TabPageModelExtensions
 	{
-		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
-		/// </summary>
-		void AddUIElement(Func<UIElement> element);
+		public static void Focus(this TabPageModel tabPage)
+		{
+			if (tabPage.Content is not FrameworkElement content)
+				return;
 
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
+			var focusable = content
+				.VisualDescendantsAndSelf()
+				.OfType<FrameworkElement>()
+				.FirstOrDefault(item => item.Focusable);
 
-		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
-		/// </summary>
-		string Title { get; set; }
+			focusable?.Focus();
+		}
 	}
 }

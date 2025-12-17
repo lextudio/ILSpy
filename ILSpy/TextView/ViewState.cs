@@ -16,30 +16,41 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#nullable enable
+
 using System;
-using System.Windows;
+using System.Collections.Generic;
+using System.Diagnostics;
 
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
+using ICSharpCode.ILSpy.TreeNodes;
 
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
-	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
-	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+	public class ViewState : IEquatable<ViewState>
 	{
-		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
-		/// </summary>
-		void AddUIElement(Func<UIElement> element);
+		public HashSet<ILSpyTreeNode>? DecompiledNodes;
+		public Uri? ViewedUri;
 
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
+		public virtual bool Equals(ViewState? other)
+		{
+			return other != null
+				&& ViewedUri == other.ViewedUri
+				&& NullSafeSetEquals(DecompiledNodes, other.DecompiledNodes);
 
-		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
-		/// </summary>
-		string Title { get; set; }
+			static bool NullSafeSetEquals(HashSet<ILSpyTreeNode>? a, HashSet<ILSpyTreeNode>? b)
+			{
+				if (a == b)
+					return true;
+				if (a == null || b == null)
+					return false;
+				return a.SetEquals(b);
+			}
+		}
+
+		protected virtual string GetDebuggerDisplay()
+		{
+			return $"Nodes = {DecompiledNodes?.Count.ToString() ?? "<null>"}, ViewedUri = {ViewedUri?.ToString() ?? "<null>"}";
+		}
 	}
 }

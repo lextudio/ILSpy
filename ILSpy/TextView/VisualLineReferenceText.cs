@@ -16,30 +16,35 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Windows;
+using System.Windows.Input;
 
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
+using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
 	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
+	/// VisualLineElement that represents a piece of text and is a clickable link.
 	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	sealed partial class VisualLineReferenceText : VisualLineText
 	{
-		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
-		/// </summary>
-		void AddUIElement(Func<UIElement> element);
-
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
+		readonly ReferenceElementGenerator parent;
+		readonly ReferenceSegment referenceSegment;
 
 		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
+		/// Creates a visual line text element with the specified length.
+		/// It uses the <see cref="ITextRunConstructionContext.VisualLine"/> and its
+		/// <see cref="VisualLineElement.RelativeTextOffset"/> to find the actual text string.
 		/// </summary>
-		string Title { get; set; }
+		public VisualLineReferenceText(VisualLine parentVisualLine, int length, ReferenceElementGenerator parent, ReferenceSegment referenceSegment) : base(parentVisualLine, length)
+		{
+			this.parent = parent;
+			this.referenceSegment = referenceSegment;
+		}
+
+		/// <inheritdoc/>
+		protected override VisualLineText CreateInstance(int length)
+		{
+			return new VisualLineReferenceText(ParentVisualLine, length, parent, referenceSegment);
+		}
 	}
 }

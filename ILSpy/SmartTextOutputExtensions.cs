@@ -16,30 +16,46 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
+using ICSharpCode.ILSpy.Themes;
 
 namespace ICSharpCode.ILSpy
 {
-	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
-	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	public static class SmartTextOutputExtensions
 	{
 		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
+		/// Creates a button.
 		/// </summary>
-		void AddUIElement(Func<UIElement> element);
-
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
-
-		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
-		/// </summary>
-		string Title { get; set; }
+		public static void AddButton(this ISmartTextOutput output, ImageSource icon, string text, RoutedEventHandler click)
+		{
+			output.AddUIElement(
+				delegate {
+					Button button = ThemeManager.Current.CreateButton();
+					button.Cursor = Cursors.Arrow;
+					button.Margin = new Thickness(2);
+					button.Padding = new Thickness(9, 1, 9, 1);
+					button.MinWidth = 73;
+					if (icon != null)
+					{
+						button.Content = new StackPanel {
+							Orientation = Orientation.Horizontal,
+							Children = {
+								new Image { Width = 16, Height = 16, Source = icon, Margin = new Thickness(0, 0, 4, 0) },
+								new TextBlock { Text = text }
+							}
+						};
+					}
+					else
+					{
+						button.Content = text;
+					}
+					button.Click += click;
+					return button;
+				});
+		}
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,30 +16,28 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Windows;
-
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
-
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
 	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
+	/// Describes a pair of matching brackets found by <see cref="IBracketSearcher"/>.
 	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	public class BracketSearchResult
 	{
-		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
-		/// </summary>
-		void AddUIElement(Func<UIElement> element);
+		public int OpeningBracketOffset { get; private set; }
 
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
+		public int OpeningBracketLength { get; private set; }
 
-		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
-		/// </summary>
-		string Title { get; set; }
+		public int ClosingBracketOffset { get; private set; }
+
+		public int ClosingBracketLength { get; private set; }
+
+		public BracketSearchResult(int openingBracketOffset, int openingBracketLength,
+								   int closingBracketOffset, int closingBracketLength)
+		{
+			this.OpeningBracketOffset = openingBracketOffset;
+			this.OpeningBracketLength = openingBracketLength;
+			this.ClosingBracketOffset = closingBracketOffset;
+			this.ClosingBracketLength = closingBracketLength;
+		}
 	}
 }

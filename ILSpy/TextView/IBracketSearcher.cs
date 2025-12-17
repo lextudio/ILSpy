@@ -1,4 +1,4 @@
-// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,30 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Windows;
+using ICSharpCode.AvalonEdit.Document;
 
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.Decompiler;
-
-namespace ICSharpCode.ILSpy
+namespace ICSharpCode.ILSpy.TextView
 {
 	/// <summary>
-	/// Adds additional WPF-specific output features to <see cref="ITextOutput"/>.
+	/// Allows language specific search for matching brackets.
 	/// </summary>
-	public interface ISmartTextOutput : ITextOutput
+	public interface IBracketSearcher
 	{
 		/// <summary>
-		/// Inserts an interactive UI element at the current position in the text output.
+		/// Searches for a matching bracket from the given offset to the start of the document.
 		/// </summary>
-		void AddUIElement(Func<UIElement> element);
-
-		void BeginSpan(HighlightingColor highlightingColor);
-		void EndSpan();
-
-		/// <summary>
-		/// Gets/sets the title displayed in the document tab's header.
-		/// </summary>
-		string Title { get; set; }
+		/// <returns>A BracketSearchResult that contains the positions and lengths of the brackets. Return null if there is nothing to highlight.</returns>
+		BracketSearchResult SearchBracket(IDocument document, int offset);
 	}
 }
