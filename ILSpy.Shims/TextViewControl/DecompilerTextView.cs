@@ -75,6 +75,9 @@ using TomsToolbox.Wpf;
 
 using ResourceKeys = ICSharpCode.ILSpy.Themes.ResourceKeys;
 using Avalonia;
+using Avalonia.Media;
+using Avalonia.VisualTree;
+using System.Windows.Threading;
 
 namespace ICSharpCode.ILSpy.TextViewControl
 {
@@ -87,7 +90,6 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		readonly IExportProvider exportProvider;
 		readonly SettingsService settingsService;
 		readonly LanguageService languageService;
-		// readonly MainWindow mainWindow;
         MainWindow MainWindowInstance => exportProvider.GetExportedValue<MainWindow>();
 		readonly ReferenceElementGenerator referenceElementGenerator;
 		readonly UIElementGenerator uiElementGenerator;
@@ -120,7 +122,6 @@ namespace ICSharpCode.ILSpy.TextViewControl
 			this.exportProvider = exportProvider;
 			settingsService = exportProvider.GetExportedValue<SettingsService>();
 			languageService = exportProvider.GetExportedValue<LanguageService>();
-			// mainWindow = exportProvider.GetExportedValue<MainWindow>();
 
 			RegisterHighlighting();
 
@@ -142,16 +143,16 @@ namespace ICSharpCode.ILSpy.TextViewControl
 			this.bracketHighlightRenderer = new BracketHighlightRenderer(textEditor.TextArea.TextView);
 			textEditor.TextArea.TextView.ElementGenerators.Add(uiElementGenerator);
 			textEditor.Options.RequireControlModifierForHyperlinkClick = false;
-			// textEditor.TextArea.TextView.MouseHover += TextViewMouseHover;
-			// textEditor.TextArea.TextView.MouseHoverStopped += TextViewMouseHoverStopped;
-			// textEditor.TextArea.PreviewMouseDown += TextAreaMouseDown;
-			// textEditor.TextArea.PreviewMouseUp += TextAreaMouseUp;
+			textEditor.TextArea.TextView.PointerHover += TextViewMouseHover;
+			textEditor.TextArea.TextView.PointerHoverStopped += TextViewMouseHoverStopped;
+			// TODO: textEditor.TextArea.PreviewMouseDown += TextAreaMouseDown;
+			//textEditor.TextArea.PreviewMouseUp += TextAreaMouseUp;
 			textEditor.TextArea.Caret.PositionChanged += HighlightBrackets;
-			// textEditor.MouseMove += TextEditorMouseMove;
-			// textEditor.MouseLeave += TextEditorMouseLeave;
-			// textEditor.SetBinding(Control.FontFamilyProperty, new Binding { Source = settingsService.DisplaySettings, Path = new PropertyPath("SelectedFont") });
-			// textEditor.SetBinding(Control.FontSizeProperty, new Binding { Source = settingsService.DisplaySettings, Path = new PropertyPath("SelectedFontSize") });
-			// textEditor.SetBinding(TextEditor.WordWrapProperty, new Binding { Source = settingsService.DisplaySettings, Path = new PropertyPath("EnableWordWrap") });
+			textEditor.PointerMoved += TextEditorMouseMove;
+			textEditor.PointerExited += TextEditorMouseLeave;
+			textEditor.Bind(TextEditor.FontFamilyProperty, new Binding { Source = settingsService.DisplaySettings, Path = "SelectedFont" });
+			textEditor.Bind(TextEditor.FontSizeProperty, new Binding { Source = settingsService.DisplaySettings, Path = "SelectedFontSize" });
+			textEditor.Bind(TextEditor.WordWrapProperty, new Binding { Source = settingsService.DisplaySettings, Path = "EnableWordWrap" });
 
 			// disable Tab editing command (useless for read-only editor); allow using tab for focus navigation instead
 			RemoveEditCommand(EditingCommands.TabForward);
@@ -183,11 +184,11 @@ namespace ICSharpCode.ILSpy.TextViewControl
 			ShowLineMargin();
 			SetHighlightCurrentLine();
 
-			//ContextMenuProvider.Add(this);
+			ContextMenuProvider.Add(this);
 
-			//textEditor.TextArea.TextView.SetResourceReference(AvaloniaEdit.Rendering.TextView.LinkTextForegroundBrushProperty, ResourceKeys.LinkTextForegroundBrush);
-			//textEditor.TextArea.TextView.SetResourceReference(AvaloniaEdit.Rendering.TextView.CurrentLineBackgroundProperty, ResourceKeys.CurrentLineBackgroundBrush);
-			//textEditor.TextArea.TextView.SetResourceReference(AvaloniaEdit.Rendering.TextView.CurrentLineBorderProperty, ResourceKeys.CurrentLineBorderPen);
+			textEditor.TextArea.TextView.Bind(AvaloniaEdit.Rendering.TextView.LinkTextForegroundBrushProperty, this.GetResourceObservable(ResourceKeys.LinkTextForegroundBrush));
+			textEditor.TextArea.TextView.Bind(AvaloniaEdit.Rendering.TextView.CurrentLineBackgroundProperty, this.GetResourceObservable(ResourceKeys.CurrentLineBackgroundBrush));
+			textEditor.TextArea.TextView.Bind(AvaloniaEdit.Rendering.TextView.CurrentLineBorderProperty, this.GetResourceObservable(ResourceKeys.CurrentLineBorderPen));
 
 			//DataObject.AddSettingDataHandler(textEditor.TextArea, OnSettingData);
 
@@ -205,9 +206,9 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		void RemoveEditCommand(AvaloniaEdit.RoutedCommand command)
 		{
 			var handler = textEditor.TextArea.DefaultInputHandler.Editing;
-			//var inputBinding = handler.InputBindings.FirstOrDefault(b => b.Command == command);
-			//if (inputBinding != null)
-			//	handler.InputBindings.Remove(inputBinding);
+			// TODO: no input bindings? var inputBinding = handler.InputBindings.FirstOrDefault(b => b.Command == command);
+			// if (inputBinding != null)
+			// 	handler.InputBindings.Remove(inputBinding);
 			var commandBinding = handler.CommandBindings.FirstOrDefault(b => b.Command == command);
 			if (commandBinding != null)
 				handler.CommandBindings.Remove(commandBinding);
@@ -243,7 +244,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 			{
 				if (margin is LineNumberMargin || margin is Avalonia.Controls.Shapes.Line)
 				{
-					//margin.Visibility = settingsService.DisplaySettings.ShowLineNumbers ? Visibility.Visible : Visibility.Collapsed;
+					margin.IsVisible = settingsService.DisplaySettings.ShowLineNumbers;
 				}
 			}
 		}
@@ -284,11 +285,11 @@ namespace ICSharpCode.ILSpy.TextViewControl
 				{
 					var popupPosition = GetPopupPosition(e);
 					popupToolTip.Closed += ToolTipClosed;
-					// TODO: popupToolTip.Placement = PlacementMode.Relative;
+					popupToolTip.Placement = PlacementMode.Pointer; // PlacementMode.Relative;
 					popupToolTip.PlacementTarget = this;
 					popupToolTip.HorizontalOffset = popupPosition.X;
 					popupToolTip.VerticalOffset = popupPosition.Y;
-					// popupToolTip.StaysOpen = true;  // We will close it ourselves
+					// popupToolTip.StaysOpen = true;  // We will close it ourselves // TODO: need to migrate to Flyout or just Popup
 
 					e.Handled = true;
 					popupToolTip.IsOpen = true;
@@ -301,13 +302,13 @@ namespace ICSharpCode.ILSpy.TextViewControl
 						toolTip = new ToolTip();
 						//toolTip.Closed += ToolTipClosed;
 					}
-					//toolTip.PlacementTarget = this; // required for property inheritance
+					this.SetValue(ToolTip.TipProperty, toolTip); // required for property inheritance
 
 					if (content is string s)
 					{
 						toolTip.Content = new TextBlock {
 							Text = s,
-							//TextWrapping = TextWrapping.Wrap
+							TextWrapping = TextWrapping.Wrap
 						};
 					}
 					else
@@ -367,7 +368,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 
 		void TextEditorMouseMove(object sender, Avalonia.Input.PointerEventArgs e)
 		{
-			if (popupToolTip != null)// && PresentationSource.FromVisual(popupToolTip.Child) != null)
+			if (popupToolTip != null && popupToolTip.Child?.GetVisualRoot() != null)
 			{
 				double distanceToPopup = GetDistanceToPopup(e);
 				if (distanceToPopup > distanceToPopupLimit)
@@ -537,14 +538,14 @@ namespace ICSharpCode.ILSpy.TextViewControl
 				// Host the provided control inside a border
 				var border = new Border
 				{
-					//BorderThickness = new Thickness(1),
+					BorderThickness = new Thickness(1),
 					MaxHeight = 400,
 					Child = documentControl
 				};
 
 				this.Child = border;
 				// Subscribe to pointer leave on the child to detect mouse leaving the popup
-				//border.PointerLeave += OnPointerLeaveHandler;
+				border.PointerExited += OnPointerLeaveHandler;
 				// set sizes
 				documentControl.MaxWidth = maxWith;
 			}
@@ -585,23 +586,23 @@ namespace ICSharpCode.ILSpy.TextViewControl
 		public void Report(DecompilationProgress value)
 		{
 			double v = (double)value.UnitsCompleted / value.TotalUnits;
-			// Dispatcher.BeginInvoke(DispatcherPriority.Normal, delegate {
-			// 	progressBar.IsIndeterminate = !double.IsFinite(v);
-			// 	progressBar.Value = v * 100.0;
-			// 	progressTitle.Text = !string.IsNullOrWhiteSpace(value.Title) ? value.Title : Properties.Resources.Decompiling;
-			// 	progressText.Text = value.Status;
-			// 	progressText.Visibility = !string.IsNullOrWhiteSpace(progressText.Text) ? Visibility.Visible : Visibility.Collapsed;
-			// 	var taskBar = mainWindow.TaskbarItemInfo;
-			// 	if (taskBar != null)
-			// 	{
-			// 		taskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
-			// 		taskBar.ProgressValue = v;
-			// 	}
-			// 	if (this.DataContext is TabPageModel model)
-			// 	{
-			// 		model.Title = progressTitle.Text;
-			// 	}
-			// });
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal, delegate {
+				progressBar.IsIndeterminate = !double.IsFinite(v);
+				progressBar.Value = v * 100.0;
+				progressTitle.Text = !string.IsNullOrWhiteSpace(value.Title) ? value.Title : Properties.Resources.Decompiling;
+				progressText.Text = value.Status;
+				progressText.IsVisible = !string.IsNullOrWhiteSpace(progressText.Text);
+				// TODO: Windows only. var taskBar = mainWindow.TaskbarItemInfo;
+				// if (taskBar != null)
+				// {
+				// 	taskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
+				// 	taskBar.ProgressValue = v;
+				// }
+				if (this.DataContext is TabPageModel model)
+				{
+					model.Title = progressTitle.Text;
+				}
+			});
 		}
 
 		/// <summary>
@@ -660,11 +661,11 @@ namespace ICSharpCode.ILSpy.TextViewControl
 						progressBar.IsIndeterminate = false;
 						progressText.Text = null;
 						progressText.IsVisible = false;
-						//var taskBar = mainWindow.TaskbarItemInfo;
+						// TODO: windows only var taskBar = mainWindow.TaskbarItemInfo;
 						//if (taskBar != null)
-						{
+						//{
 							//taskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
-						}
+						//}
 						if (task.IsCanceled)
 						{
 							AvalonEditTextOutput output = new AvalonEditTextOutput();
@@ -683,7 +684,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 					myCancellationTokenSource.Dispose();
 				}
 			};
-			//task.ContinueWith(delegate { Dispatcher.BeginInvoke(DispatcherPriority.Normal, continuation); });
+			task.ContinueWith(delegate { Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal, continuation); });
 			return tcs.Task;
 		}
 
@@ -853,15 +854,15 @@ namespace ICSharpCode.ILSpy.TextViewControl
 			var task = this.nextDecompilationRun.TaskCompletionSource.Task;
 			if (!isDecompilationScheduled)
 			{
-				//  TODO: Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
-				// 	delegate {
-				// 		var context = this.nextDecompilationRun;
-				// 		this.nextDecompilationRun = null;
-				// 		if (context != null)
-				// 			DoDecompile(context, DefaultOutputLengthLimit)
-				// 				.ContinueWith(t => context.TaskCompletionSource.SetFromTask(t)).HandleExceptions();
-				// 	}
-				// ));
+				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
+					delegate {
+						var context = this.nextDecompilationRun;
+						this.nextDecompilationRun = null;
+						if (context != null)
+							DoDecompile(context, DefaultOutputLengthLimit)
+								.ContinueWith(t => context.TaskCompletionSource.SetFromTask(t)).HandleExceptions();
+					}
+				));
 			}
 			return task;
 		}
@@ -1110,18 +1111,18 @@ namespace ICSharpCode.ILSpy.TextViewControl
 			if (!treeNodes.Any())
 				return;
 
-			// TODO: SaveFileDialog dlg = new SaveFileDialog();
-			// dlg.DefaultExt = language.FileExtension;
-			// dlg.Filter = language.Name + "|*" + language.FileExtension + Properties.Resources.AllFiles;
-			// string? nodeText = treeNodes.First().Text?.ToString();
-			// if (!string.IsNullOrWhiteSpace(nodeText))
-			// {
-			// 	dlg.FileName = WholeProjectDecompiler.CleanUpFileName(nodeText, language.FileExtension);
-			// }
-			// if (dlg.ShowDialog() == true)
-			// {
-			// 	SaveToDisk(new DecompilationContext(language, treeNodes.ToArray(), options), dlg.FileName);
-			// }
+			SaveFileDialog dlg = new SaveFileDialog();
+			dlg.DefaultExt = language.FileExtension;
+			dlg.Filter = language.Name + "|*" + language.FileExtension + Properties.Resources.AllFiles;
+			string? nodeText = treeNodes.First().Text?.ToString();
+			if (!string.IsNullOrWhiteSpace(nodeText))
+			{
+				dlg.FileName = WholeProjectDecompiler.CleanUpFileName(nodeText, language.FileExtension);
+			}
+			if (dlg.ShowDialog() == true)
+			{
+				SaveToDisk(new DecompilationContext(language, treeNodes.ToArray(), options), dlg.FileName);
+			}
 		}
 
 		public void SaveToDisk(ILSpy.Language language, IEnumerable<ILSpyTreeNode> treeNodes, DecompilationOptions options, string fileName)
@@ -1217,7 +1218,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 							}
 						}
 						output.WriteLine();
-						// TODO: output.AddButton(null, Properties.Resources.OpenExplorer, delegate { ShellHelper.OpenFolderAndSelectItem(fileName); });
+						output.AddButton(null, Properties.Resources.OpenExplorer, delegate { ShellHelper.OpenFolderAndSelectItem(fileName); });
 						output.WriteLine();
 						tcs.SetResult(output);
 					}
@@ -1452,6 +1453,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 
 			if (resourceStream != null)
 			{
+				Console.WriteLine("Loading highlighting definition for " + name);
 				IHighlightingDefinition highlightingDefinition;
 
 				using (resourceStream)
@@ -1463,7 +1465,7 @@ namespace ICSharpCode.ILSpy.TextViewControl
 				manager.RegisterHighlighting(
 				name, extensions,
 				delegate {
-					// TODO: ThemeManager.Current.ApplyHighlightingColors(highlightingDefinition);
+					ThemeManager.Current.ApplyHighlightingColors(highlightingDefinition);
 					return highlightingDefinition;
 				});
 			}

@@ -9,13 +9,14 @@ namespace ICSharpCode.ILSpy.Themes
     public class ThemeManager
     {
         public static ThemeManager Current { get; } = new ThemeManager();
-		public bool IsDarkTheme { get; internal set; } // TODO:
+		public bool IsDarkTheme { get; internal set; } = false; // TODO:
 
         public string DefaultTheme => IsDarkTheme ? "Dark" : "Light"; // TODO:
 
 		internal static HighlightingColor GetColorForDarkTheme(HighlightingColor hc) // TODO:
 		{
-			throw new NotImplementedException();
+			// TODO:
+            return hc;
 		}
 
         public bool IsThemeAware(IHighlightingDefinition highlightingDefinition)
@@ -28,5 +29,10 @@ namespace ICSharpCode.ILSpy.Themes
         {
             return new Button();
         }
-    }
+
+		internal void ApplyHighlightingColors(IHighlightingDefinition highlightingDefinition)
+		{
+			// TODO:
+		}
+	}
 }

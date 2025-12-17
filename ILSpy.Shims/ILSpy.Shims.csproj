@@ -91,6 +91,22 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Link XSHD syntax definition files from ILSpy TextViewControl -->
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\Asm-Mode.xshd">
+      <Link>TextViewControl\Asm-Mode.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\CSharp-Mode.xshd">
+      <Link>TextViewControl\CSharp-Mode.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\ILAsm-Mode.xshd">
+      <Link>TextViewControl\ILAsm-Mode.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)..\ILSpy\TextViewControl\XML-Mode.xshd">
+      <Link>TextViewControl\XML-Mode.xshd</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <ItemGroup>
 
     <Compile Include="$(MSBuildThisFileDirectory)..\ILSpy\Analyzers\AnalyzeCommand.cs">

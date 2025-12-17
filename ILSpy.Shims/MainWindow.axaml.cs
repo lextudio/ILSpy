@@ -9,7 +9,6 @@ using Dock.Model.Avalonia.Controls;
 using Dock.Model.Core;
 using ICSharpCode.ILSpy.Search;
 using ICSharpCode.ILSpy.Views;
-using ICSharpCode.ILSpy.TextViewControl;
 using System.Windows.Threading;
 
 namespace ICSharpCode.ILSpy
@@ -18,12 +17,9 @@ namespace ICSharpCode.ILSpy
     {
         private MainWindowViewModel? viewModel;
         private AssemblyListPane leftDockView = null!;
-        private DecompilerTextView centerDockView = null!;
         private SearchPane searchDockView = null!;
-        private Document? documentHost;
         private Factory dockFactory = null!;
         private ToolDock? searchDock;
-        private ProportionalDock? verticalLayout;
         private ProportionalDockSplitter? searchSplitter;
 
         public MainWindow()
@@ -31,6 +27,7 @@ namespace ICSharpCode.ILSpy
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
+            Console.WriteLine("[Log][MainWindow] DevTools attached.");
 #endif
 			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, () => {
 				viewModel.Workspace.InitializeLayout();
@@ -63,28 +60,17 @@ namespace ICSharpCode.ILSpy
             try {
                 Console.WriteLine($"[Log][MainWindow] Created AssemblyListPane with DataContext instance={viewModel.AssemblyTreeModel?.GetHashCode()}");
             } catch { }
-            centerDockView = new DecompilerTextView { DataContext = viewModel };
             searchDockView = new SearchPane { DataContext = viewModel.SearchPaneModel };
             try {
                 Console.WriteLine($"[Log][MainWindow] Created SearchPane with SearchPaneModel.DataContext AssemblyTreeModel instance={viewModel.AssemblyTreeModel?.GetHashCode()}");
             } catch { }
 
-            documentHost = new Document
-            {
-                Id = "DocumentPane",
-                Content = centerDockView,
-                Context = viewModel,
-                CanClose = false,
-                CanFloat = false,
-                CanPin = false
-            };
-
-            var documentDock = new DocumentDock
+            var workspace = viewModel.Workspace as ICSharpCode.ILSpy.Docking.DockWorkspace;
+            var documentDock = workspace?.CreateDocumentDock() ?? new DocumentDock
             {
                 Id = "DocumentDock",
                 Title = "DocumentDock",
-                VisibleDockables = new ObservableCollection<IDockable> { documentHost },
-                ActiveDockable = documentHost
+                VisibleDockables = new ObservableCollection<IDockable>()
             };
 
             var tool = new Tool
@@ -98,7 +84,7 @@ namespace ICSharpCode.ILSpy
                 CanPin = false
             };
 
-            (viewModel.Workspace as ICSharpCode.ILSpy.Docking.DockWorkspace)?.RegisterTool(tool);
+            workspace?.RegisterTool(tool);
 
             var toolDock = new ToolDock
             {
@@ -123,7 +109,7 @@ namespace ICSharpCode.ILSpy
                 CanPin = false
             };
 
-            (viewModel.Workspace as ICSharpCode.ILSpy.Docking.DockWorkspace)?.RegisterTool(searchTool);
+            workspace?.RegisterTool(searchTool);
 
             searchDock = new ToolDock
             {
@@ -182,6 +168,7 @@ namespace ICSharpCode.ILSpy
             {
                 dockHost.Factory = dockFactory;
                 dockHost.Layout = rootDock;
+                workspace?.AttachToDockHost(dockHost, dockFactory, documentDock);
             }
         }
     }

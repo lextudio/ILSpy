@@ -110,22 +110,6 @@ public partial class App : Application
                 System.Diagnostics.Debug.WriteLine("[Startup] Failed to start assembly diagnostics: " + ex);
             }
 
-            // Exercise docking workspace once at startup (diagnostic)
-            try
-            {
-                var dockWorkspace = Services.GetService<ICSharpCode.ILSpy.Docking.DockWorkspace>();
-                if (dockWorkspace != null)
-                {
-                    // Add a diagnostic tab and show some text
-                    var doc = dockWorkspace.AddTabPage(null);
-                    dockWorkspace.ShowText(null);//  TODO: "ProjectRover: diagnostic tab created at startup.");
-                }
-            }
-            catch
-            {
-                // swallow diagnostic errors
-            }
-
             // Runtime MEF diagnostics: try to resolve the exported IlSpy backend wrapper
             try
             {

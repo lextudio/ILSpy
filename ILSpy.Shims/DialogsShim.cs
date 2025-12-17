@@ -153,8 +153,9 @@ namespace Microsoft.Win32
         public string Filter { get; set; } = string.Empty;
         public string InitialDirectory { get; set; } = string.Empty;
         public string Title { get; set; }
+		public string DefaultExt { get; internal set; }
 
-        public bool? ShowDialog()
+		public bool? ShowDialog()
         {
             return DialogHelper.RunSync(ShowDialogAsync());
         }
@@ -178,7 +179,8 @@ namespace Microsoft.Win32
                 Title = Title,
                 SuggestedFileName = FileName,
                 FileTypeChoices = DialogHelper.ParseFilter(Filter),
-                SuggestedStartLocation = startLocation
+                SuggestedStartLocation = startLocation,
+                DefaultExtension = DefaultExt
             };
 
             Console.WriteLine("SaveFileDialog.ShowDialogAsync: Calling SaveFilePickerAsync");

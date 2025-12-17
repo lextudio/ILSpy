@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Avalonia.Controls;
@@ -9,8 +10,10 @@ using Dock.Model.Avalonia;
 using Dock.Model.Avalonia.Controls;
 using Dock.Model.Core;
 using Dock.Model.Core.Events;
+using ICSharpCode.ILSpy.TextViewControl;
 using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpy.Search;
+using Dock.Model.Controls;
 
 namespace ICSharpCode.ILSpy.Docking
 {
@@ -20,6 +23,10 @@ namespace ICSharpCode.ILSpy.Docking
   public partial class DockWorkspace
   {
     private IFactory? currentFactory;
+    private DockControl? dockHost;
+    private IDocumentDock? documentDock;
+    private IFactory? factory;
+    private readonly Dictionary<TabPageModel, Dock.Model.Avalonia.Controls.Document> documents = new();
 
     public void InitializeLayout()
     {
@@ -35,10 +42,12 @@ namespace ICSharpCode.ILSpy.Docking
         if (dockHost == null)
           return;
 
-        // If layout is already initialized (by MainWindow.ConfigureDockLayout), don't overwrite it
+        // If layout is already initialized (by MainWindow.ConfigureDockLayout), reuse it but hook listeners
         if (dockHost.Layout != null && dockHost.Factory != null)
         {
-          Console.WriteLine("DockWorkspace.InitializeLayout: Layout already initialized, skipping creation but hooking listeners");
+          Console.WriteLine("DockWorkspace.InitializeLayout: Layout already initialized, hooking listeners");
+          var docDock1 = FindDockById(dockHost.Layout, "DocumentDock") as IDocumentDock;
+          AttachToDockHost(dockHost, dockHost.Factory, docDock1);
           HookUpToolListeners(dockHost);
           return;
         }
@@ -46,15 +55,7 @@ namespace ICSharpCode.ILSpy.Docking
         // Fallback: create a basic layout structure if not already done
         Console.WriteLine("DockWorkspace.InitializeLayout: Creating layout structure");
         var factory = new Factory();
-
-        // Create document dock (for the main decompiler/editor area)
-        var documentDock = new DocumentDock
-        {
-          Id = "DocumentDock",
-          Title = "Documents",
-          VisibleDockables = new ObservableCollection<IDockable>(),
-          ActiveDockable = null
-        };
+        var docDock = CreateDocumentDock();
 
         // Create tool dock (for side panels like Search, etc.)
         var toolDock = new ToolDock
@@ -67,7 +68,7 @@ namespace ICSharpCode.ILSpy.Docking
         };
 
         toolDock.Proportion = 0.25;
-        documentDock.Proportion = 0.75;
+        docDock.Proportion = 0.75;
 
         // Create main horizontal layout
         var mainLayout = new ProportionalDock
@@ -77,11 +78,11 @@ namespace ICSharpCode.ILSpy.Docking
           Orientation = Dock.Model.Core.Orientation.Horizontal,
           VisibleDockables = new ObservableCollection<IDockable>
           {
-            documentDock,
+            docDock,
             new ProportionalDockSplitter { CanResize = true },
             toolDock
           },
-          ActiveDockable = documentDock
+          ActiveDockable = docDock
         };
 
         // Create root dock
@@ -111,6 +112,7 @@ namespace ICSharpCode.ILSpy.Docking
         dockHost.InitializeFactory = true;
         dockHost.InitializeLayout = true;
 
+        AttachToDockHost(dockHost, factory, docDock);
         HookUpToolListeners(dockHost);
 
         Console.WriteLine("DockWorkspace.InitializeLayout: Dock layout initialized successfully");
@@ -172,6 +174,17 @@ namespace ICSharpCode.ILSpy.Docking
         if (pane != null)
         {
             pane.IsVisible = false;
+            return;
+        }
+
+        // Closing documents should remove the corresponding tab page.
+        if (e?.Dockable is Dock.Model.Avalonia.Controls.Document doc)
+        {
+            var tab = documents.FirstOrDefault(kv => kv.Value == doc).Key;
+            if (tab != null)
+            {
+                tabPages.Remove(tab);
+            }
         }
     }
 
@@ -191,6 +204,265 @@ namespace ICSharpCode.ILSpy.Docking
         if (dockable.Id != null)
         {
             _registeredDockables[dockable.Id] = dockable;
+        }
+    }
+
+    /// <summary>
+    /// Build a document dock based on the current tab pages and track future changes.
+    /// </summary>
+    public DocumentDock CreateDocumentDock()
+    {
+        EnsureTabPage();
+
+        var docDock = new DocumentDock
+        {
+            Id = "DocumentDock",
+            Title = "Documents",
+            VisibleDockables = new ObservableCollection<IDockable>()
+        };
+
+        foreach (var tab in tabPages)
+        {
+            docDock.VisibleDockables.Add(CreateDocument(tab));
+        }
+
+        docDock.ActiveDockable = docDock.VisibleDockables.FirstOrDefault();
+        documentDock = docDock;
+        SyncActiveDocument();
+        HookTabPageCollection();
+
+        return docDock;
+    }
+
+    /// <summary>
+    /// Connects DockWorkspace to an existing DockControl layout (used by MainWindow).
+    /// </summary>
+    public void AttachToDockHost(DockControl host, IFactory factory, IDocumentDock? docDock)
+    {
+        dockHost = host;
+        this.factory = factory;
+        documentDock = docDock;
+
+        HookUpFactoryListeners(factory);
+        HookTabPageCollection();
+
+        if (documentDock != null)
+        {
+            HookDocumentDockListeners(documentDock);
+            if (documentDock.VisibleDockables == null || documentDock.VisibleDockables.Count == 0)
+            {
+                PopulateDocuments();
+            }
+            else
+            {
+                RebindExistingDocuments(documentDock);
+            }
+            SyncActiveDocument();
+        }
+    }
+
+    private void HookTabPageCollection()
+    {
+        tabPages.CollectionChanged -= TabPages_CollectionChangedForDock;
+        tabPages.CollectionChanged += TabPages_CollectionChangedForDock;
+
+        // Keep document titles/content synced
+        foreach (var tab in tabPages)
+        {
+            tab.PropertyChanged -= TabPage_PropertyChanged;
+            tab.PropertyChanged += TabPage_PropertyChanged;
+        }
+
+        this.PropertyChanged -= DockWorkspace_PropertyChanged;
+        this.PropertyChanged += DockWorkspace_PropertyChanged;
+    }
+
+    private void DockWorkspace_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ActiveTabPage))
+        {
+            SyncActiveDocument();
+        }
+    }
+
+    private void TabPages_CollectionChangedForDock(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (documentDock?.VisibleDockables == null)
+            return;
+
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+        {
+            int insertIndex = e.NewStartingIndex >= 0 ? e.NewStartingIndex : documentDock.VisibleDockables.Count;
+            foreach (TabPageModel tab in e.NewItems)
+            {
+                var doc = CreateDocument(tab);
+                documentDock.VisibleDockables.Insert(insertIndex++, doc);
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
+        {
+            foreach (TabPageModel tab in e.OldItems)
+            {
+                RemoveDocument(tab);
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Reset)
+        {
+            PopulateDocuments();
+        }
+
+        SyncActiveDocument();
+    }
+
+    private void PopulateDocuments()
+    {
+        if (documentDock?.VisibleDockables == null)
+            return;
+
+        foreach (var kvp in documents.Keys.ToList())
+        {
+            kvp.PropertyChanged -= TabPage_PropertyChanged;
+        }
+        documents.Clear();
+        documentDock.VisibleDockables.Clear();
+        EnsureTabPage();
+
+        foreach (var tab in tabPages)
+        {
+            documentDock.VisibleDockables.Add(CreateDocument(tab));
+        }
+    }
+
+    private Dock.Model.Avalonia.Controls.Document CreateDocument(TabPageModel tabPage)
+    {
+        // Ensure there is a visible text view and that it knows its tab page
+        if (tabPage.Content is not DecompilerTextView textView)
+        {
+            textView = new DecompilerTextView(tabPage.ExportProvider);
+            tabPage.Content = textView;
+        }
+        if (textView.DataContext == null)
+        {
+            textView.DataContext = tabPage;
+        }
+
+        var doc = new Dock.Model.Avalonia.Controls.Document
+        {
+            Id = tabPage.ContentId ?? $"Tab{documents.Count + 1}",
+            Title = tabPage.Title,
+            Content = tabPage.Content,
+            Context = tabPage,
+            CanClose = tabPage.IsCloseable,
+            CanFloat = false,
+            CanPin = false
+        };
+
+        documents[tabPage] = doc;
+        tabPage.PropertyChanged -= TabPage_PropertyChanged;
+        tabPage.PropertyChanged += TabPage_PropertyChanged;
+
+        return doc;
+    }
+
+    private void RemoveDocument(TabPageModel tabPage)
+    {
+        if (documents.TryGetValue(tabPage, out var doc))
+        {
+            tabPage.PropertyChanged -= TabPage_PropertyChanged;
+            documents.Remove(tabPage);
+            documentDock?.VisibleDockables?.Remove(doc);
+        }
+    }
+
+    private void RebindExistingDocuments(IDocumentDock docDock)
+    {
+        foreach (var kvp in documents.Keys.ToList())
+        {
+            kvp.PropertyChanged -= TabPage_PropertyChanged;
+        }
+        documents.Clear();
+
+        if (docDock.VisibleDockables == null)
+            return;
+
+        foreach (var dockable in docDock.VisibleDockables.OfType<Dock.Model.Avalonia.Controls.Document>())
+        {
+            if (dockable.Context is TabPageModel tab)
+            {
+                documents[tab] = dockable;
+                tab.PropertyChanged -= TabPage_PropertyChanged;
+                tab.PropertyChanged += TabPage_PropertyChanged;
+            }
+        }
+    }
+
+    private void TabPage_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not TabPageModel tab || !documents.TryGetValue(tab, out var doc))
+            return;
+
+        switch (e.PropertyName)
+        {
+            case nameof(TabPageModel.Title):
+                doc.Title = tab.Title;
+                break;
+            case nameof(TabPageModel.Content):
+                doc.Content = tab.Content;
+                if (doc.Content is DecompilerTextView dtv && dtv.DataContext == null)
+                    dtv.DataContext = tab;
+                break;
+            case nameof(TabPageModel.IsCloseable):
+                doc.CanClose = tab.IsCloseable;
+                break;
+        }
+    }
+
+    private void HookDocumentDockListeners(IDocumentDock docDock)
+    {
+        if (docDock is INotifyPropertyChanged inpc)
+        {
+            inpc.PropertyChanged -= DocumentDock_PropertyChanged;
+            inpc.PropertyChanged += DocumentDock_PropertyChanged;
+        }
+    }
+
+    private void DocumentDock_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IDock.ActiveDockable) && sender is IDock dock)
+        {
+            if (dock.ActiveDockable is Dock.Model.Avalonia.Controls.Document doc)
+            {
+                var tab = documents.FirstOrDefault(kv => kv.Value == doc).Key;
+                if (tab != null && !ReferenceEquals(ActiveTabPage, tab))
+                {
+                    ActiveTabPage = tab;
+                }
+            }
+        }
+    }
+
+    private void SyncActiveDocument()
+    {
+        if (documentDock == null || factory == null)
+            return;
+
+        var targetTab = ActiveTabPage ?? tabPages.FirstOrDefault();
+        if (targetTab == null)
+            return;
+
+        if (!documents.TryGetValue(targetTab, out var doc))
+            return;
+
+        documentDock.ActiveDockable = doc;
+        factory.SetActiveDockable(doc);
+        factory.SetFocusedDockable(documentDock, doc);
+    }
+
+    private void EnsureTabPage()
+    {
+        if (!tabPages.Any())
+        {
+            AddTabPage();
         }
     }
 
