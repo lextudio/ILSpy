@@ -97,6 +97,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				var oldSelection = selectedItems;
 				selectedItems = value;
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(SelectedItem));
 				TreeView_SelectionChanged(oldSelection, selectedItems);
 			}
 		}
@@ -291,38 +292,50 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 		public ILSpyTreeNode? FindTreeNode(object? reference)
 		{
-			if (assemblyListTreeNode == null)
-				return null;
+	        try {
+	            Console.WriteLine($"[Log][AssemblyTree] FindTreeNode called");
+	        } catch { }
 
-			switch (reference)
+			if (assemblyListTreeNode == null)
 			{
-				case LoadedAssembly lasm:
-					return assemblyListTreeNode.FindAssemblyNode(lasm);
-				case MetadataFile asm:
-					return assemblyListTreeNode.FindAssemblyNode(asm);
-				case Resource res:
-					return assemblyListTreeNode.FindResourceNode(res);
-				case ValueTuple<Resource, string> resName:
-					return assemblyListTreeNode.FindResourceNode(resName.Item1, resName.Item2);
-				case ITypeDefinition type:
-					return assemblyListTreeNode.FindTypeNode(type);
-				case IField fd:
-					return assemblyListTreeNode.FindFieldNode(fd);
-				case IMethod md:
-					return assemblyListTreeNode.FindMethodNode(md);
-				case IProperty pd:
-					return assemblyListTreeNode.FindPropertyNode(pd);
-				case IEvent ed:
-					return assemblyListTreeNode.FindEventNode(ed);
-				case INamespace nd:
-					return assemblyListTreeNode.FindNamespaceNode(nd);
-				default:
-					return null;
+				Console.WriteLine("[Log][AssemblyTree] FindTreeNode abort: assemblyListTreeNode is null");
+				return null;
 			}
+
+			ILSpyTreeNode? node = reference switch
+			{
+				LoadedAssembly lasm => assemblyListTreeNode.FindAssemblyNode(lasm),
+				MetadataFile asm => assemblyListTreeNode.FindAssemblyNode(asm),
+				Resource res => assemblyListTreeNode.FindResourceNode(res),
+				ValueTuple<Resource, string> resName => assemblyListTreeNode.FindResourceNode(resName.Item1, resName.Item2),
+				ITypeDefinition type => assemblyListTreeNode.FindTypeNode(type),
+				IField fd => assemblyListTreeNode.FindFieldNode(fd),
+				IMethod md => assemblyListTreeNode.FindMethodNode(md),
+				IProperty pd => assemblyListTreeNode.FindPropertyNode(pd),
+				IEvent ed => assemblyListTreeNode.FindEventNode(ed),
+				INamespace nd => assemblyListTreeNode.FindNamespaceNode(nd),
+				_ => null,
+			};
+
+			if (node == null)
+			{
+				Console.WriteLine($"[Log][AssemblyTree] FindTreeNode could not resolve");
+			}
+			else
+			{
+				var path = GetPathForNode(node);
+				var pathText = path == null ? "<no path>" : string.Join("/", path);
+				Console.WriteLine($"[Log][AssemblyTree] FindTreeNode resolved -> {node.GetType().Name} (Path={pathText})");
+			}
+
+			return node;
 		}
 
 		private void JumpToReference(object? sender, NavigateToReferenceEventArgs e)
 		{
+	        try {
+	            Console.WriteLine($"[Log][AssemblyTree] JumpToReference reference={e.Reference?.GetType().Name ?? "null"} source={e.Source?.GetType().Name ?? "null"} inNewTab={e.InNewTabPage}");
+	        } catch { }
 			JumpToReferenceAsync(e.Reference, e.Source, e.InNewTabPage).HandleExceptions();
 			IsActive = true;
 		}
@@ -891,12 +904,22 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			}
 			else
 			{
+				ExpandAncestors(node);
 				activeView?.ScrollIntoView(node);
 				SelectedItem = node;
 
 				Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
 					activeView?.ScrollIntoView(node);
 				});
+			}
+		}
+
+		void ExpandAncestors(SharpTreeNode node)
+		{
+			foreach (var ancestor in node.Ancestors().Reverse())
+			{
+				ancestor.EnsureLazyChildren();
+				ancestor.IsExpanded = true;
 			}
 		}
 

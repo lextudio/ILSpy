@@ -24,6 +24,7 @@ using ICSharpCode.ILSpyX.Search;
 using ICSharpCode.ILSpyX.TreeView;
 using TomsToolbox.Essentials;
 using ICSharpCode.ILSpy.AppEnv;
+using Avalonia.VisualTree;
 
 namespace ICSharpCode.ILSpy.Search;
 
@@ -79,6 +80,9 @@ public partial class SearchPane : UserControl
             assemblyTreeModel = ProjectRover.App.ExportProvider.GetExportedValue<AssemblyTreeModel>();
             settingsService = ProjectRover.App.ExportProvider.GetExportedValue<SettingsService>();
             treeNodeFactory = ProjectRover.App.ExportProvider.GetExportedValue<ITreeNodeFactory>();
+            try {
+                Console.WriteLine($"[Log][SearchPane] Resolved AssemblyTreeModel instance={assemblyTreeModel?.GetHashCode()}");
+            } catch { }
         }
 
         // Avalonia doesn't have CompositionTarget.Rendering in the same way, but we can use DispatcherTimer or similar.
@@ -107,14 +111,31 @@ public partial class SearchPane : UserControl
         if (e.Handled)
             return;
 
-        if (DataContext is not SearchPaneModel vm || sender is not ListBox listBox)
+        if (sender is not ListBox listBox)
             return;
 
-        if (listBox.SelectedItem is SearchResult result)
+        var result = GetSearchResultAtPoint(listBox, e.GetPosition(listBox));
+        if (result == null)
+            return;
+
+        listBox.SelectedItem = result;
+        MessageBus.Send(this, new NavigateToReferenceEventArgs(result.Reference));
+        Console.WriteLine("send selection changed message from SearchPane");
+        e.Handled = true;
+    }
+
+    SearchResult? GetSearchResultAtPoint(ListBox listBox, Point point)
+    {
+        if (listBox.InputHitTest(point) is not IInputElement input)
+            return null;
+
+        for (var current = input as Visual; current != null && current != listBox; current = current.GetVisualParent())
         {
-            // vm.NavigateToSearchResult(result); // TODO: Implement navigation in ViewModel or here
-            e.Handled = true;
+            if (current is ListBoxItem item && item.DataContext is SearchResult searchResult)
+                return searchResult;
         }
+
+        return listBox.SelectedItem as SearchResult;
     }
     
     protected override void OnDataContextChanged(EventArgs e)

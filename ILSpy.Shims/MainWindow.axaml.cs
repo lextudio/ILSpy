@@ -55,8 +55,19 @@ namespace ICSharpCode.ILSpy
             if (viewModel == null) return;
 
             leftDockView = new AssemblyListPane { DataContext = viewModel.AssemblyTreeModel };
+            try {
+                // Ensure the model knows about this view (some UI frameworks don't trigger DataContext property change the same way)
+                viewModel.AssemblyTreeModel?.SetActiveView(leftDockView);
+                Console.WriteLine($"[Log][MainWindow] Explicitly called SetActiveView on AssemblyTreeModel instance={viewModel.AssemblyTreeModel?.GetHashCode()}");
+            } catch { }
+            try {
+                Console.WriteLine($"[Log][MainWindow] Created AssemblyListPane with DataContext instance={viewModel.AssemblyTreeModel?.GetHashCode()}");
+            } catch { }
             centerDockView = new DecompilerTextView { DataContext = viewModel };
             searchDockView = new SearchPane { DataContext = viewModel.SearchPaneModel };
+            try {
+                Console.WriteLine($"[Log][MainWindow] Created SearchPane with SearchPaneModel.DataContext AssemblyTreeModel instance={viewModel.AssemblyTreeModel?.GetHashCode()}");
+            } catch { }
 
             documentHost = new Document
             {

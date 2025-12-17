@@ -16,6 +16,7 @@
               HorizontalAlignment="Stretch" 
               VerticalAlignment="Stretch" 
               SelectionMode="Single"
+              SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
               ItemsSource="{Binding Root.Children}">
       <TreeView.Styles>
         <Style Selector="TreeViewItem" x:DataType="treeView:SharpTreeNode">

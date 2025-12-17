@@ -65,6 +65,9 @@ namespace ICSharpCode.ILSpy.ViewModels
 
 			public void Execute(object parameter)
 			{
+	                try {
+	                    Console.WriteLine($"[Log][PaneModel] CloseCommand.Execute invoked for {model?.GetType().Name}");
+	                } catch { }
 				DockWorkspace.Remove(model);
 			}
 		}
