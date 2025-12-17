@@ -20,5 +20,14 @@ namespace ICSharpCode.ILSpy.Options
 		{
 			section.SetAttributeValue("Font", this.SelectedFont.Name);
 		}
+
+		public DisplaySettings()
+		{
+			// Ensure a reasonable default for Avalonia if settings haven't been loaded yet.
+			if (SelectedFontSize <= 0)
+			{
+				SelectedFontSize = 12;
+			}
+		}
    	}
 }
