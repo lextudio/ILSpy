@@ -19,20 +19,12 @@
 using System;
 using System.Composition;
 
-using ICSharpCode.ILSpy.AssemblyTree;
-using ICSharpCode.ILSpy.Properties;
-
 namespace ICSharpCode.ILSpy.Options
 {
-	/// <summary>
-	/// Interaction logic for OptionsDialog.xaml
-	/// </summary>
-	public sealed partial class OptionsDialog
+	[MetadataAttribute]
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class ExportOptionPageAttribute() : ExportAttribute("OptionPages", typeof(IOptionPage)), IOptionsMetadata
 	{
-		public OptionsDialog(SettingsService settingsService)
-		{
-			DataContext = new OptionsDialogViewModel(settingsService);
-			InitializeComponent();
-		}
+		public int Order { get; set; }
 	}
 }
