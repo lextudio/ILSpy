@@ -94,11 +94,7 @@ namespace ICSharpCode.ILSpy
 				};
 
 				var settings = settingsService.GetSettings<UpdateSettings>();
-#if CROSS_PLATFORM
-				checkBox.Bind(ToggleButton.IsCheckedProperty, new Binding("AutomaticUpdateCheckEnabled") { Source = settings });
-#else
 				checkBox.SetBinding(ToggleButton.IsCheckedProperty, new Binding("AutomaticUpdateCheckEnabled") { Source = settings });
-#endif
 				return new StackPanel {
 					Margin = new Thickness(0, 4, 0, 0),
 					Cursor = Cursors.Arrow,

@@ -193,11 +193,7 @@ namespace ICSharpCode.ILSpy.Options
 		public XElement SaveToXml()
 		{
 			var section = new XElement(SectionName);
-#if CROSS_PLATFORM
-			section.SetAttributeValue("Font", SelectedFont.Name);
-#else
 			section.SetAttributeValue("Font", SelectedFont.Source);
-#endif
 			section.SetAttributeValue("FontSize", SelectedFontSize);
 			section.SetAttributeValue("ShowLineNumbers", ShowLineNumbers);
 			section.SetAttributeValue("ShowMetadataTokens", ShowMetadataTokens);
