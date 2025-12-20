@@ -20,8 +20,14 @@ using System.Windows.Input;
 
 namespace ICSharpCode.ILSpy.ViewModels
 {
-	public abstract class ToolPaneModel : PaneModel
+#if CROSS_PLATFORM
+	public abstract class ToolPaneModel : Dock.Model.TomsToolbox.Controls.Tool
 	{
+		protected static DockWorkspace DockWorkspace => App.ExportProvider.GetExportedValue<DockWorkspace>();
+#else
+	public abstract class ToolPaneModel : ToolPaneModel
+	{
+#endif
 		public virtual void Show()
 		{
 			this.IsActive = true;

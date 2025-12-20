@@ -31,8 +31,14 @@ namespace ICSharpCode.ILSpy.ViewModels
 {
 	[Export]
 	[NonShared]
+#if CROSS_PLATFORM
+	public class TabPageModel : Dock.Model.TomsToolbox.Controls.Document
+	{
+		protected static DockWorkspace DockWorkspace => App.ExportProvider.GetExportedValue<DockWorkspace>();
+#else
 	public class TabPageModel : PaneModel
 	{
+#endif
 		public IExportProvider ExportProvider { get; }
 
 		public TabPageModel(IExportProvider exportProvider)
