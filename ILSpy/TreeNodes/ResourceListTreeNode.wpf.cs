@@ -16,14 +16,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Linq;
-using System.Windows.Threading;
-
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.Metadata;
-using ICSharpCode.ILSpy.Properties;
-
 namespace ICSharpCode.ILSpy.TreeNodes
 {
 	/// <summary>
@@ -31,38 +23,8 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// </summary>
 	sealed partial class ResourceListTreeNode : ILSpyTreeNode
 	{
-		readonly MetadataFile module;
+		public override object Icon => Images.FolderClosed;
 
-		public ResourceListTreeNode(MetadataFile module)
-		{
-			this.LazyLoading = true;
-			this.module = module;
-		}
-
-		public override object Text => Resources._Resources;
-
-		protected override void LoadChildren()
-		{
-			foreach (Resource r in module.Resources.OrderBy(m => m.Name, NaturalStringComparer.Instance))
-				this.Children.Add(ResourceTreeNode.Create(r));
-		}
-
-		public override FilterResult Filter(LanguageSettings settings)
-		{
-			if (string.IsNullOrEmpty(settings.SearchTerm))
-				return FilterResult.MatchAndRecurse;
-			else
-				return FilterResult.Recurse;
-		}
-
-		public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
-		{
-			App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(EnsureLazyChildren));
-			foreach (ILSpyTreeNode child in this.Children)
-			{
-				child.Decompile(language, output, options);
-				output.WriteLine();
-			}
-		}
+		public override object ExpandedIcon => Images.FolderOpen;
 	}
 }

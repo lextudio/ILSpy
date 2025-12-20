@@ -17,51 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
-using System.Windows.Threading;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.ILSpy.Properties;
+using ICSharpCode.ILSpy.TextView;
+using ICSharpCode.ILSpy.ViewModels;
 
 namespace ICSharpCode.ILSpy.TreeNodes
 {
-	/// <summary>
-	/// Lists the embedded resources in an assembly.
-	/// </summary>
-	sealed partial class ResourceListTreeNode : ILSpyTreeNode
+	partial class ImageResourceEntryNode
 	{
-		readonly MetadataFile module;
-
-		public ResourceListTreeNode(MetadataFile module)
+		public override bool View(TabPageModel tabPage)
 		{
-			this.LazyLoading = true;
-			this.module = module;
-		}
-
-		public override object Text => Resources._Resources;
-
-		protected override void LoadChildren()
-		{
-			foreach (Resource r in module.Resources.OrderBy(m => m.Name, NaturalStringComparer.Instance))
-				this.Children.Add(ResourceTreeNode.Create(r));
-		}
-
-		public override FilterResult Filter(LanguageSettings settings)
-		{
-			if (string.IsNullOrEmpty(settings.SearchTerm))
-				return FilterResult.MatchAndRecurse;
-			else
-				return FilterResult.Recurse;
-		}
-
-		public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
-		{
-			App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(EnsureLazyChildren));
-			foreach (ILSpyTreeNode child in this.Children)
+			try
 			{
-				child.Decompile(language, output, options);
+				AvalonEditTextOutput output = new AvalonEditTextOutput();
+				BitmapImage image = new BitmapImage();
+				image.BeginInit();
+				image.StreamSource = OpenStream();
+				image.EndInit();
+				output.AddUIElement(() => new Image { Source = image });
 				output.WriteLine();
+				output.AddButton(Images.Save, Resources.Save, delegate {
+					Save(null);
+				});
+				tabPage.ShowTextView(textView => textView.ShowNode(output, this));
+				tabPage.SupportsLanguageSwitching = false;
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
 			}
 		}
 	}
