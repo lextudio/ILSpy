@@ -25,7 +25,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 	{
 		protected static DockWorkspace DockWorkspace => App.ExportProvider.GetExportedValue<DockWorkspace>();
 #else
-	public abstract class ToolPaneModel : ToolPaneModel
+	public abstract class ToolPaneModel : PaneModel
 	{
 #endif
 		public virtual void Show()
