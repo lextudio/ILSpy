@@ -112,7 +112,11 @@ namespace ICSharpCode.ILSpy.Metadata
 				case "RVA":
 				case "StartOffset":
 				case "Length":
+				    #if CROSS_PLATFORM
+					binding.Converter = HexFormatConverter.Instance;
+					#else
 					binding.StringFormat = "X8";
+					#endif
 					e.Column.SetTemplate((ControlTemplate)MetadataTableViews.Instance["HexFilter"]);
 					break;
 				case "RowDetails":
