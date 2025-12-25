@@ -125,6 +125,7 @@ namespace ICSharpCode.ILSpy.Metadata
 				case "Value" when e.PropertyDescriptor is PropertyDescriptor dp && dp.ComponentType == typeof(Entry):
 					#if CROSS_PLATFORM
 					binding.Path = ".";
+					e.Column.SetTemplate((ControlTemplate)MetadataTableViews.Instance["DefaultFilter"]);
 					#else
 					binding.Path = new PropertyPath(".");
 					#endif
