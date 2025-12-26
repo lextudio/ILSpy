@@ -501,6 +501,9 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				SelectedItem = node;
 
 				Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
+					#if CROSS_PLATFORM
+					SelectedItem = node;
+					#endif
 					activeView?.ScrollIntoView(node);
 				});
 			}
@@ -956,14 +959,14 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			return selection.Where(item => item.Ancestors().All(a => !selectionHash.Contains(a)));
 		}
 
-		void ExpandAncestors(SharpTreeNode node)
+	void ExpandAncestors(SharpTreeNode node)
+	{
+		foreach (var ancestor in node.Ancestors().Reverse())
 		{
-			foreach (var ancestor in node.Ancestors().Reverse())
-			{
-				ancestor.EnsureLazyChildren();
-				ancestor.IsExpanded = true;
-			}
+			ancestor.EnsureLazyChildren();
+			ancestor.IsExpanded = true;
 		}
+	}
 
 		public void SetActiveView(AssemblyListPane activeView)
 		{
