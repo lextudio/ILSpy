@@ -128,7 +128,9 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				var oldSelection = selectedItems;
 				selectedItems = value;
 				OnPropertyChanged();
-				// TODO: OnPropertyChanged(nameof(SelectedItem));
+				#if CROSS_PLATFORM
+				OnPropertyChanged(nameof(SelectedItem));
+				#endif
 				TreeView_SelectionChanged(oldSelection, selectedItems);
 			}
 		}
@@ -492,7 +494,9 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			}
 			else
 			{
-				// TODO: ExpandAncestors(node);
+				#if CROSS_PLATFORM
+				ExpandAncestors(node);
+				#endif
 				activeView?.ScrollIntoView(node);
 				SelectedItem = node;
 
@@ -952,14 +956,14 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			return selection.Where(item => item.Ancestors().All(a => !selectionHash.Contains(a)));
 		}
 
-		// TODO: void ExpandAncestors(SharpTreeNode node)
-		// {
-		// 	foreach (var ancestor in node.Ancestors().Reverse())
-		// 	{
-		// 		ancestor.EnsureLazyChildren();
-		// 		ancestor.IsExpanded = true;
-		// 	}
-		// }
+		void ExpandAncestors(SharpTreeNode node)
+		{
+			foreach (var ancestor in node.Ancestors().Reverse())
+			{
+				ancestor.EnsureLazyChildren();
+				ancestor.IsExpanded = true;
+			}
+		}
 
 		public void SetActiveView(AssemblyListPane activeView)
 		{
