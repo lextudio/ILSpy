@@ -35,7 +35,7 @@ namespace ICSharpCode.ILSpy.Metadata
 
 		public override object Text => "Data Directories";
 #if CROSS_PLATFORM
-		public override object Icon => IsExpanded ? Images.FolderOpen : Images.FolderClosed;
+		public override object Icon => Images.DirectoryTable;
 
 		protected override void OnExpanding()
 		{
