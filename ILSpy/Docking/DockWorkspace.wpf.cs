@@ -19,6 +19,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 using AvalonDock;
 using AvalonDock.Layout;
@@ -85,6 +86,19 @@ namespace ICSharpCode.ILSpy.Docking
 
 			DockingManager.SetBinding(DockingManager.AnchorablesSourceProperty, new Binding(nameof(ToolPanes)));
 			DockingManager.SetBinding(DockingManager.DocumentsSourceProperty, new Binding(nameof(TabPages)));
+		}
+
+		internal void ResetLayout()
+		{
+			foreach (var pane in ToolPanes)
+			{
+				pane.IsVisible = false;
+			}
+			CloseAllTabs();
+			sessionSettings.DockLayout.Reset();
+			InitializeLayout();
+
+			App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => MessageBus.Send(this, new ResetLayoutEventArgs()));
 		}
 
 		static readonly PropertyInfo previousContainerProperty = typeof(LayoutContent).GetProperty("PreviousContainer", BindingFlags.NonPublic | BindingFlags.Instance);

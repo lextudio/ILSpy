@@ -192,19 +192,6 @@ namespace ICSharpCode.ILSpy.Docking
 			tabPages.RemoveWhere(page => page != activePage);
 		}
 
-		internal void ResetLayout()
-		{
-			foreach (var pane in ToolPanes)
-			{
-				pane.IsVisible = false;
-			}
-			CloseAllTabs();
-			sessionSettings.DockLayout.Reset();
-			InitializeLayout();
-
-			App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => MessageBus.Send(this, new ResetLayoutEventArgs()));
-		}
-
 		// Dummy property to make the XAML designer happy, the model is provided by the AvalonDock PaneStyleSelectors, not by the DockWorkspace, but the designer assumes the data context in the PaneStyleSelectors is the DockWorkspace.
 		public PaneModel Model { get; } = null;
 	}
