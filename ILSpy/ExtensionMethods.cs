@@ -142,18 +142,30 @@ namespace ICSharpCode.ILSpy
 						return childItem;
 				}
 			}
+#if ROMA_UNO
+			return default;
+#else
 			return null;
+#endif
 		}
 
 		public static T? GetParent<T>(this DependencyObject? depObj) where T : DependencyObject
 		{
 			if (depObj == null)
+#if ROMA_UNO
+				return default;
+#else
 				return null;
+#endif
 			while (!(depObj is T))
 			{
 				var parent = VisualTreeHelper.GetParent(depObj);
 				if (parent == null)
+#if ROMA_UNO
+					return default;
+#else
 					return null;
+#endif
 				depObj = parent;
 			}
 			return (T)depObj;

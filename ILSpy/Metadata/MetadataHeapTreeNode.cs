@@ -43,6 +43,7 @@ namespace ICSharpCode.ILSpy.Metadata
 			this.metadataFile = metadataFile;
 		}
 
+#if !ROMA_UNO
 		protected void ScrollItemIntoView(DataGrid view, object item)
 		{
 			view.Loaded += View_Loaded;
@@ -57,6 +58,9 @@ namespace ICSharpCode.ILSpy.Metadata
 			view.Loaded -= View_Loaded;
 			this.scrollTarget = default;
 		}
+#else
+		protected void ScrollItemIntoView(DataGrid view, object item) { }
+#endif
 
 		public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
 		{

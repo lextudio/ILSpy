@@ -53,7 +53,9 @@ namespace ICSharpCode.ILSpy.Metadata
 
 			var dataGrid = Helpers.PrepareDataGrid(tabPage, this);
 
+			#if !ROMA_UNO
 			dataGrid.RowDetailsTemplateSelector = new CharacteristicsDataTemplateSelector("DLL Characteristics");
+#endif
 			dataGrid.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Collapsed;
 
 			dataGrid.Columns.Clear();

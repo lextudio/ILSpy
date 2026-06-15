@@ -5,7 +5,7 @@ namespace ICSharpCode.ILSpy.Metadata
 {
 	partial class MetadataTableTreeNode
 	{
-
+#if !ROMA_UNO
 		protected void ScrollRowIntoView(DataGrid view, int row)
 		{
 			if (!view.IsLoaded)
@@ -28,5 +28,8 @@ namespace ICSharpCode.ILSpy.Metadata
 			view.Loaded -= View_Loaded;
 			this.scrollTarget = default;
 		}
+#else
+		protected void ScrollRowIntoView(DataGrid view, int row) { }
+#endif
 	}
 }

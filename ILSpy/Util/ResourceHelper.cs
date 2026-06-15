@@ -24,10 +24,14 @@ namespace ICSharpCode.ILSpy.Util
 		{
 			if (string.IsNullOrEmpty(key))
 				return null;
-
+#if ROMA_UNO
+			// WPF ResourceManager / RESX pipeline not wired on Uno; return key as fallback.
+			return key;
+#else
 			string value = Properties.Resources.ResourceManager.GetString(key);
 
 			return !string.IsNullOrEmpty(value) ? value : key;
+#endif
 		}
 	}
 }

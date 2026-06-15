@@ -32,12 +32,14 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
+#if !ROMA_UNO
 using System.Windows.Navigation;
+using ICSharpCode.ILSpy.Controls;
+#endif
 
 using DataGridExtensions;
 
 using ICSharpCode.Decompiler.Util;
-using ICSharpCode.ILSpy.Controls;
 using ICSharpCode.ILSpy.TextView;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.ViewModels;

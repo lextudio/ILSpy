@@ -36,7 +36,9 @@ namespace ICSharpCode.ILSpy.Metadata
 	{
 		public FlagsTooltip(int value = 0, Type flagsType = null)
 		{
+#if !ROMA_UNO
 			InitializeComponent();
+#endif
 		}
 
 		public void Add(FlagGroup group)
@@ -57,7 +59,8 @@ namespace ICSharpCode.ILSpy.Metadata
 		public List<FlagGroup> Groups { get; } = new List<FlagGroup>();
 	}
 
-	class FlagActiveConverter : DependencyObject, IValueConverter
+#if !ROMA_UNO
+	partial class FlagActiveConverter : DependencyObject, IValueConverter
 	{
 		public int Value {
 			get { return (int)GetValue(ValueProperty); }
@@ -77,6 +80,7 @@ namespace ICSharpCode.ILSpy.Metadata
 			throw new NotImplementedException();
 		}
 	}
+#endif
 
 	public readonly struct Flag
 	{

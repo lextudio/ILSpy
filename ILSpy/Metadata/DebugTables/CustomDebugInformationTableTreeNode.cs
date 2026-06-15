@@ -46,6 +46,7 @@ namespace ICSharpCode.ILSpy.Metadata
 			return list;
 		}
 
+#if !ROMA_UNO
 		protected override void ConfigureDataGrid(DataGrid view)
 		{
 			view.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.VisibleWhenSelected;
@@ -69,6 +70,7 @@ namespace ICSharpCode.ILSpy.Metadata
 				}
 			}
 		}
+#endif
 
 		internal struct CustomDebugInformationEntry
 		{

@@ -21,7 +21,9 @@ using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
 using System.Windows;
+#if !ROMA_UNO
 using System.Windows.Controls;
+#endif
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.ILSpy.TextView;
@@ -172,6 +174,15 @@ namespace ICSharpCode.ILSpy
 
 	internal class ContextMenuProvider
 	{
+#if ROMA_UNO
+		// On Uno the full WPF control event/menu wiring is not yet available.
+		// Add() is a no-op so call sites compile; real context-menu support is a Roma.Host milestone.
+		public static event EventHandler<EventArgs> ContextMenuClosed { add { } remove { } }
+		public static void Add(SharpTreeView treeView) { }
+		public static void Add(DecompilerTextView textView) { }
+		public static void Add(ListBox listBox) { }
+		public static void Add(DataGrid dataGrid) { }
+#else
 		private static readonly WeakEventSource<EventArgs> ContextMenuClosedEventSource = new();
 
 		public static event EventHandler<EventArgs> ContextMenuClosed {
@@ -371,5 +382,6 @@ namespace ICSharpCode.ILSpy
 				}
 			}
 		}
+#endif // !ROMA_UNO
 	}
 }

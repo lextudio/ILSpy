@@ -38,11 +38,16 @@ namespace ICSharpCode.ILSpy.Metadata
 
 		public MetaDataGrid()
 		{
+#if !ROMA_UNO
 			this.hoverLogic = new MouseHoverLogic(this);
 			this.hoverLogic.MouseHover += HoverLogic_MouseHover;
 			this.hoverLogic.MouseHoverStopped += HoverLogic_MouseHoverStopped;
+#endif
 		}
 
+#if !ROMA_UNO
+		// Hover tooltip requires WPF VisualTreeHelper.HitTest and MouseEventArgs — not available
+		// on Uno/WinUI. Cell hover tooltips are a Roma.Host polish milestone.
 		private void HoverLogic_MouseHoverStopped(object sender, System.Windows.Input.MouseEventArgs e)
 		{
 			// Non-popup tooltips get closed as soon as the mouse starts moving again
@@ -106,6 +111,7 @@ namespace ICSharpCode.ILSpy.Metadata
 				toolTip = null;
 			}
 		}
+#endif
 
 		public ViewState GetState()
 		{

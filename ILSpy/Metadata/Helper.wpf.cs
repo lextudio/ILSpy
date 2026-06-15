@@ -4,7 +4,9 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+#if !ROMA_UNO
 using System.Windows.Documents;
+#endif
 
 namespace ICSharpCode.ILSpy.Metadata
 {
@@ -16,7 +18,13 @@ namespace ICSharpCode.ILSpy.Metadata
 			{
 				return template;
 			}
-
+#if ROMA_UNO
+			// FrameworkElementFactory / Hyperlink / DataTemplate.VisualTree are WPF-imperative
+			// template builders with no WinUI equivalent. Token-link cells render as plain text
+			// until the Uno DataTemplate port replaces this; return null (DataGrid accepts it).
+			linkCellTemplates.Add(name, null);
+			return null;
+#else
 			var tb = new FrameworkElementFactory(typeof(TextBlock));
 			var hyper = new FrameworkElementFactory(typeof(Hyperlink));
 			tb.AppendChild(hyper);
@@ -38,6 +46,7 @@ namespace ICSharpCode.ILSpy.Metadata
 					onClickMethod.Invoke(hyperlink.DataContext, Array.Empty<object>());
 				}
 			}
+#endif
 		}
 	}
 }

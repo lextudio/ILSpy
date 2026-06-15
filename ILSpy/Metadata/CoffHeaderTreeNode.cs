@@ -54,7 +54,9 @@ namespace ICSharpCode.ILSpy.Metadata
 
 			var dataGrid = Helpers.PrepareDataGrid(tabPage, this);
 
+#if !ROMA_UNO
 			dataGrid.RowDetailsTemplateSelector = new CharacteristicsDataTemplateSelector("Characteristics");
+#endif
 			dataGrid.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Collapsed;
 
 			dataGrid.Columns.Clear();
@@ -111,6 +113,7 @@ namespace ICSharpCode.ILSpy.Metadata
 		}
 	}
 
+#if !ROMA_UNO
 	public class CharacteristicsDataTemplateSelector : DataTemplateSelector
 	{
 		string detailsFieldName;
@@ -127,4 +130,5 @@ namespace ICSharpCode.ILSpy.Metadata
 			return null;
 		}
 	}
+#endif
 }
