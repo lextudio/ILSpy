@@ -1,14 +1,14 @@
 // Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -16,12 +16,15 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Windows.Media;
 using System.Xml.Linq;
 
 using ICSharpCode.ILSpyX.Settings;
 
 using TomsToolbox.Wpf;
+
+#if !ROMA_UNO
+using System.Windows.Media;
+#endif
 
 namespace ICSharpCode.ILSpy.Options
 {
@@ -30,11 +33,19 @@ namespace ICSharpCode.ILSpy.Options
 	/// </summary>
 	public class DisplaySettings : ObservableObjectBase, ISettingsSection
 	{
+#if !ROMA_UNO
 		FontFamily selectedFont;
 		public FontFamily SelectedFont {
 			get => selectedFont;
 			set => SetProperty(ref selectedFont, value);
 		}
+#else
+		string selectedFontName = "Consolas";
+		public string SelectedFontName {
+			get => selectedFontName;
+			set => SetProperty(ref selectedFontName, value);
+		}
+#endif
 
 		double selectedFontSize;
 		public double SelectedFontSize {
@@ -166,7 +177,11 @@ namespace ICSharpCode.ILSpy.Options
 
 		public void LoadFromXml(XElement section)
 		{
+#if !ROMA_UNO
 			SelectedFont = new FontFamily((string)section.Attribute("Font") ?? "Consolas");
+#else
+			SelectedFontName = (string)section.Attribute("Font") ?? "Consolas";
+#endif
 			SelectedFontSize = (double?)section.Attribute("FontSize") ?? 10.0 * 4 / 3;
 			ShowLineNumbers = (bool?)section.Attribute("ShowLineNumbers") ?? false;
 			ShowMetadataTokens = (bool?)section.Attribute("ShowMetadataTokens") ?? false;
@@ -194,7 +209,11 @@ namespace ICSharpCode.ILSpy.Options
 		{
 			var section = new XElement(SectionName);
 
+#if !ROMA_UNO
 			section.SetAttributeValue("Font", SelectedFont.Source);
+#else
+			section.SetAttributeValue("Font", SelectedFontName);
+#endif
 			section.SetAttributeValue("FontSize", SelectedFontSize);
 			section.SetAttributeValue("ShowLineNumbers", ShowLineNumbers);
 			section.SetAttributeValue("ShowMetadataTokens", ShowMetadataTokens);

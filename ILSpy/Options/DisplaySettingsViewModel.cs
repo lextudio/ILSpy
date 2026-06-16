@@ -1,11 +1,14 @@
 using ICSharpCode.ILSpyX.Settings;
-using System.Windows.Media;
 using System.Xml.Linq;
 using System;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+
+#if !ROMA_UNO
+using System.Windows.Media;
 using System.Windows;
+#endif
 
 using TomsToolbox.Wpf;
 using ICSharpCode.ILSpy.Themes;
@@ -17,11 +20,14 @@ namespace ICSharpCode.ILSpy.Options
 	public class DisplaySettingsViewModel : ObservableObjectBase, IOptionPage
 	{
 		private DisplaySettings settings = new();
+#if !ROMA_UNO
 		private FontFamily[] fontFamilies;
+#endif
 		private SessionSettings sessionSettings;
 
 		public DisplaySettingsViewModel()
 		{
+#if !ROMA_UNO
 			fontFamilies = [settings.SelectedFont];
 
 			Task.Run(FontLoader).ContinueWith(continuation => {
@@ -33,6 +39,7 @@ namespace ICSharpCode.ILSpy.Options
 					MessageBox.Show(ex.ToString());
 				}
 			});
+#endif
 		}
 
 		public string Title => Properties.Resources.Display;
@@ -47,12 +54,19 @@ namespace ICSharpCode.ILSpy.Options
 			set => SetProperty(ref sessionSettings, value);
 		}
 
+#if !ROMA_UNO
 		public FontFamily[] FontFamilies {
 			get => fontFamilies;
 			set => SetProperty(ref fontFamilies, value);
 		}
+#else
+		public string[] FontFamilies { get; } =
+			SkiaSharp.SKFontManager.Default.GetFontFamilies()
+				.OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+				.ToArray();
+#endif
 
-		public int[] FontSizes { get; } = Enumerable.Range(6, 24 - 6 + 1).ToArray();
+		public double[] FontSizes { get; } = Enumerable.Range(6, 24 - 6 + 1).Select(i => (double)i).ToArray();
 
 		public void Load(SettingsSnapshot snapshot)
 		{
@@ -60,6 +74,7 @@ namespace ICSharpCode.ILSpy.Options
 			SessionSettings = snapshot.GetSettings<SessionSettings>();
 		}
 
+#if !ROMA_UNO
 		static bool IsSymbolFont(FontFamily fontFamily)
 		{
 			foreach (var tf in fontFamily.GetTypefaces())
@@ -84,6 +99,7 @@ namespace ICSharpCode.ILSpy.Options
 				.OrderBy(ff => ff.Source)
 				.ToArray();
 		}
+#endif
 
 		public void LoadDefaults()
 		{
