@@ -93,6 +93,11 @@ namespace ICSharpCode.ILSpy
 		/// </summary>
 		public DependencyObject OriginalSource { get; private set; }
 
+#if ROMA_UNO
+		public static TextViewContext ForTreeNode(SharpTreeNode node, SharpTreeView treeView = null)
+			=> new() { SelectedTreeNodes = [node], TreeView = treeView };
+#endif
+
 		public static TextViewContext Create(ContextMenuEventArgs eventArgs, SharpTreeView treeView = null, DecompilerTextView textView = null, ListBox listBox = null, DataGrid dataGrid = null)
 		{
 			ReferenceSegment reference;

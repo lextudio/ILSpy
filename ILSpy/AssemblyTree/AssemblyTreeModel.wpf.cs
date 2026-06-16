@@ -66,6 +66,21 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 		{
 			// Called when loading an empty assembly list; so that
 			// the user can see something initially.
+#if ROMA_UNO
+			// Roma seeds the core Uno assemblies instead of WPF's: System.Windows.UIElement/
+			// FrameworkElement/MarkupExtension are not real types in the Uno build (WindowsShims
+			// aliases them to Microsoft.UI.Xaml), so use the Microsoft.UI.Xaml equivalents.
+			System.Reflection.Assembly[] initialAssemblies = {
+				typeof(object).Assembly,
+				typeof(Uri).Assembly,
+				typeof(System.Linq.Enumerable).Assembly,
+				typeof(System.Xml.XmlDocument).Assembly,
+				typeof(global::Windows.Foundation.Rect).Assembly,
+				typeof(global::Microsoft.UI.Xaml.UIElement).Assembly,
+				typeof(global::Microsoft.UI.Xaml.FrameworkElement).Assembly,
+				typeof(global::Microsoft.UI.Xaml.Markup.MarkupExtension).Assembly,
+			};
+#else
 			System.Reflection.Assembly[] initialAssemblies = {
 				typeof(object).Assembly,
 				typeof(Uri).Assembly,
@@ -76,6 +91,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				typeof(System.Windows.UIElement).Assembly,
 				typeof(System.Windows.FrameworkElement).Assembly
 			};
+#endif
 			foreach (System.Reflection.Assembly asm in initialAssemblies)
 				assemblyList.OpenAssembly(asm.Location);
 		}
