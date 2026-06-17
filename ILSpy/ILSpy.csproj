@@ -83,6 +83,9 @@
     <ProjectReference Include="..\ICSharpCode.ILSpyX\ICSharpCode.ILSpyX.csproj" />
     <ProjectReference Include="..\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj" />
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\..\wpf-labs\src\DevFlow\LeXtudio.DevFlow.Agent.WPF\LeXtudio.DevFlow.Agent.WPF.csproj" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <PackageReference Include="Microsoft.DiaSymReader.Converter.Xml" />

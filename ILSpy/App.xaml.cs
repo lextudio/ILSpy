@@ -46,6 +46,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 using TomsToolbox.Composition.MicrosoftExtensions;
 using TomsToolbox.Essentials;
+#if DEBUG
+using LeXtudio.DevFlow.Agent.Core;
+using LeXtudio.DevFlow.Agent.WPF;
+using Microsoft.Maui.DevFlow.Agent.Core;
+#endif
 
 namespace ICSharpCode.ILSpy
 {
@@ -216,6 +221,9 @@ namespace ICSharpCode.ILSpy
 
 			MainWindow = ExportProvider.GetExportedValue<MainWindow>();
 			MainWindow.Show();
+#if DEBUG
+			this.AddWpfDevFlowAgent(new AgentOptions { Port = 9224 });
+#endif
 		}
 
 		void DotNet40_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
