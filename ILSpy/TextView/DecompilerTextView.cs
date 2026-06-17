@@ -36,7 +36,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+#if !ROMA_UNO
 using System.Windows.Media.Animation;
+#endif
 using System.Windows.Threading;
 using System.Xml;
 
@@ -117,13 +119,20 @@ namespace ICSharpCode.ILSpy.TextView
 			this.bracketHighlightRenderer = new BracketHighlightRenderer(textEditor.TextArea.TextView);
 			textEditor.TextArea.TextView.ElementGenerators.Add(uiElementGenerator);
 			textEditor.Options.RequireControlModifierForHyperlinkClick = false;
+#if !ROMA_UNO
 			textEditor.TextArea.TextView.MouseHover += TextViewMouseHover;
 			textEditor.TextArea.TextView.MouseHoverStopped += TextViewMouseHoverStopped;
+#endif
+#if !ROMA_UNO
 			textEditor.TextArea.PreviewMouseDown += TextAreaMouseDown;
 			textEditor.TextArea.PreviewMouseUp += TextAreaMouseUp;
+#endif
 			textEditor.TextArea.Caret.PositionChanged += HighlightBrackets;
+#if !ROMA_UNO
 			textEditor.MouseMove += TextEditorMouseMove;
 			textEditor.MouseLeave += TextEditorMouseLeave;
+#endif
+#if !ROMA_UNO
 			textEditor.SetBinding(Control.FontFamilyProperty, new Binding { Source = settingsService.DisplaySettings, Path = new PropertyPath("SelectedFont") });
 			textEditor.SetBinding(Control.FontSizeProperty, new Binding { Source = settingsService.DisplaySettings, Path = new PropertyPath("SelectedFontSize") });
 			textEditor.SetBinding(TextEditor.WordWrapProperty, new Binding { Source = settingsService.DisplaySettings, Path = new PropertyPath("EnableWordWrap") });
@@ -131,6 +140,7 @@ namespace ICSharpCode.ILSpy.TextView
 			// disable Tab editing command (useless for read-only editor); allow using tab for focus navigation instead
 			RemoveEditCommand(EditingCommands.TabForward);
 			RemoveEditCommand(EditingCommands.TabBackward);
+#endif
 
 			textMarkerService = new TextMarkerService(textEditor.TextArea.TextView);
 			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
@@ -139,12 +149,15 @@ namespace ICSharpCode.ILSpy.TextView
 
 			MessageBus<SettingsChangedEventArgs>.Subscribers += Settings_Changed;
 
-			// SearchPanel
+			// SearchPanel — UnoEdit now exposes the canonical ICSharpCode.AvalonEdit.Search.SearchPanel,
+			// so Install / RegisterCommands / the marker-brush resource ref compile unguarded.
 			SearchPanel searchPanel = SearchPanel.Install(textEditor.TextArea);
 			searchPanel.RegisterCommands(mainWindow.CommandBindings);
 			searchPanel.SetResourceReference(SearchPanel.MarkerBrushProperty, ResourceKeys.SearchResultBackgroundBrush);
+#if !ROMA_UNO
 			searchPanel.Loaded += (_, _) => {
-				// HACK: fix search text box
+				// HACK: fix search text box. WPF-only: reaches into the control TEMPLATE; UnoEdit's
+				// SearchPanel is a UserControl with its own XAML (no PART_searchTextBox template part).
 				var textBox = searchPanel.Template.FindName("PART_searchTextBox", searchPanel) as TextBox;
 				if (textBox != null)
 				{
@@ -154,12 +167,14 @@ namespace ICSharpCode.ILSpy.TextView
 					textBox.Height = double.NaN;
 				}
 			};
+#endif
 
 			ShowLineMargin();
 			SetHighlightCurrentLine();
 
 			ContextMenuProvider.Add(this);
 
+#if !ROMA_UNO
 			textEditor.TextArea.TextView.SetResourceReference(ICSharpCode.AvalonEdit.Rendering.TextView.LinkTextForegroundBrushProperty, ResourceKeys.LinkTextForegroundBrush);
 			textEditor.TextArea.TextView.SetResourceReference(ICSharpCode.AvalonEdit.Rendering.TextView.CurrentLineBackgroundProperty, ResourceKeys.CurrentLineBackgroundBrush);
 			textEditor.TextArea.TextView.SetResourceReference(ICSharpCode.AvalonEdit.Rendering.TextView.CurrentLineBorderProperty, ResourceKeys.CurrentLineBorderPen);
@@ -167,8 +182,10 @@ namespace ICSharpCode.ILSpy.TextView
 			DataObject.AddSettingDataHandler(textEditor.TextArea, OnSettingData);
 
 			this.DataContextChanged += DecompilerTextView_DataContextChanged;
+#endif
 		}
 
+#if !ROMA_UNO
 		private void DecompilerTextView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			if (this.DataContext is PaneModel model)
@@ -187,6 +204,7 @@ namespace ICSharpCode.ILSpy.TextView
 			if (commandBinding != null)
 				handler.CommandBindings.Remove(commandBinding);
 		}
+#endif
 		#endregion
 
 		#region Line margin
@@ -216,7 +234,11 @@ namespace ICSharpCode.ILSpy.TextView
 		{
 			foreach (var margin in this.textEditor.TextArea.LeftMargins)
 			{
+#if ROMA_UNO
+				if (margin is LineNumberMargin)
+#else
 				if (margin is LineNumberMargin || margin is System.Windows.Shapes.Line)
+#endif
 				{
 					margin.Visibility = settingsService.DisplaySettings.ShowLineNumbers ? Visibility.Visible : Visibility.Collapsed;
 				}
@@ -231,6 +253,7 @@ namespace ICSharpCode.ILSpy.TextView
 		#endregion
 
 		#region Tooltip support
+#if !ROMA_UNO
 		ToolTip? toolTip;
 		Popup? popupToolTip;
 
@@ -551,6 +574,7 @@ namespace ICSharpCode.ILSpy.TextView
 					this.IsOpen = false;
 			}
 		}
+#endif
 		#endregion
 
 		#region Highlight brackets
@@ -571,6 +595,7 @@ namespace ICSharpCode.ILSpy.TextView
 		#region RunWithCancellation
 		public void Report(DecompilationProgress value)
 		{
+#if !ROMA_UNO
 			double v = (double)value.UnitsCompleted / value.TotalUnits;
 			Dispatcher.BeginInvoke(DispatcherPriority.Normal, delegate {
 				progressBar.IsIndeterminate = !double.IsFinite(v);
@@ -589,6 +614,7 @@ namespace ICSharpCode.ILSpy.TextView
 					model.Title = progressTitle.Text;
 				}
 			});
+#endif
 		}
 
 		/// <summary>
@@ -607,7 +633,9 @@ namespace ICSharpCode.ILSpy.TextView
 				progressBar.IsIndeterminate = true;
 				progressText.Text = null;
 				progressText.Visibility = Visibility.Collapsed;
+#if !ROMA_UNO
 				waitAdorner.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, new Duration(TimeSpan.FromSeconds(0.5)), FillBehavior.Stop));
+#endif
 				var taskBar = mainWindow.TaskbarItemInfo;
 				if (taskBar != null)
 				{
@@ -1010,10 +1038,12 @@ namespace ICSharpCode.ILSpy.TextView
 					textEditor.TextArea.Focus();
 					textEditor.Select(pos, 0);
 					textEditor.ScrollTo(textEditor.TextArea.Caret.Line, textEditor.TextArea.Caret.Column);
+#if !ROMA_UNO
 					Dispatcher.Invoke(DispatcherPriority.Background, new Action(
 						delegate {
 							CaretHighlightAdorner.DisplayCaretHighlightAnimation(textEditor.TextArea);
 						}));
+#endif
 					return;
 				}
 			}
@@ -1031,7 +1061,9 @@ namespace ICSharpCode.ILSpy.TextView
 				if (reference.Equals(r.Reference))
 				{
 					var mark = textMarkerService.Create(r.StartOffset, r.Length);
+#if !ROMA_UNO
 					mark.BackgroundColor = (Color)(r.IsDefinition ? FindResource(ResourceKeys.TextMarkerDefinitionBackgroundColor) : FindResource(ResourceKeys.TextMarkerBackgroundColor));
+#endif
 					localReferenceMarks.Add(mark);
 				}
 			}
@@ -1039,6 +1071,7 @@ namespace ICSharpCode.ILSpy.TextView
 
 		Point? mouseDownPos;
 
+#if !ROMA_UNO
 		void TextAreaMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			mouseDownPos = e.GetPosition(this);
@@ -1070,6 +1103,7 @@ namespace ICSharpCode.ILSpy.TextView
 				}
 			}
 		}
+#endif
 
 		void ClearLocalReferenceMarks()
 		{
@@ -1224,6 +1258,7 @@ namespace ICSharpCode.ILSpy.TextView
 		#endregion
 
 		#region Clipboard
+#if !ROMA_UNO
 		private void OnSettingData(object sender, DataObjectSettingDataEventArgs e)
 		{
 			if (e.Format == DataFormats.Html && e.DataObject is DataObject dataObject)
@@ -1273,6 +1308,7 @@ namespace ICSharpCode.ILSpy.TextView
 				return (start, end - start);
 			}
 		}
+#endif
 		#endregion
 
 		internal ReferenceSegment? GetReferenceSegmentAtMousePosition()
@@ -1288,6 +1324,21 @@ namespace ICSharpCode.ILSpy.TextView
 
 		internal TextViewPosition? GetPositionFromMousePosition()
 		{
+#if ROMA_UNO
+			// Use the pointer position stored by OnTextAreaPointerReleased (Roma partial),
+			// converting from viewport to document space via the existing UnoEdit ScrollOffset.
+			var tv = textEditor.TextArea.TextView;
+			var visualPos = new Windows.Foundation.Point(
+				_lastPointerPos.X + tv.ScrollOffset.X,
+				_lastPointerPos.Y + tv.ScrollOffset.Y);
+			var position = tv.GetPosition(visualPos);
+			if (position == null)
+				return null;
+			var lineLength = textEditor.Document.GetLineByNumber(position.Value.Line).Length + 1;
+			if (position.Value.Column == lineLength)
+				return null;
+			return position;
+#else
 			var position = textEditor.TextArea.TextView.GetPosition(Mouse.GetPosition(textEditor.TextArea.TextView) + textEditor.TextArea.TextView.ScrollOffset);
 			if (position == null)
 				return null;
@@ -1295,6 +1346,7 @@ namespace ICSharpCode.ILSpy.TextView
 			if (position.Value.Column == lineLength)
 				return null;
 			return position;
+#endif
 		}
 
 		public DecompilerTextViewState? GetState()

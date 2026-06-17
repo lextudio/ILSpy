@@ -434,7 +434,11 @@ namespace ICSharpCode.ILSpy.TextView
 
 		FontFamily GetCodeFont()
 		{
+#if ROMA_UNO
+			return new FontFamily(displaySettings.SelectedFontName);
+#else
 			return displaySettings.SelectedFont;
+#endif
 		}
 
 		public void AddInline(Inline inline)
