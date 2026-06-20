@@ -570,6 +570,8 @@ namespace ICSharpCode.ILSpy.TextView
 				};
 				var border = new Microsoft.UI.Xaml.Controls.Border {
 					BorderThickness = new Microsoft.UI.Xaml.Thickness(1),
+					CornerRadius = new Microsoft.UI.Xaml.CornerRadius(4),
+					Padding = new Microsoft.UI.Xaml.Thickness(10, 7, 10, 7),
 					MaxHeight = 400,
 					Child = viewer,
 					Background = ThemeBrush("ToolTipBackground", "SystemControlBackgroundChromeMediumLowBrush"),
@@ -1392,16 +1394,34 @@ namespace ICSharpCode.ILSpy.TextView
 		{
 			if (referenceElementGenerator.References == null)
 				return null;
+#if ROMA_UNO
+			// Offset under the pointer, captured from the live pointer event in content space via
+			// UnoEdit's folding/word-wrap/gutter/scroll-aware hit-test. The WPF path below relies on
+			// Mouse.GetPosition (a no-op shim) and a naive y/lineHeight mapping that ignores folded
+			// regions, so it resolves the wrong document line and finds no reference.
+			int offset = _lastHoverOffset;
+			if (offset < 0)
+				return null;
+#else
 			TextViewPosition? position = GetPositionFromMousePosition();
 			if (position == null)
 				return null;
 			int offset = textEditor.Document.GetOffset(position.Value.Location);
+#endif
 			return referenceElementGenerator.References.FindSegmentsContaining(offset).FirstOrDefault();
 		}
 
 		internal TextViewPosition? GetPositionFromMousePosition()
 		{
-			var position = textEditor.TextArea.TextView.GetPosition(Mouse.GetPosition(textEditor.TextArea.TextView) + textEditor.TextArea.TextView.ScrollOffset);
+#if ROMA_UNO
+			// Mouse.GetPosition is a no-op shim on Uno (always returns 0,0). Use the pointer
+			// position captured from the live PointerMoved / PointerReleased events instead, so
+			// hover hit-testing targets the actual cursor location rather than the document origin.
+			var mousePosition = _lastPointerPos;
+#else
+			var mousePosition = Mouse.GetPosition(textEditor.TextArea.TextView);
+#endif
+			var position = textEditor.TextArea.TextView.GetPosition(mousePosition + textEditor.TextArea.TextView.ScrollOffset);
 			if (position == null)
 				return null;
 			var lineLength = textEditor.Document!.GetLineByNumber(position.Value.Line).Length + 1;

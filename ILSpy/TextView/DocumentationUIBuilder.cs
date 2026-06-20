@@ -112,8 +112,12 @@ namespace ICSharpCode.ILSpy.TextView
 			var document = new TextDocument(signature);
 			var richText = highlighting ?? DocumentPrinter.ConvertTextDocumentToRichText(document, new DocumentHighlighter(document, highlightingDefinition)).ToRichTextModel();
 			var block = new Paragraph();
+#if !ROMA_UNO
 			// HACK: measure width of signature using a TextBlock
 			// Paragraph sadly does not support TextWrapping.NoWrap
+			// (Skipped on Uno: TextBlock.Inlines is backed by a TextElementCollection that requires
+			// a TextElement owner, and MinPageWidth is unused by the Uno FlowDocumentTooltip, which
+			// constrains via MaxWidth instead.)
 			var text = new TextBlock {
 				FontFamily = GetCodeFont(),
 				FontSize = displaySettings.SelectedFontSize,
@@ -122,6 +126,7 @@ namespace ICSharpCode.ILSpy.TextView
 			text.Inlines.AddRange(richText.CreateRuns(document));
 			text.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 			this.document.MinPageWidth = Math.Min(text.DesiredSize.Width, mainWindow.ActualWidth);
+#endif
 			block.Inlines.AddRange(richText.CreateRuns(document));
 			block.FontFamily = GetCodeFont();
 			block.TextAlignment = TextAlignment.Left;
