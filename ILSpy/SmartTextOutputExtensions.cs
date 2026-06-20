@@ -35,7 +35,9 @@ namespace ICSharpCode.ILSpy
 			output.AddUIElement(
 				delegate {
 					Button button = ThemeManager.Current.CreateButton();
-					button.Cursor = Cursors.Arrow;
+#if !HAS_UNO
+					button.Cursor = Cursors.Arrow; // TODO:
+#endif
 					button.Margin = new Thickness(2);
 					button.Padding = new Thickness(9, 1, 9, 1);
 					button.MinWidth = 73;

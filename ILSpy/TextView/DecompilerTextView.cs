@@ -41,6 +41,7 @@ using System.Windows.Media.Animation;
 #endif
 using System.Windows.Threading;
 using System.Xml;
+using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
@@ -431,7 +432,11 @@ namespace ICSharpCode.ILSpy.TextView
 				popupToolTip = null;
 			}
 		}
+#endif
 
+		// Builds the tooltip content (a FlowDocumentTooltip) for a hovered reference. Shared
+		// between WPF and Uno: the FlowDocument is produced by DocumentationUIBuilder (which renders
+		// via the FlowDocument shim on Uno), and FlowDocumentTooltip hosts it in the platform popup.
 		object? GenerateTooltip(ReferenceSegment segment)
 		{
 			var fontSize = settingsService.DisplaySettings.SelectedFontSize;
@@ -526,12 +531,19 @@ namespace ICSharpCode.ILSpy.TextView
 			}
 		}
 
+		// Rich documentation tooltip. The WPF body and the Uno body share the same shape (a
+		// FlowDocumentScrollViewer in a bordered popup), but diverge on the host primitives:
+		// WPF uses System.Windows Popup + SystemColors resource keys + focus/mouse virtual
+		// overrides; Uno uses the WinUI Popup primitive, theme-resource brushes, and events
+		// (WinUI Popup exposes no OnLostKeyboardFocus/OnMouseLeave to override). FlowDocumentScrollViewer
+		// itself is the real WPF control on WPF and the WindowsShims view-only host on Uno.
 		sealed class FlowDocumentTooltip : Popup
 		{
 			readonly FlowDocumentScrollViewer viewer;
 
 			public FlowDocumentTooltip(FlowDocument document, double fontSize, double maxWith)
 			{
+#if !ROMA_UNO
 				TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
 				viewer = new() {
 					Width = document.MinPageWidth + fontSize * 5,
@@ -551,8 +563,31 @@ namespace ICSharpCode.ILSpy.TextView
 				document.TextAlignment = TextAlignment.Left;
 				document.FontSize = fontSize;
 				document.FontFamily = SystemFonts.SmallCaptionFontFamily;
+#else
+				viewer = new() {
+					MaxWidth = maxWith,
+					Document = document,
+				};
+				var border = new Microsoft.UI.Xaml.Controls.Border {
+					BorderThickness = new Microsoft.UI.Xaml.Thickness(1),
+					MaxHeight = 400,
+					Child = viewer,
+					Background = ThemeBrush("ToolTipBackground", "SystemControlBackgroundChromeMediumLowBrush"),
+					BorderBrush = ThemeBrush("ToolTipBorderBrush", "SystemControlForegroundBaseMediumLowBrush"),
+				};
+				this.Child = border;
+				viewer.Foreground = ThemeBrush("ToolTipForeground", "SystemControlForegroundBaseHighBrush");
+
+				// WinUI's Popup primitive has no OnLostKeyboardFocus / OnMouseLeave virtuals; track
+				// focus containment via events and close on focus loss or pointer-exit, matching the
+				// WPF override behaviour below.
+				GotFocus += (_, _) => _keyboardFocusWithin = true;
+				LostFocus += (_, _) => { _keyboardFocusWithin = false; IsOpen = false; };
+				viewer.PointerExited += (_, _) => { if (CloseWhenMouseMovesAway) IsOpen = false; };
+#endif
 			}
 
+#if !ROMA_UNO
 			public bool CloseWhenMouseMovesAway {
 				get { return !this.IsKeyboardFocusWithin; }
 			}
@@ -573,8 +608,30 @@ namespace ICSharpCode.ILSpy.TextView
 				if (CloseWhenMouseMovesAway)
 					this.IsOpen = false;
 			}
-		}
+#else
+			bool _keyboardFocusWithin;
+
+			// Matches WPF's !IsKeyboardFocusWithin: keep the popup open while it (or a child) is
+			// focused, e.g. while the user scrolls or selects inside the documentation.
+			public bool CloseWhenMouseMovesAway => !_keyboardFocusWithin;
+
+			// Resolve a theme brush by key, preferring the WPF-equivalent ToolTip key and falling
+			// back to a WinUI system brush; returns a neutral brush if neither resource exists.
+			static Microsoft.UI.Xaml.Media.Brush ThemeBrush(string preferredKey, string fallbackKey)
+			{
+				var resources = Microsoft.UI.Xaml.Application.Current?.Resources;
+				if (resources is not null)
+				{
+					if (resources.TryGetValue(preferredKey, out var preferred) && preferred is Microsoft.UI.Xaml.Media.Brush a)
+						return a;
+					if (resources.TryGetValue(fallbackKey, out var fallback) && fallback is Microsoft.UI.Xaml.Media.Brush b)
+						return b;
+				}
+				return new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray);
+			}
 #endif
+		}
+
 		#endregion
 
 		#region Highlight brackets
@@ -833,6 +890,26 @@ namespace ICSharpCode.ILSpy.TextView
 			expandMemberDefinitions = settingsService.DisplaySettings.ExpandMemberDefinitions;
 			SetLocalReferenceMarks(textOutput.InitialHighlightReference);
 		}
+
+#if ROMA_UNO
+		internal string GetUnoDebugSnapshot()
+		{
+			var document = textEditor.Document;
+			var textView = textEditor.TextArea.TextView;
+			return string.Join(Environment.NewLine, new[] {
+				$"currentTitle={currentTitle ?? string.Empty}",
+				$"documentLength={document?.TextLength ?? -1}",
+				$"documentLineCount={document?.LineCount ?? -1}",
+				$"editorTextLength={textEditor.Text?.Length ?? -1}",
+				$"textViewSize={textView.ActualWidth:0.##}x{textView.ActualHeight:0.##}",
+				$"waitVisible={waitAdorner.Visibility}",
+				$"nextDecompilationRun={(nextDecompilationRun is null ? "null" : "pending")}",
+				$"currentCancellationToken={(currentCancellationTokenSource is null ? "null" : "active")}",
+				$"decompiledNodes={decompiledNodes?.Length ?? -1}",
+				textView.GetInlineObjectsDebugSnapshot(),
+			});
+		}
+#endif
 		#endregion
 
 		#region Decompile (for display)
@@ -1324,29 +1401,13 @@ namespace ICSharpCode.ILSpy.TextView
 
 		internal TextViewPosition? GetPositionFromMousePosition()
 		{
-#if ROMA_UNO
-			// Use the pointer position stored by OnTextAreaPointerReleased (Roma partial),
-			// converting from viewport to document space via the existing UnoEdit ScrollOffset.
-			var tv = textEditor.TextArea.TextView;
-			var visualPos = new Windows.Foundation.Point(
-				_lastPointerPos.X + tv.ScrollOffset.X,
-				_lastPointerPos.Y + tv.ScrollOffset.Y);
-			var position = tv.GetPosition(visualPos);
-			if (position == null)
-				return null;
-			var lineLength = textEditor.Document.GetLineByNumber(position.Value.Line).Length + 1;
-			if (position.Value.Column == lineLength)
-				return null;
-			return position;
-#else
 			var position = textEditor.TextArea.TextView.GetPosition(Mouse.GetPosition(textEditor.TextArea.TextView) + textEditor.TextArea.TextView.ScrollOffset);
 			if (position == null)
 				return null;
-			var lineLength = textEditor.Document.GetLineByNumber(position.Value.Line).Length + 1;
+			var lineLength = textEditor.Document!.GetLineByNumber(position.Value.Line).Length + 1;
 			if (position.Value.Column == lineLength)
 				return null;
 			return position;
-#endif
 		}
 
 		public DecompilerTextViewState? GetState()
