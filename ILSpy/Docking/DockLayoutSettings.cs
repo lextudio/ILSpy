@@ -21,7 +21,14 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
+#if ROMA_UNO
+// UnoDock's serializer lives in a different namespace and exposes Stream-based (not TextReader)
+// (de)serialization; XmlLayoutSerializer is otherwise API-compatible with WPF AvalonDock's.
+using System.Text;
+using AvalonDock.Serializer.Xml;
+#else
 using AvalonDock.Layout.Serialization;
+#endif
 
 namespace ICSharpCode.ILSpy.Docking
 {
@@ -90,6 +97,26 @@ namespace ICSharpCode.ILSpy.Docking
 
 		public void Deserialize(XmlLayoutSerializer serializer)
 		{
+#if ROMA_UNO
+			// No saved layout: leave the host's code-built default layout (already on the DockingManager)
+			// untouched rather than parsing the WPF-schema DefaultLayout, which UnoDock can't read.
+			if (!Valid)
+				return;
+			try
+			{
+				Deserialize(rawSettings);
+			}
+			catch (Exception)
+			{
+				// Corrupt saved layout: fall back to the code-built default (do nothing).
+			}
+
+			void Deserialize(string settings)
+			{
+				using var stream = new MemoryStream(Encoding.UTF8.GetBytes(settings));
+				serializer.Deserialize(stream);
+			}
+#else
 			if (!Valid)
 				rawSettings = DefaultLayout;
 			try
@@ -108,15 +135,22 @@ namespace ICSharpCode.ILSpy.Docking
 					serializer.Deserialize(reader);
 				}
 			}
+#endif
 		}
 
 		public void Serialize(XmlLayoutSerializer serializer)
 		{
+#if ROMA_UNO
+			using var stream = new MemoryStream();
+			serializer.Serialize(stream);
+			rawSettings = Encoding.UTF8.GetString(stream.ToArray());
+#else
 			using (StringWriter fs = new StringWriter())
 			{
 				serializer.Serialize(fs);
 				rawSettings = fs.ToString();
 			}
+#endif
 		}
 	}
 }

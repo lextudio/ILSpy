@@ -23,9 +23,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+#if !ROMA_UNO
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+#endif
 using System.Windows.Media;
+#if ROMA_UNO
+// System.Windows brings in a ResourceDictionary shim that collides with the WinUI one; the theme
+// dictionaries are real WinUI/Uno resource dictionaries loaded via ms-appx, so bind to that type.
+using ResourceDictionary = Microsoft.UI.Xaml.ResourceDictionary;
+#endif
 
 using ICSharpCode.AvalonEdit.Highlighting;
 
@@ -43,7 +50,13 @@ namespace ICSharpCode.ILSpy.Themes
 
 		private ThemeManager()
 		{
+#if !ROMA_UNO
+			// WPF merges the theme dictionary into app resources so its control templates pick up the
+			// ResourceKeys brushes. Roma themes its WinUI UI via ElementTheme instead and applies syntax
+			// colors directly to the highlighting definition, so this app-wide merge isn't needed (and
+			// the System.Windows.Application shim has no Resources collection).
 			Application.Current.Resources.MergedDictionaries.Add(_themeDictionaryContainer);
+#endif
 			MessageBus<SettingsChangedEventArgs>.Subscribers += (sender, e) => Settings_Changed(sender, e);
 		}
 
@@ -65,6 +78,14 @@ namespace ICSharpCode.ILSpy.Themes
 			set => UpdateTheme(value);
 		}
 
+#if ROMA_UNO
+		// SmartTextOutputExtensions.AddButton uses this for inline buttons in decompiler output. The WPF
+		// Style helpers below stay compiled out; an unstyled WinUI Button is enough here.
+		public Microsoft.UI.Xaml.Controls.Button CreateButton()
+		{
+			return new Microsoft.UI.Xaml.Controls.Button();
+		}
+#else
 		public Button CreateButton()
 		{
 			return new Button {
@@ -86,6 +107,7 @@ namespace ICSharpCode.ILSpy.Themes
 		{
 			return new Style(typeof(ToggleButton), (Style)Application.Current.FindResource(ToolBar.ToggleButtonStyleKey));
 		}
+#endif
 
 		public void ApplyHighlightingColors(IHighlightingDefinition highlightingDefinition)
 		{
@@ -124,11 +146,22 @@ namespace ICSharpCode.ILSpy.Themes
 			_themeDictionaryContainer.MergedDictionaries.Clear();
 			_syntaxColors.Clear();
 
+#if ROMA_UNO
+			// Uno/WinUI XAML can't parse the WPF theme files (x:Static keys, ComponentResourceKey,
+			// <Pen>), so Roma ships parallel Uno theme dictionaries with plain string keys, loaded by
+			// ms-appx. Dark/light is detected from a string-keyed background brush.
+			var resourceDictionary = new ResourceDictionary { Source = new Uri($"ms-appx:///Themes/Theme.{themeFileName}.uno.xaml") };
+			_themeDictionaryContainer.MergedDictionaries.Add(resourceDictionary);
+
+			IsDarkTheme = resourceDictionary.TryGetValue("ILSpy.TextBackground", out var bgValue)
+				&& bgValue is SolidColorBrush { Color: { R: < 128, G: < 128, B: < 128 } };
+#else
 			// Load SyntaxColor info from theme XAML
 			var resourceDictionary = new ResourceDictionary { Source = new Uri($"/themes/Theme.{themeFileName}.xaml", UriKind.Relative) };
 			_themeDictionaryContainer.MergedDictionaries.Add(resourceDictionary);
 
 			IsDarkTheme = resourceDictionary[ResourceKeys.TextBackgroundBrush] is SolidColorBrush { Color: { R: < 128, G: < 128, B: < 128 } };
+#endif
 
 			// Iterate over keys first, because we don't want to instantiate all values eagerly, if we don't need them.
 			foreach (var item in resourceDictionary.Keys)
