@@ -64,6 +64,13 @@ namespace ICSharpCode.ILSpy.Themes
 
 		public bool IsDarkTheme { get; private set; }
 
+#if ROMA_UNO
+		// The current theme's editor-surface brush (ILSpy.TextBackground). In WPF, ILSpy binds the
+		// editor Background to this via DynamicResource; Roma doesn't merge the theme dictionary into
+		// Application.Resources, so it reads this brush here and pushes it onto the UnoEdit editor.
+		public SolidColorBrush? TextBackgroundBrush { get; private set; }
+#endif
+
 		public static IReadOnlyCollection<string> AllThemes => new[] {
 			"Light",
 			"Dark",
@@ -153,8 +160,10 @@ namespace ICSharpCode.ILSpy.Themes
 			var resourceDictionary = new ResourceDictionary { Source = new Uri($"ms-appx:///Themes/Theme.{themeFileName}.uno.xaml") };
 			_themeDictionaryContainer.MergedDictionaries.Add(resourceDictionary);
 
-			IsDarkTheme = resourceDictionary.TryGetValue("ILSpy.TextBackground", out var bgValue)
-				&& bgValue is SolidColorBrush { Color: { R: < 128, G: < 128, B: < 128 } };
+			TextBackgroundBrush = resourceDictionary.TryGetValue("ILSpy.TextBackground", out var bgValue)
+				? bgValue as SolidColorBrush
+				: null;
+			IsDarkTheme = TextBackgroundBrush is { Color: { R: < 128, G: < 128, B: < 128 } };
 #else
 			// Load SyntaxColor info from theme XAML
 			var resourceDictionary = new ResourceDictionary { Source = new Uri($"/themes/Theme.{themeFileName}.xaml", UriKind.Relative) };
