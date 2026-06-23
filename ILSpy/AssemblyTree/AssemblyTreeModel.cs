@@ -449,6 +449,28 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 #endif
 		}
 
+#if ROMA_UNO
+		// Roma renders the tree with its own WinUI SharpTreeView and resolves the active assembly list
+		// itself (presets / active-list selection in RomaAssemblyTree). These seams let the host make
+		// THIS model own the AssemblyListTreeNode it displays, so SelectNode/FindNodeByPath/history all
+		// operate on the one tree the user sees — without invoking Initialize()'s own list-loading.
+		public void ShowAssemblyListForHost(AssemblyList assemblyList) => ShowAssemblyList(assemblyList);
+
+		// Runs the startup restore tail of Initialize() (re-open the auto-loaded assembly, then navigate
+		// to the persisted ActiveTreeViewPath) against the already-shown list. Mirrors Initialize() lines
+		// that follow ShowAssemblyList, minus the list loading the host already performed.
+		public async Task RestoreSessionForHostAsync()
+		{
+			var sessionSettings = settingsService.SessionSettings;
+			if (sessionSettings.ActiveAutoLoadedAssembly != null
+				&& File.Exists(sessionSettings.ActiveAutoLoadedAssembly))
+			{
+				AssemblyList.Open(sessionSettings.ActiveAutoLoadedAssembly, true);
+			}
+			await NavigateOnLaunch(null, sessionSettings.ActiveTreeViewPath, settingsService.GetSettings<UpdateSettings>(), []);
+		}
+#endif
+
 		private void assemblyList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Reset)
@@ -784,6 +806,15 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				history.Record(new NavigationState(activeTabPage, newState));
 			}
 
+#if ROMA_UNO
+			// Roma renders the decompiled output itself: the WinUI document tab hosts its own
+			// DecompilerTextView (DocTabContent), bound via the tab DataTemplate rather than through
+			// TabPageModel.Content. The host observes SelectedItems (see MainPage) and drives the
+			// display + node-view, so the model must NOT also create an orphan DecompilerTextView here.
+			// History recording above is kept so Back/Forward work; only the rendering is skipped.
+			_ = source;
+			return;
+#else
 			if (SelectedItems.Length == 1)
 			{
 				if (SelectedItem is ILSpyTreeNode node && node.View(activeTabPage))
@@ -800,6 +831,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			activeTabPage.ShowTextViewAsync(textView => {
 				return textView.DecompileAsync(this.CurrentLanguage, this.SelectedNodes, source, options);
 			});
+#endif
 		}
 
 		public void RefreshDecompiledView()
