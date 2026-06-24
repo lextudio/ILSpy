@@ -54,9 +54,7 @@ namespace ICSharpCode.ILSpy.Metadata
 
 			var dataGrid = Helpers.PrepareDataGrid(tabPage, this);
 
-#if !ROMA_UNO
 			dataGrid.RowDetailsTemplateSelector = new CharacteristicsDataTemplateSelector("Characteristics");
-#endif
 			dataGrid.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Collapsed;
 
 			dataGrid.Columns.Clear();
@@ -113,7 +111,6 @@ namespace ICSharpCode.ILSpy.Metadata
 		}
 	}
 
-#if !ROMA_UNO
 	public class CharacteristicsDataTemplateSelector : DataTemplateSelector
 	{
 		string detailsFieldName;
@@ -123,12 +120,17 @@ namespace ICSharpCode.ILSpy.Metadata
 			this.detailsFieldName = detailsFieldName;
 		}
 
-		public override DataTemplate SelectTemplate(object item, DependencyObject container)
+		protected override DataTemplate SelectTemplateCore(object item)
+			=> SelectTemplateFor(item);
+
+		protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+			=> SelectTemplateFor(item);
+
+		private DataTemplate SelectTemplateFor(object item)
 		{
 			if (((Entry)item).Member == detailsFieldName)
 				return (DataTemplate)MetadataTableViews.Instance["HeaderFlagsDetailsDataGrid"];
 			return null;
 		}
 	}
-#endif
 }

@@ -46,7 +46,6 @@ namespace ICSharpCode.ILSpy.Metadata
 			return list;
 		}
 
-#if !ROMA_UNO
 		protected override void ConfigureDataGrid(DataGrid view)
 		{
 			view.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.VisibleWhenSelected;
@@ -55,7 +54,13 @@ namespace ICSharpCode.ILSpy.Metadata
 
 		class CustomDebugInformationDetailsTemplateSelector : DataTemplateSelector
 		{
-			public override DataTemplate SelectTemplate(object item, DependencyObject container)
+			protected override DataTemplate SelectTemplateCore(object item)
+				=> SelectTemplateFor(item);
+
+			protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+				=> SelectTemplateFor(item);
+
+			private static DataTemplate SelectTemplateFor(object item)
 			{
 				var entry = (CustomDebugInformationEntry)item;
 				switch (entry.kind)
@@ -70,7 +75,6 @@ namespace ICSharpCode.ILSpy.Metadata
 				}
 			}
 		}
-#endif
 
 		internal struct CustomDebugInformationEntry
 		{
