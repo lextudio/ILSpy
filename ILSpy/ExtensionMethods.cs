@@ -173,6 +173,14 @@ namespace ICSharpCode.ILSpy
 
 		public static void SelectItem(this DataGrid view, object item)
 		{
+#if ROMA_UNO
+			// Set the engine selection so it survives virtualization: a re-realized row reads
+			// its selected state from the DataGrid's selection, not a transient row flag. Then
+			// scroll the (possibly off-screen) item into view.
+			view.SelectedItem = item;
+			view.ScrollIntoView(item);
+			view.UpdateLayout();
+#endif
 			var container = (DataGridRow)view.ItemContainerGenerator.ContainerFromItem(item);
 			if (container != null)
 				container.IsSelected = true;

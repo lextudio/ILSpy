@@ -46,7 +46,15 @@ namespace ICSharpCode.ILSpy.Util
 		{
 			try
 			{
-				Process.Start(new ProcessStartInfo { FileName = folderPath, UseShellExecute = true });
+				if (string.IsNullOrEmpty(folderPath))
+					return;
+
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+					Process.Start(new ProcessStartInfo("open") { ArgumentList = { folderPath }, UseShellExecute = false });
+				else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+					Process.Start(new ProcessStartInfo("xdg-open") { ArgumentList = { folderPath }, UseShellExecute = false });
+				else
+					Process.Start(new ProcessStartInfo { FileName = folderPath, UseShellExecute = true });
 			}
 			catch (Exception)
 			{
@@ -57,7 +65,6 @@ namespace ICSharpCode.ILSpy.Util
 
 		public static void OpenFolderAndSelectItem(string path)
 		{
-			// Reuse the multi-item implementation for single item selection to avoid duplication.
 			if (string.IsNullOrEmpty(path))
 				return;
 			if (Directory.Exists(path))
@@ -69,6 +76,27 @@ namespace ICSharpCode.ILSpy.Util
 			if (!File.Exists(path))
 				return;
 
+			// Reveal-and-select the file. Windows uses the shell32 multi-item path below;
+			// macOS reveals in Finder; Linux opens the containing folder (no portable select).
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+			{
+				try
+				{
+					Process.Start(new ProcessStartInfo("open") { ArgumentList = { "-R", path }, UseShellExecute = false });
+				}
+				catch (Exception)
+				{
+					OpenFolder(Path.GetDirectoryName(path)!);
+				}
+				return;
+			}
+
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				OpenFolder(Path.GetDirectoryName(path)!);
+				return;
+			}
+
 			OpenFolderAndSelectItems(path);
 		}
 
@@ -76,6 +104,15 @@ namespace ICSharpCode.ILSpy.Util
 		{
 			if (paths == null)
 				return;
+
+			// Non-Windows: the shell32 select API is unavailable, reveal each item individually.
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				foreach (var p in paths)
+					OpenFolderAndSelectItem(p);
+				return;
+			}
+
 			// Group by containing folder
 			var files = paths.Distinct(StringComparer.OrdinalIgnoreCase).Where(p => !string.IsNullOrEmpty(p) && File.Exists(p)).ToList();
 			if (files.Count == 0)
