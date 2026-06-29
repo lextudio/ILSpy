@@ -96,6 +96,9 @@ namespace ICSharpCode.ILSpy
 #if ROMA_UNO
 		public static TextViewContext ForTreeNode(SharpTreeNode node, SharpTreeView treeView = null)
 			=> new() { SelectedTreeNodes = [node], TreeView = treeView };
+
+		public static TextViewContext ForDataGrid(DataGrid grid, DependencyObject originalSource)
+			=> new() { DataGrid = grid, OriginalSource = originalSource };
 #endif
 
 		public static TextViewContext Create(ContextMenuEventArgs eventArgs, SharpTreeView treeView = null, DecompilerTextView textView = null, ListBox listBox = null, DataGrid dataGrid = null)
@@ -181,12 +184,20 @@ namespace ICSharpCode.ILSpy
 	{
 #if ROMA_UNO
 		// On Uno the full WPF control event/menu wiring is not yet available.
-		// Add() is a no-op so call sites compile; real context-menu support is a Roma.Host milestone.
+		// Tree/text/listbox Add() remain no-ops; DataGrid Add() delegates to a hook that
+		// Roma.Host registers so the metadata grid gets a right-click context menu.
 		public static event EventHandler<EventArgs> ContextMenuClosed { add { } remove { } }
 		public static void Add(SharpTreeView treeView) { }
 		public static void Add(DecompilerTextView textView) { }
 		public static void Add(ListBox listBox) { }
-		public static void Add(DataGrid dataGrid) { }
+
+		/// <summary>
+		/// Roma.Host sets this before the first metadata grid is created to attach
+		/// context-menu support without a reverse dependency from ILSpy → Roma.Host.
+		/// </summary>
+		public static Action<DataGrid>? AttachDataGridContextMenu { get; set; }
+
+		public static void Add(DataGrid dataGrid) => AttachDataGridContextMenu?.Invoke(dataGrid);
 #else
 		private static readonly WeakEventSource<EventArgs> ContextMenuClosedEventSource = new();
 
