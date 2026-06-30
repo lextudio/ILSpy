@@ -19,11 +19,10 @@ namespace ICSharpCode.ILSpy.Metadata
 				return template;
 			}
 #if ROMA_UNO
-			// FrameworkElementFactory / Hyperlink / DataTemplate.VisualTree are WPF-imperative
-			// template builders with no WinUI equivalent. Token-link cells render as plain text
-			// until the Uno DataTemplate port replaces this; return null (DataGrid accepts it).
-			linkCellTemplates.Add(name, null);
-			return null;
+			string xaml = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'><TextBlock Text=\"{Binding}\"/></DataTemplate>";
+			var dataTemplate = (DataTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(xaml);
+			linkCellTemplates.Add(name, dataTemplate);
+			return dataTemplate;
 #else
 			var tb = new FrameworkElementFactory(typeof(TextBlock));
 			var hyper = new FrameworkElementFactory(typeof(Hyperlink));

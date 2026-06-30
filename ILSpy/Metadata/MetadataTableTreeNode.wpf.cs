@@ -5,9 +5,9 @@ namespace ICSharpCode.ILSpy.Metadata
 {
 	partial class MetadataTableTreeNode
 	{
-#if !ROMA_UNO
 		protected void ScrollRowIntoView(DataGrid view, int row)
 		{
+#if !ROMA_UNO
 			if (!view.IsLoaded)
 			{
 				view.Loaded += View_Loaded;
@@ -18,8 +18,13 @@ namespace ICSharpCode.ILSpy.Metadata
 			}
 			if (row > 0 && view.Items.Count >= row)
 				view.Dispatcher.BeginInvoke(() => view.SelectItem(view.Items[row - 1]), DispatcherPriority.Background);
+#else
+			if (row > 0 && view.Items.Count >= row)
+				view.SelectItem(view.Items[row - 1]);
+#endif
 		}
 
+#if !ROMA_UNO
 		private void View_Loaded(object sender, System.Windows.RoutedEventArgs e)
 		{
 			DataGrid view = (DataGrid)sender;
@@ -28,8 +33,6 @@ namespace ICSharpCode.ILSpy.Metadata
 			view.Loaded -= View_Loaded;
 			this.scrollTarget = default;
 		}
-#else
-		protected void ScrollRowIntoView(DataGrid view, int row) { }
 #endif
 	}
 }
