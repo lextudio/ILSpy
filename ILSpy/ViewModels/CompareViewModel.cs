@@ -33,7 +33,9 @@ using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 using ICSharpCode.Decompiler.Util;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.TreeNodes;
+#if !ROMA_UNO
 using ICSharpCode.ILSpy.Views;
+#endif
 using ICSharpCode.ILSpyX;
 using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
 
@@ -520,6 +522,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 
 		internal static void Show(TabPageModel tabPage, LoadedAssembly left, LoadedAssembly right, AssemblyTreeModel assemblyTreeModel)
 		{
+#if !ROMA_UNO
 			tabPage.ShowTextView(t => t.RunWithCancellation(token => Task.Run(DoCompare, token), $"Comparing {left.Text} - {right.Text}").Then(vm => {
 				tabPage.Title = $"Compare {left.Text} - {right.Text}";
 				tabPage.SupportsLanguageSwitching = false;
@@ -528,6 +531,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 				compareView.DataContext = vm;
 				tabPage.Content = compareView;
 			}));
+#endif
 
 			CompareViewModel DoCompare()
 			{

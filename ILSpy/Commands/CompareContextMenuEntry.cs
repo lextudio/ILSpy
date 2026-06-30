@@ -23,7 +23,9 @@ using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.Docking;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.ViewModels;
+#if !ROMA_UNO
 using ICSharpCode.ILSpy.Views;
+#endif
 
 namespace ICSharpCode.ILSpy
 {

@@ -30,7 +30,9 @@ namespace ICSharpCode.ILSpy
 		{
 			this.wrappedCommand = wrappedCommand;
 
+#if !ROMA_UNO
 			Application.Current.MainWindow?.CommandBindings.Add(new CommandBinding(wrappedCommand, OnExecute, OnCanExecute));
+#endif
 		}
 
 		public static ICommand Unwrap(ICommand command)

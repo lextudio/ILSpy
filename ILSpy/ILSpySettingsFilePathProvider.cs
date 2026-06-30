@@ -27,6 +27,18 @@ namespace ICSharpCode.ILSpy
 	{
 		public string GetSettingsFilePath()
 		{
+			var overridePath = Environment.GetEnvironmentVariable("ROMA_SETTINGS_FILE");
+			if (!string.IsNullOrWhiteSpace(overridePath))
+			{
+				var overrideDirectory = Path.GetDirectoryName(overridePath);
+				if (!string.IsNullOrEmpty(overrideDirectory))
+				{
+					Directory.CreateDirectory(overrideDirectory);
+				}
+
+				return overridePath;
+			}
+
 			if (App.CommandLineArguments.ConfigFile != null)
 				return App.CommandLineArguments.ConfigFile;
 
@@ -38,7 +50,11 @@ namespace ICSharpCode.ILSpy
 					return localPath;
 			}
 
-			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ICSharpCode", "ILSpy.xml");
+			var fallback = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ICSharpCode", "ILSpy.xml");
+			var fallbackDirectory = Path.GetDirectoryName(fallback);
+			if (!string.IsNullOrEmpty(fallbackDirectory))
+				Directory.CreateDirectory(fallbackDirectory);
+			return fallback;
 		}
 	}
 }

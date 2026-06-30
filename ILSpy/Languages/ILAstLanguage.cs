@@ -138,11 +138,14 @@ namespace ICSharpCode.ILSpy
 						OnStepperUpdated(new EventArgs());
 					}
 				}
-				(output as ISmartTextOutput)?.AddButton(Images.ViewCode, "Show Steps", delegate {
-					dockWorkspace.ShowToolPane(DebugStepsPaneModel.PaneContentId);
-				});
-				output.WriteLine();
-				il.WriteTo(output, DebugSteps.Options);
+			(output as ISmartTextOutput)?.AddButton(Images.ViewCode, "Show Steps", delegate {
+				dockWorkspace.ShowToolPane(DebugStepsPaneModel.PaneContentId);
+			});
+			output.WriteLine();
+			il.WriteTo(output, new ILAstWritingOptions {
+				UseFieldSugar = true,
+				UseLogicOperationSugar = true
+			});
 			}
 		}
 	}
