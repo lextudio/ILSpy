@@ -34,8 +34,10 @@ namespace ICSharpCode.ILSpy.Analyzers
 	{
 		public bool IsVisible(TextViewContext context)
 		{
+#if !ROMA_UNO
 			if (context.TreeView is AnalyzerTreeView && context.SelectedTreeNodes != null && context.SelectedTreeNodes.All(n => n.Parent.IsRoot))
 				return false;
+#endif
 			if (context.SelectedTreeNodes == null)
 				return context.Reference != null && IsValidReference(context.Reference.Reference);
 			return context.SelectedTreeNodes.All(n => n is IMemberTreeNode);
