@@ -34,14 +34,8 @@ namespace ICSharpCode.ILSpy
 		{
 			output.AddUIElement(
 				delegate {
-#if ROMA_UNO
-					Microsoft.UI.Xaml.Controls.Button button = ThemeManager.Current.CreateButton();
-#else
 					Button button = ThemeManager.Current.CreateButton();
-#endif
-#if !HAS_UNO
-					button.Cursor = Cursors.Arrow; // TODO:
-#endif
+					button.Cursor = Cursors.Arrow;
 					button.Margin = new Thickness(2);
 					button.Padding = new Thickness(9, 1, 9, 1);
 					button.MinWidth = 73;

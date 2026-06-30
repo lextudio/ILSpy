@@ -86,8 +86,7 @@ namespace ICSharpCode.ILSpy.Themes
 		}
 
 #if ROMA_UNO
-		// SmartTextOutputExtensions.AddButton uses this for inline buttons in decompiler output. The WPF
-		// Style helpers below stay compiled out; an unstyled WinUI Button is enough here.
+		// SmartTextOutputExtensions.AddButton uses this for inline buttons in decompiler output.
 		public Microsoft.UI.Xaml.Controls.Button CreateButton()
 		{
 			return new Microsoft.UI.Xaml.Controls.Button();
