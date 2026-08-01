@@ -71,7 +71,7 @@
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
         "resolved": "1.1.0",
-        "contentHash": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A=="
+        "contentHash": "TODWS3kzLiDQY2ieMt3CTwqrm5qNvk3DTBk0Z8DaISTdIpO0bTk5NT4i0JP88OGxn1cWvoA0rJVW5+RwI132Cg=="
       },
       "Microsoft.SourceLink.Common": {
         "type": "Transitive",
