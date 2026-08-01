@@ -71,7 +71,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				if (state == LoadState.Unloaded)
 				{
 					state = LoadState.Loading;
-					Dispatcher.CurrentDispatcher.BeginInvoke(() => {
+					_ = Dispatcher.CurrentDispatcher.BeginInvoke(() => {
 						var resolver = parentAssembly.LoadedAssembly.GetAssemblyResolver(SettingsService.DecompilerSettings.AutoLoadAssemblyReferences);
 						referencedModule = resolver.Resolve(r);
 						state = referencedModule is null
@@ -98,7 +98,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					// while the list of references is updated causes problems with WPF's ListView rendering.
 					// Moving the assembly resolving out of the "add assembly reference"-loop by using the
 					// dispatcher fixes the issue.
-					Dispatcher.CurrentDispatcher.BeginInvoke(EnsureLazyChildren, DispatcherPriority.Normal);
+					_ = Dispatcher.CurrentDispatcher.BeginInvoke(EnsureLazyChildren, DispatcherPriority.Normal);
 				}
 				return base.ShowExpander;
 			}

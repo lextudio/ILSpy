@@ -155,7 +155,7 @@ namespace ICSharpCode.ILSpy.Search
 
 		void FocusSearchBox()
 		{
-			this.BeginInvoke(DispatcherPriority.Background, () => {
+			_ = this.BeginInvoke(DispatcherPriority.Background, () => {
 				searchBox.Focus();
 				searchBox.SelectAll();
 			});

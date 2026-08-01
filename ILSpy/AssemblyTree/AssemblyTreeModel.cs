@@ -375,7 +375,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				AssemblyList.Open(sessionSettings.ActiveAutoLoadedAssembly, true);
 			}
 
-			UIThreadDispatcher.BeginInvoke(DispatcherPriority.Loaded, OpenAssembliesAsync);
+			_ = UIThreadDispatcher.BeginInvoke(DispatcherPriority.Loaded, OpenAssembliesAsync);
 		}
 
 		private async Task OpenAssembliesAsync()
@@ -492,7 +492,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 			if (SelectedItem == node)
 			{
-				UIThreadDispatcher.BeginInvoke(RefreshDecompiledView);
+				_ = UIThreadDispatcher.BeginInvoke(RefreshDecompiledView);
 			}
 			else
 			{
@@ -502,7 +502,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				activeView?.ScrollIntoView(node);
 				SelectedItem = node;
 
-				UIThreadDispatcher.BeginInvoke(DispatcherPriority.Background, () => {
+				_ = UIThreadDispatcher.BeginInvoke(DispatcherPriority.Background, () => {
 #if CROSS_PLATFORM
 					SelectedItem = node;
 #endif
@@ -757,7 +757,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			{
 				ContextMenuProvider.ContextMenuClosed -= ContextMenuClosed;
 
-				UIThreadDispatcher.BeginInvoke(DispatcherPriority.Background, () => {
+				_ = UIThreadDispatcher.BeginInvoke(DispatcherPriority.Background, () => {
 					if (Mouse.RightButton != MouseButtonState.Pressed)
 					{
 						RefreshDecompiledView();
@@ -797,7 +797,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 
 			var options = activeTabPage.CreateDecompilationOptions();
 			options.TextViewState = newState as DecompilerTextViewState;
-			activeTabPage.ShowTextViewAsync(textView => {
+			_ = activeTabPage.ShowTextViewAsync(textView => {
 				return textView.DecompileAsync(this.CurrentLanguage, this.SelectedNodes, source, options);
 			});
 		}

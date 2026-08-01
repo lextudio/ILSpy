@@ -17,7 +17,7 @@ namespace ICSharpCode.ILSpy.Metadata
 				View_Loaded(view, new System.Windows.RoutedEventArgs());
 			}
 			if (row > 0 && view.Items.Count >= row)
-				view.Dispatcher.BeginInvoke(() => view.SelectItem(view.Items[row - 1]), DispatcherPriority.Background);
+				_ = view.Dispatcher.BeginInvoke(() => view.SelectItem(view.Items[row - 1]), DispatcherPriority.Background);
 		}
 
 		private void View_Loaded(object sender, System.Windows.RoutedEventArgs e)

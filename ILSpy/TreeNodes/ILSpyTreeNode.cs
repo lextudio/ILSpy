@@ -89,7 +89,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 
 			assemblyTreeModel.SelectNode(this, inNewTabPage: true);
 
-			App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, assemblyTreeModel.RefreshDecompiledView);
+			_ = App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, assemblyTreeModel.RefreshDecompiledView);
 		}
 
 		/// <summary>

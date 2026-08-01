@@ -263,7 +263,7 @@ namespace ICSharpCode.ILSpy.Controls.TreeView
 				// to much (keep node itself visible)
 				base.ScrollIntoView(lastVisibleChild);
 				// For some reason, this only works properly when delaying it...
-				Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(
+				_ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(
 					delegate {
 						base.ScrollIntoView(node);
 					}));
@@ -420,7 +420,7 @@ namespace ICSharpCode.ILSpy.Controls.TreeView
 			}
 			else
 			{
-				this.BeginInvoke(DispatcherPriority.Loaded, () => OnFocusItem(node));
+				_ = this.BeginInvoke(DispatcherPriority.Loaded, () => OnFocusItem(node));
 			}
 		}
 

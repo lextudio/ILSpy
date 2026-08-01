@@ -46,7 +46,7 @@ namespace ICSharpCode.ILSpy.Metadata
 		protected void ScrollItemIntoView(DataGrid view, object item)
 		{
 			view.Loaded += View_Loaded;
-			view.Dispatcher.BeginInvoke(() => view.SelectItem(item), DispatcherPriority.Background);
+			_ = view.Dispatcher.BeginInvoke(() => view.SelectItem(item), DispatcherPriority.Background);
 		}
 
 		private void View_Loaded(object sender, System.Windows.RoutedEventArgs e)

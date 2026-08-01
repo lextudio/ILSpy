@@ -572,7 +572,7 @@ namespace ICSharpCode.ILSpy.TextView
 		public void Report(DecompilationProgress value)
 		{
 			double v = (double)value.UnitsCompleted / value.TotalUnits;
-			Dispatcher.BeginInvoke(DispatcherPriority.Normal, delegate {
+			_ = Dispatcher.BeginInvoke(DispatcherPriority.Normal, delegate {
 				progressBar.IsIndeterminate = !double.IsFinite(v);
 				progressBar.Value = v * 100.0;
 				progressTitle.Text = !string.IsNullOrWhiteSpace(value.Title) ? value.Title : Properties.Resources.Decompiling;
@@ -670,7 +670,7 @@ namespace ICSharpCode.ILSpy.TextView
 					myCancellationTokenSource.Dispose();
 				}
 			};
-			task.ContinueWith(delegate { Dispatcher.BeginInvoke(DispatcherPriority.Normal, continuation); }, TaskScheduler.Default);
+			_ = task.ContinueWith(delegate { _ = Dispatcher.BeginInvoke(DispatcherPriority.Normal, continuation); }, TaskScheduler.Default);
 			return tcs.Task;
 		}
 
@@ -840,7 +840,7 @@ namespace ICSharpCode.ILSpy.TextView
 			var task = this.nextDecompilationRun.TaskCompletionSource.Task;
 			if (!isDecompilationScheduled)
 			{
-				Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
+				_ = Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
 					delegate {
 						var context = this.nextDecompilationRun;
 						this.nextDecompilationRun = null;

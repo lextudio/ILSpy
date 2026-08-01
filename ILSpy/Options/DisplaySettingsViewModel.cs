@@ -24,7 +24,7 @@ namespace ICSharpCode.ILSpy.Options
 		{
 			fontFamilies = [settings.SelectedFont];
 
-			Task.Run(FontLoader).ContinueWith(continuation => {
+			_ = Task.Run(FontLoader).ContinueWith(continuation => {
 				FontFamilies = continuation.Result;
 				if (continuation.Exception == null)
 					return;

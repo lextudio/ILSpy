@@ -198,11 +198,13 @@ namespace ICSharpCode.ILSpy
 		/// </summary>
 		public static void HandleExceptions(this Task task)
 		{
-			task.CatchAsync<Exception>(exception => App.Current.Dispatcher.BeginInvoke(new Action(delegate {
-				AvalonEditTextOutput output = new();
-				output.Write(exception.ToString());
-				App.ExportProvider.GetExportedValue<DockWorkspace>().ShowText(output);
-			}))).IgnoreExceptions();
+			task.CatchAsync<Exception>(exception => {
+				_ = App.Current.Dispatcher.BeginInvoke(new Action(delegate {
+					AvalonEditTextOutput output = new();
+					output.Write(exception.ToString());
+					App.ExportProvider.GetExportedValue<DockWorkspace>().ShowText(output);
+				}));
+			}).IgnoreExceptions();
 		}
 	}
 }

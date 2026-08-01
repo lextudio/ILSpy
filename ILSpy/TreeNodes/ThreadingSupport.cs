@@ -84,7 +84,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					{
 						ct.ThrowIfCancellationRequested();
 						result.Add(child);
-						App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action<SharpTreeNode>(
+						_ = App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action<SharpTreeNode>(
 							delegate (SharpTreeNode newChild) {
 								// don't access "child" here,
 								// the background thread might already be running the next loop iteration
@@ -98,9 +98,9 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				}, ct);
 			loadChildrenTask = thisTask;
 			thisTask.Start();
-			thisTask.ContinueWith(
+			_ = thisTask.ContinueWith(
 				delegate (Task continuation) {
-					App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+					_ = App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
 						delegate {
 							if (loadChildrenTask == thisTask)
 							{
