@@ -95,7 +95,7 @@ namespace ICSharpCode.ILSpy
 
 		internal static void Save(DockWorkspace dockWorkspace, ICollection<SharpTreeNode> nodes, string path, bool isFile)
 		{
-			dockWorkspace.RunWithCancellation(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
 				Stopwatch stopwatch = Stopwatch.StartNew();
 				Dictionary<string, int> fileNameCounts = new Dictionary<string, int>(Platform.FileNameComparer);
@@ -124,7 +124,7 @@ namespace ICSharpCode.ILSpy
 					output.AddButton(null, Resources.OpenExplorer, delegate { ShellHelper.OpenFolder(path); });
 				output.WriteLine();
 				return output;
-			}, ct)).Then(dockWorkspace.ShowText).HandleExceptions();
+			}, ct)).ThenAsync(dockWorkspace.ShowText).HandleExceptions();
 
 			static IEnumerable<(PackageEntry Entry, string TargetFileName)> CollectAllFiles(ICollection<SharpTreeNode> nodes)
 			{

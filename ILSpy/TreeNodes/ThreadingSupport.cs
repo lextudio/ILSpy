@@ -38,7 +38,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Adds threading support to nodes
 	/// </summary>
-	class ThreadingSupport
+	class ThreadingSupport : IDisposable
 	{
 		readonly Stopwatch stopwatch = new Stopwatch();
 		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -53,9 +53,16 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		public void Cancel()
 		{
 			cancellationTokenSource.Cancel();
+			cancellationTokenSource.Dispose();
 			loadChildrenTask = null;
 			cancellationTokenSource = new CancellationTokenSource();
 			stopwatch.Reset();
+		}
+
+		public void Dispose()
+		{
+			cancellationTokenSource.Cancel();
+			cancellationTokenSource.Dispose();
 		}
 
 		/// <summary>

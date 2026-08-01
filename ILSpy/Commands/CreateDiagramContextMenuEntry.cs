@@ -48,7 +48,7 @@ namespace ICSharpCode.ILSpy.TextView
 			if (string.IsNullOrEmpty(selectedPath))
 				return;
 
-			dockWorkspace.RunWithCancellation(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
 				AvalonEditTextOutput output = new() {
 					EnableHyperlinks = true
 				};
@@ -78,7 +78,7 @@ namespace ICSharpCode.ILSpy.TextView
 				output.AddButton(null, Resources.OpenExplorer, delegate { ShellHelper.OpenFolderAndSelectItem(diagramHtml); });
 				output.WriteLine();
 				return output;
-			}, ct), Properties.Resources.CreatingDiagram).Then(dockWorkspace.ShowText).HandleExceptions();
+			}, ct), Properties.Resources.CreatingDiagram).ThenAsync(dockWorkspace.ShowText).HandleExceptions();
 
 			return;
 		}

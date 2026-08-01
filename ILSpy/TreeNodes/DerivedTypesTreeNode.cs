@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -30,7 +31,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Lists the sub types of a class.
 	/// </summary>
-	sealed class DerivedTypesTreeNode : ILSpyTreeNode
+	sealed class DerivedTypesTreeNode : ILSpyTreeNode, IDisposable
 	{
 		readonly AssemblyList list;
 		readonly ITypeDefinition type;
@@ -42,6 +43,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.type = type;
 			this.LazyLoading = true;
 			this.threading = new ThreadingSupport();
+		}
+
+		public void Dispose()
+		{
+			threading.Dispose();
 		}
 
 		public override object Text => Resources.DerivedTypes;

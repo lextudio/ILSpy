@@ -27,23 +27,23 @@ namespace ICSharpCode.ILSpy
 {
 	public static class TaskHelper
 	{
-		public static readonly Task CompletedTask = FromResult<object>(null);
+		public static readonly Task CompletedTask = FromResultAsync<object>(null);
 
-		public static Task<T> FromResult<T>(T result)
+		public static Task<T> FromResultAsync<T>(T result)
 		{
 			TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
 			tcs.SetResult(result);
 			return tcs.Task;
 		}
 
-		public static Task<T> FromException<T>(Exception ex)
+		public static Task<T> FromExceptionAsync<T>(Exception ex)
 		{
 			var tcs = new TaskCompletionSource<T>();
 			tcs.SetException(ex);
 			return tcs.Task;
 		}
 
-		public static Task<T> FromCancellation<T>()
+		public static Task<T> FromCancellationAsync<T>()
 		{
 			var tcs = new TaskCompletionSource<T>();
 			tcs.SetCanceled();
@@ -92,35 +92,35 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		public static Task Then<T>(this Task<T> task, Action<T> action)
+		public static Task ThenAsync<T>(this Task<T> task, Action<T> action)
 		{
 			if (action == null)
 				throw new ArgumentNullException(nameof(action));
 			return task.ContinueWith(t => action(t.Result), CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
-		public static Task<U> Then<T, U>(this Task<T> task, Func<T, U> func)
+		public static Task<U> ThenAsync<T, U>(this Task<T> task, Func<T, U> func)
 		{
 			if (func == null)
 				throw new ArgumentNullException(nameof(func));
 			return task.ContinueWith(t => func(t.Result), CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
-		public static Task Then<T>(this Task<T> task, Func<T, Task> asyncFunc)
+		public static Task ThenAsync<T>(this Task<T> task, Func<T, Task> asyncFunc)
 		{
 			if (asyncFunc == null)
 				throw new ArgumentNullException(nameof(asyncFunc));
 			return task.ContinueWith(t => asyncFunc(t.Result), CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap();
 		}
 
-		public static Task<U> Then<T, U>(this Task<T> task, Func<T, Task<U>> asyncFunc)
+		public static Task<U> ThenAsync<T, U>(this Task<T> task, Func<T, Task<U>> asyncFunc)
 		{
 			if (asyncFunc == null)
 				throw new ArgumentNullException(nameof(asyncFunc));
 			return task.ContinueWith(t => asyncFunc(t.Result), CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap();
 		}
 
-		public static Task Then(this Task task, Action action)
+		public static Task ThenAsync(this Task task, Action action)
 		{
 			if (action == null)
 				throw new ArgumentNullException(nameof(action));
@@ -130,7 +130,7 @@ namespace ICSharpCode.ILSpy
 			}, CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
-		public static Task<U> Then<U>(this Task task, Func<U> func)
+		public static Task<U> ThenAsync<U>(this Task task, Func<U> func)
 		{
 			if (func == null)
 				throw new ArgumentNullException(nameof(func));
@@ -140,7 +140,7 @@ namespace ICSharpCode.ILSpy
 			}, CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
-		public static Task Then(this Task task, Func<Task> asyncAction)
+		public static Task ThenAsync(this Task task, Func<Task> asyncAction)
 		{
 			if (asyncAction == null)
 				throw new ArgumentNullException(nameof(asyncAction));
@@ -150,7 +150,7 @@ namespace ICSharpCode.ILSpy
 			}, CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap();
 		}
 
-		public static Task<U> Then<U>(this Task task, Func<Task<U>> asyncFunc)
+		public static Task<U> ThenAsync<U>(this Task task, Func<Task<U>> asyncFunc)
 		{
 			if (asyncFunc == null)
 				throw new ArgumentNullException(nameof(asyncFunc));
@@ -168,7 +168,7 @@ namespace ICSharpCode.ILSpy
 		/// If the input task ran successfully, the returned task completes successfully.
 		/// If the input task was cancelled, the returned task is cancelled as well.
 		/// </returns>
-		public static Task Catch<TException>(this Task task, Action<TException> action) where TException : Exception
+		public static Task CatchAsync<TException>(this Task task, Action<TException> action) where TException : Exception
 		{
 			if (action == null)
 				throw new ArgumentNullException(nameof(action));
@@ -198,7 +198,7 @@ namespace ICSharpCode.ILSpy
 		/// </summary>
 		public static void HandleExceptions(this Task task)
 		{
-			task.Catch<Exception>(exception => App.Current.Dispatcher.BeginInvoke(new Action(delegate {
+			task.CatchAsync<Exception>(exception => App.Current.Dispatcher.BeginInvoke(new Action(delegate {
 				AvalonEditTextOutput output = new();
 				output.Write(exception.ToString());
 				App.ExportProvider.GetExportedValue<DockWorkspace>().ShowText(output);

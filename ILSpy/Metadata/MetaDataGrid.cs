@@ -29,7 +29,7 @@ using ICSharpCode.ILSpy.ViewModels;
 
 namespace ICSharpCode.ILSpy.Metadata
 {
-	class MetaDataGrid : DataGrid, IHaveState
+	class MetaDataGrid : DataGrid, IHaveState, IDisposable
 	{
 		private readonly MouseHoverLogic hoverLogic;
 		private ToolTip toolTip;
@@ -41,6 +41,13 @@ namespace ICSharpCode.ILSpy.Metadata
 			this.hoverLogic = new MouseHoverLogic(this);
 			this.hoverLogic.MouseHover += HoverLogic_MouseHover;
 			this.hoverLogic.MouseHoverStopped += HoverLogic_MouseHoverStopped;
+		}
+
+		public void Dispose()
+		{
+			this.hoverLogic.MouseHover -= HoverLogic_MouseHover;
+			this.hoverLogic.MouseHoverStopped -= HoverLogic_MouseHoverStopped;
+			this.hoverLogic.Dispose();
 		}
 
 		private void HoverLogic_MouseHoverStopped(object sender, System.Windows.Input.MouseEventArgs e)

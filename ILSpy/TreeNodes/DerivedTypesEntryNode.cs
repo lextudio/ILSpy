@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -27,7 +28,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	using ICSharpCode.Decompiler.TypeSystem;
 	using ICSharpCode.ILSpyX.TreeView.PlatformAbstractions;
 
-	class DerivedTypesEntryNode : ILSpyTreeNode, IMemberTreeNode
+	class DerivedTypesEntryNode : ILSpyTreeNode, IMemberTreeNode, IDisposable
 	{
 		readonly AssemblyList list;
 		readonly ITypeDefinition type;
@@ -39,6 +40,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.type = type;
 			this.LazyLoading = true;
 			threading = new ThreadingSupport();
+		}
+
+		public void Dispose()
+		{
+			threading.Dispose();
 		}
 
 		public override bool ShowExpander => !type.IsSealed && base.ShowExpander;

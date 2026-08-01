@@ -85,7 +85,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 						break;
 					updating = true;
 					var view = tabPage.Content;
-					tabPage.ShowTextView(t => t.RunWithCancellation(token => Task.Run(DoCompare, token), $"Comparing {LeftAssembly.Text} - {RightAssembly.Text}").Then(_ => {
+					tabPage.ShowTextView(t => t.RunWithCancellationAsync(token => Task.Run(DoCompare, token), $"Comparing {LeftAssembly.Text} - {RightAssembly.Text}").ThenAsync(_ => {
 						tabPage.Title = $"Compare {LeftAssembly.Text} - {RightAssembly.Text}";
 						tabPage.SupportsLanguageSwitching = false;
 						tabPage.FrozenContent = true;
@@ -520,7 +520,7 @@ namespace ICSharpCode.ILSpy.ViewModels
 
 		internal static void Show(TabPageModel tabPage, LoadedAssembly left, LoadedAssembly right, AssemblyTreeModel assemblyTreeModel)
 		{
-			tabPage.ShowTextView(t => t.RunWithCancellation(token => Task.Run(DoCompare, token), $"Comparing {left.Text} - {right.Text}").Then(vm => {
+			tabPage.ShowTextView(t => t.RunWithCancellationAsync(token => Task.Run(DoCompare, token), $"Comparing {left.Text} - {right.Text}").ThenAsync(vm => {
 				tabPage.Title = $"Compare {left.Text} - {right.Text}";
 				tabPage.SupportsLanguageSwitching = false;
 				tabPage.FrozenContent = true;

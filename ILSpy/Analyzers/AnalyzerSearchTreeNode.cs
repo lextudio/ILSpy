@@ -29,7 +29,7 @@ using ICSharpCode.ILSpyX.Analyzers;
 
 namespace ICSharpCode.ILSpy.Analyzers
 {
-	class AnalyzerSearchTreeNode : AnalyzerTreeNode
+	class AnalyzerSearchTreeNode : AnalyzerTreeNode, IDisposable
 	{
 		private readonly ThreadingSupport threading = new ThreadingSupport();
 		readonly ISymbol symbol;
@@ -42,6 +42,11 @@ namespace ICSharpCode.ILSpy.Analyzers
 			this.analyzer = analyzer ?? throw new ArgumentNullException(nameof(analyzer));
 			this.LazyLoading = true;
 			this.analyzerHeader = analyzerHeader;
+		}
+
+		public void Dispose()
+		{
+			threading.Dispose();
 		}
 
 		public override object Text => analyzerHeader

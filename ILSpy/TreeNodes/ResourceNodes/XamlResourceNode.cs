@@ -56,7 +56,7 @@ namespace ICSharpCode.ILSpy.Xaml
 			AvalonEditTextOutput output = new AvalonEditTextOutput();
 			IHighlightingDefinition highlighting = null;
 
-			tabPage.ShowTextView(textView => textView.RunWithCancellation(
+			tabPage.ShowTextView(textView => textView.RunWithCancellationAsync(
 				token => Task.Factory.StartNew(
 					() => {
 						try
@@ -85,7 +85,7 @@ namespace ICSharpCode.ILSpy.Xaml
 						}
 						return output;
 					}, token)
-			).Then(t => textView.ShowNode(t, this, highlighting)).HandleExceptions());
+			).ThenAsync(t => textView.ShowNode(t, this, highlighting)).HandleExceptions());
 			tabPage.SupportsLanguageSwitching = false;
 			return true;
 		}

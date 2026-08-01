@@ -568,7 +568,7 @@ namespace ICSharpCode.ILSpy.TextView
 		}
 		#endregion
 
-		#region RunWithCancellation
+		#region RunWithCancellationAsync
 		public void Report(DecompilationProgress value)
 		{
 			double v = (double)value.UnitsCompleted / value.TotalUnits;
@@ -596,7 +596,7 @@ namespace ICSharpCode.ILSpy.TextView
 		/// the task.
 		/// If another task is started before the previous task finishes running, the previous task is cancelled.
 		/// </summary>
-		public Task<T> RunWithCancellation<T>(Func<CancellationToken, Task<T>> taskCreation, string? progressTitle = null)
+		public Task<T> RunWithCancellationAsync<T>(Func<CancellationToken, Task<T>> taskCreation, string? progressTitle = null)
 		{
 			if (waitAdorner.Visibility != Visibility.Visible)
 			{
@@ -631,11 +631,11 @@ namespace ICSharpCode.ILSpy.TextView
 			}
 			catch (OperationCanceledException)
 			{
-				task = TaskHelper.FromCancellation<T>();
+				task = TaskHelper.FromCancellationAsync<T>();
 			}
 			catch (Exception ex)
 			{
-				task = TaskHelper.FromException<T>(ex);
+				task = TaskHelper.FromExceptionAsync<T>(ex);
 			}
 			Action continuation = delegate {
 				try
@@ -845,7 +845,7 @@ namespace ICSharpCode.ILSpy.TextView
 						var context = this.nextDecompilationRun;
 						this.nextDecompilationRun = null;
 						if (context != null)
-							DoDecompile(context, DefaultOutputLengthLimit)
+							DoDecompileAsync(context, DefaultOutputLengthLimit)
 								.ContinueWith(t => context.TaskCompletionSource.SetFromTask(t)).HandleExceptions();
 					}
 				));
@@ -870,20 +870,20 @@ namespace ICSharpCode.ILSpy.TextView
 			}
 		}
 
-		Task DoDecompile(DecompilationContext context, int outputLengthLimit)
+		Task DoDecompileAsync(DecompilationContext context, int outputLengthLimit)
 		{
-			return RunWithCancellation(
+			return RunWithCancellationAsync(
 				delegate (CancellationToken ct) { // creation of the background task
 					context.Options.CancellationToken = ct;
 					context.Options.Progress = this;
 					decompiledNodes = context.TreeNodes;
 					return DecompileAsync(context, outputLengthLimit);
 				})
-			.Then(
+			.ThenAsync(
 				delegate (AvalonEditTextOutput textOutput) { // handling the result
 					ShowOutput(textOutput, context.Language.SyntaxHighlighting, context.Options.TextViewState);
 				})
-			.Catch<Exception>(exception => {
+			.CatchAsync<Exception>(exception => {
 				textEditor.SyntaxHighlighting = null;
 				Debug.WriteLine("Decompiler crashed: " + exception.ToString());
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
@@ -975,7 +975,7 @@ namespace ICSharpCode.ILSpy.TextView
 				output.AddButton(
 					Images.ViewCode, Properties.Resources.DisplayCode,
 					delegate {
-						DoDecompile(context, ExtendedOutputLengthLimit).HandleExceptions();
+						DoDecompileAsync(context, ExtendedOutputLengthLimit).HandleExceptions();
 					});
 				output.WriteLine();
 			}
@@ -1123,13 +1123,13 @@ namespace ICSharpCode.ILSpy.TextView
 		/// </summary>
 		void SaveToDisk(DecompilationContext context, string fileName)
 		{
-			RunWithCancellation(
+			RunWithCancellationAsync(
 				delegate (CancellationToken ct) {
 					context.Options.CancellationToken = ct;
 					return SaveToDiskAsync(context, fileName);
 				})
-				.Then(output => ShowOutput(output))
-				.Catch((Exception ex) => {
+				.ThenAsync(output => ShowOutput(output))
+				.CatchAsync((Exception ex) => {
 					textEditor.SyntaxHighlighting = null;
 					Debug.WriteLine("Decompiler crashed: " + ex.ToString());
 					// Unpack aggregate exceptions as long as there's only a single exception:

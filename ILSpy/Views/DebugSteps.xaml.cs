@@ -59,7 +59,7 @@ namespace ICSharpCode.ILSpy
 
 		private void WritingOptions_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			DecompileAsync(lastSelectedStep);
+			Decompile(lastSelectedStep);
 		}
 
 		private void SelectionChanged(object sender, EventArgs e)
@@ -109,7 +109,7 @@ namespace ICSharpCode.ILSpy
 			Stepper.Node n = (Stepper.Node)tree.SelectedItem;
 			if (n == null)
 				return;
-			DecompileAsync(n.EndStep);
+			Decompile(n.EndStep);
 		}
 
 		private void ShowStateBefore_Click(object sender, RoutedEventArgs e)
@@ -117,7 +117,7 @@ namespace ICSharpCode.ILSpy
 			Stepper.Node n = (Stepper.Node)tree.SelectedItem;
 			if (n == null)
 				return;
-			DecompileAsync(n.BeginStep);
+			Decompile(n.BeginStep);
 		}
 
 		private void DebugStep_Click(object sender, RoutedEventArgs e)
@@ -125,12 +125,12 @@ namespace ICSharpCode.ILSpy
 			Stepper.Node n = (Stepper.Node)tree.SelectedItem;
 			if (n == null)
 				return;
-			DecompileAsync(n.BeginStep, true);
+			Decompile(n.BeginStep, true);
 		}
 
 		int lastSelectedStep = int.MaxValue;
 
-		void DecompileAsync(int step, bool isDebug = false)
+		void Decompile(int step, bool isDebug = false)
 		{
 			lastSelectedStep = step;
 

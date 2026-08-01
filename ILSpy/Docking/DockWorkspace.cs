@@ -172,14 +172,14 @@ namespace ICSharpCode.ILSpy.Docking
 			ActiveTabPage.ShowTextView(textView => textView.ShowText(textOutput));
 		}
 
-		public Task<T> RunWithCancellation<T>(Func<CancellationToken, Task<T>> taskCreation)
+		public Task<T> RunWithCancellationAsync<T>(Func<CancellationToken, Task<T>> taskCreation)
 		{
-			return ActiveTabPage.ShowTextViewAsync(textView => textView.RunWithCancellation(taskCreation));
+			return ActiveTabPage.ShowTextViewAsync(textView => textView.RunWithCancellationAsync(taskCreation));
 		}
 
-		public Task<T> RunWithCancellation<T>(Func<CancellationToken, Task<T>> taskCreation, string progressTitle)
+		public Task<T> RunWithCancellationAsync<T>(Func<CancellationToken, Task<T>> taskCreation, string progressTitle)
 		{
-			return ActiveTabPage.ShowTextViewAsync(textView => textView.RunWithCancellation(taskCreation, progressTitle));
+			return ActiveTabPage.ShowTextViewAsync(textView => textView.RunWithCancellationAsync(taskCreation, progressTitle));
 		}
 
 		internal void ShowNodes(AvalonEditTextOutput output, TreeNodes.ILSpyTreeNode[] nodes, IHighlightingDefinition highlighting)

@@ -119,7 +119,7 @@ namespace ICSharpCode.ILSpy.Updates
 				|| settings.LastSuccessfulUpdateCheck < DateTime.UtcNow.AddDays(-7)
 				|| settings.LastSuccessfulUpdateCheck > DateTime.UtcNow)
 			{
-				return await CheckForUpdateInternal(settings).ConfigureAwait(false);
+				return await CheckForUpdateInternalAsync(settings).ConfigureAwait(false);
 			}
 
 			return null;
@@ -127,10 +127,10 @@ namespace ICSharpCode.ILSpy.Updates
 
 		public static Task<string> CheckForUpdatesAsync(UpdateSettings settings)
 		{
-			return CheckForUpdateInternal(settings);
+			return CheckForUpdateInternalAsync(settings);
 		}
 
-		static async Task<string> CheckForUpdateInternal(UpdateSettings settings)
+		static async Task<string> CheckForUpdateInternalAsync(UpdateSettings settings)
 		{
 			try
 			{

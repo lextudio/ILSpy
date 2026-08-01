@@ -42,7 +42,7 @@ namespace ILSpy.BamlDecompiler
 			IHighlightingDefinition highlighting = null;
 
 			tabPage.SupportsLanguageSwitching = false;
-			tabPage.ShowTextView(textView => textView.RunWithCancellation(
+			tabPage.ShowTextView(textView => textView.RunWithCancellationAsync(
 				token => Task.Factory.StartNew(
 					() => {
 						AvalonEditTextOutput output = new AvalonEditTextOutput();
@@ -57,7 +57,7 @@ namespace ILSpy.BamlDecompiler
 						}
 						return output;
 					}, token))
-				.Then(output => textView.ShowNode(output, this, highlighting))
+				.ThenAsync(output => textView.ShowNode(output, this, highlighting))
 				.HandleExceptions());
 			return true;
 		}

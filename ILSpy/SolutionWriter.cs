@@ -77,8 +77,8 @@ namespace ICSharpCode.ILSpy
 			var writer = new SolutionWriter(solutionFilePath);
 
 			textView
-				.RunWithCancellation(ct => writer.CreateSolution(tabPage, assemblies, language, ct))
-				.Then(textView.ShowText)
+				.RunWithCancellationAsync(ct => writer.CreateSolutionAsync(tabPage, assemblies, language, ct))
+				.ThenAsync(textView.ShowText)
 				.HandleExceptions();
 		}
 
@@ -95,7 +95,7 @@ namespace ICSharpCode.ILSpy
 			projects = new ConcurrentBag<ProjectItem>();
 		}
 
-		async Task<AvalonEditTextOutput> CreateSolution(TabPageModel tabPage, List<LoadedAssembly> allAssemblies, Language language, CancellationToken ct)
+		async Task<AvalonEditTextOutput> CreateSolutionAsync(TabPageModel tabPage, List<LoadedAssembly> allAssemblies, Language language, CancellationToken ct)
 		{
 			var result = new AvalonEditTextOutput();
 

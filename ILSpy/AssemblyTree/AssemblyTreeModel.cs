@@ -153,14 +153,14 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 		/// Called on startup or when passed arguments via WndProc from a second instance.
 		/// In the format case, updateSettings is non-null; in the latter it is null.
 		/// </summary>
-		private async Task HandleCommandLineArgumentsAfterShowList(CommandLineArguments args, UpdateSettings? updateSettings = null)
+		private async Task HandleCommandLineArgumentsAfterShowListAsync(CommandLineArguments args, UpdateSettings? updateSettings = null)
 		{
 			var sessionSettings = settingsService.SessionSettings;
 
 			var relevantAssemblies = commandLineLoadedAssemblies.ToList();
 			commandLineLoadedAssemblies.Clear(); // clear references once we don't need them anymore
 
-			await NavigateOnLaunch(args.NavigateTo, sessionSettings.ActiveTreeViewPath, updateSettings, relevantAssemblies);
+			await NavigateOnLaunchAsync(args.NavigateTo, sessionSettings.ActiveTreeViewPath, updateSettings, relevantAssemblies);
 
 			if (args.Search != null)
 			{
@@ -168,7 +168,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			}
 		}
 
-		public async Task HandleSingleInstanceCommandLineArguments(string[] args)
+		public async Task HandleSingleInstanceCommandLineArgumentsAsync(string[] args)
 		{
 			var cmdArgs = CommandLineArguments.Create(args);
 
@@ -184,11 +184,11 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 					window.WindowState = WindowState.Normal;
 				}
 
-				await HandleCommandLineArgumentsAfterShowList(cmdArgs);
+				await HandleCommandLineArgumentsAfterShowListAsync(cmdArgs);
 			});
 		}
 
-		private async Task NavigateOnLaunch(string? navigateTo, string[]? activeTreeViewPath, UpdateSettings? updateSettings, List<LoadedAssembly> relevantAssemblies)
+		private async Task NavigateOnLaunchAsync(string? navigateTo, string[]? activeTreeViewPath, UpdateSettings? updateSettings, List<LoadedAssembly> relevantAssemblies)
 		{
 			var initialSelection = SelectedItem;
 			if (navigateTo != null)
@@ -204,7 +204,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 						{
 							// FindNamespaceNode() blocks the UI if the assembly is not yet loaded,
 							// so use an async wait instead.
-							await asm.GetMetadataFileAsync().Catch<Exception>(_ => { });
+							await asm.GetMetadataFileAsync().CatchAsync<Exception>(_ => { });
 							NamespaceTreeNode nsNode = asmNode.FindNamespaceNode(namespaceName);
 							if (nsNode != null)
 							{
@@ -269,7 +269,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 						{
 							// FindNodeByPath() blocks the UI if the assembly is not yet loaded,
 							// so use an async wait instead.
-							await asm.GetMetadataFileAsync().Catch<Exception>(_ => { });
+							await asm.GetMetadataFileAsync().CatchAsync<Exception>(_ => { });
 						}
 					}
 					node = FindNodeByPath(activeTreeViewPath, true);
@@ -375,12 +375,12 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				AssemblyList.Open(sessionSettings.ActiveAutoLoadedAssembly, true);
 			}
 
-			UIThreadDispatcher.BeginInvoke(DispatcherPriority.Loaded, OpenAssemblies);
+			UIThreadDispatcher.BeginInvoke(DispatcherPriority.Loaded, OpenAssembliesAsync);
 		}
 
-		private async Task OpenAssemblies()
+		private async Task OpenAssembliesAsync()
 		{
-			await HandleCommandLineArgumentsAfterShowList(App.CommandLineArguments, settingsService.GetSettings<UpdateSettings>());
+			await HandleCommandLineArgumentsAfterShowListAsync(App.CommandLineArguments, settingsService.GetSettings<UpdateSettings>());
 
 			if (FormatExceptions(App.StartupExceptions.ToArray(), out var output))
 			{
@@ -968,7 +968,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 						// FindNodeByPath() blocks the UI if the assembly is not yet loaded,
 						// so use an async wait instead.
 						var preAwaitSelection = SelectedItem;
-						await rootAssembly.GetMetadataFileAsync().Catch<Exception>(_ => { });
+						await rootAssembly.GetMetadataFileAsync().CatchAsync<Exception>(_ => { });
 
 						// If the user navigated to a different node while the assembly
 						// was loading, respect that — don't restore the pre-refresh path.

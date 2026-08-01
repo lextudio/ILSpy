@@ -281,7 +281,7 @@ namespace ICSharpCode.ILSpy.Search
 		{
 			if (currentSearch != null)
 			{
-				currentSearch.Cancel();
+				currentSearch.Dispose();
 				currentSearch = null;
 			}
 
@@ -304,7 +304,7 @@ namespace ICSharpCode.ILSpy.Search
 					settingsService);
 				currentSearch = startedSearch;
 
-				await startedSearch.Run();
+				await startedSearch.RunAsync();
 			}
 
 			if (currentSearch == startedSearch)
@@ -322,7 +322,7 @@ namespace ICSharpCode.ILSpy.Search
 			}
 		}
 
-		sealed class RunningSearch
+		sealed class RunningSearch : IDisposable
 		{
 			readonly CancellationTokenSource cts = new();
 			readonly IList<LoadedAssembly> assemblies;
@@ -521,8 +521,15 @@ namespace ICSharpCode.ILSpy.Search
 				cts.Cancel();
 			}
 
-			public async Task Run()
+			public void Dispose()
 			{
+				cts.Cancel();
+				cts.Dispose();
+			}
+
+			public async Task RunAsync()
+			{
+				var ct = cts.Token;
 				try
 				{
 					await Task.Factory.StartNew(() => {
@@ -536,7 +543,7 @@ namespace ICSharpCode.ILSpy.Search
 								var module = loadedAssembly.GetMetadataFileOrNull();
 								if (module == null)
 									continue;
-								searcher.Search(module, cts.Token);
+								searcher.Search(module, ct);
 							}
 						}
 						catch (OperationCanceledException)
@@ -544,7 +551,7 @@ namespace ICSharpCode.ILSpy.Search
 							// ignore cancellation
 						}
 
-					}, cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current).ConfigureAwait(false);
+					}, ct, TaskCreationOptions.LongRunning, TaskScheduler.Current).ConfigureAwait(false);
 				}
 				catch (TaskCanceledException)
 				{

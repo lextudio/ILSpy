@@ -47,7 +47,7 @@ namespace ICSharpCode.ILSpy
 
 		public override void Execute(object parameter)
 		{
-			dockWorkspace.RunWithCancellation(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
 				Parallel.ForEach(
 					Partitioner.Create(assemblyTreeModel.AssemblyList.GetAssemblies(), loadBalance: true),
@@ -85,7 +85,7 @@ namespace ICSharpCode.ILSpy
 						}
 					});
 				return output;
-			}, ct)).Then(dockWorkspace.ShowText).HandleExceptions();
+			}, ct)).ThenAsync(dockWorkspace.ShowText).HandleExceptions();
 		}
 	}
 
@@ -99,7 +99,7 @@ namespace ICSharpCode.ILSpy
 			var language = languageService.Language;
 			var nodes = assemblyTreeModel.SelectedNodes.ToArray();
 			var options = dockWorkspace.ActiveTabPage.CreateDecompilationOptions();
-			dockWorkspace.RunWithCancellation(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
 				options.CancellationToken = ct;
 				Stopwatch w = Stopwatch.StartNew();
 				for (int i = 0; i < numRuns; ++i)
@@ -114,7 +114,7 @@ namespace ICSharpCode.ILSpy
 				double msPerRun = w.Elapsed.TotalMilliseconds / numRuns;
 				output.Write($"Average time: {msPerRun.ToString("f1")}ms\n");
 				return output;
-			}, ct)).Then(output => dockWorkspace.ShowText(output)).HandleExceptions();
+			}, ct)).ThenAsync(output => dockWorkspace.ShowText(output)).HandleExceptions();
 		}
 	}
 }
