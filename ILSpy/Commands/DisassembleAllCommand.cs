@@ -43,7 +43,7 @@ namespace ICSharpCode.ILSpy
 
 		public override void Execute(object parameter)
 		{
-			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task.Run(() => {
 				AvalonEditTextOutput output = new();
 				Parallel.ForEach(
 					Partitioner.Create(assemblyTreeModel.AssemblyList.GetAssemblies(), loadBalance: true),

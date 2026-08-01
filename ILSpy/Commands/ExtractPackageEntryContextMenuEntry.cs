@@ -95,7 +95,7 @@ namespace ICSharpCode.ILSpy
 
 		internal static void Save(DockWorkspace dockWorkspace, ICollection<SharpTreeNode> nodes, string path, bool isFile)
 		{
-			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task.Run(() => {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
 				Stopwatch stopwatch = Stopwatch.StartNew();
 				Dictionary<string, int> fileNameCounts = new Dictionary<string, int>(Platform.FileNameComparer);

@@ -56,7 +56,7 @@ namespace ICSharpCode.ILSpy
 		{
 			var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(".xml");
 			var options = PdbToXmlOptions.IncludeEmbeddedSources | PdbToXmlOptions.IncludeMethodSpans | PdbToXmlOptions.IncludeTokens;
-			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task.Run(() => {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
 				var writer = new TextOutputWriter(output);
 				foreach (var node in nodes)

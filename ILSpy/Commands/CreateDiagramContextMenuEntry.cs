@@ -48,7 +48,7 @@ namespace ICSharpCode.ILSpy.TextView
 			if (string.IsNullOrEmpty(selectedPath))
 				return;
 
-			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task.Run(() => {
 				AvalonEditTextOutput output = new() {
 					EnableHyperlinks = true
 				};

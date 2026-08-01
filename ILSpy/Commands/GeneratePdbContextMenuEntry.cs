@@ -107,7 +107,7 @@ namespace ICSharpCode.ILSpy
 			string targetFolder = dlg.FolderName;
 			DecompilationOptions options = dockWorkspace.ActiveTabPage.CreateDecompilationOptions();
 
-			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task.Run(() => {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
 				Stopwatch totalWatch = Stopwatch.StartNew();
 				options.CancellationToken = ct;

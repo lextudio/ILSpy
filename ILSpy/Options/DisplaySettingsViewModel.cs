@@ -32,7 +32,7 @@ namespace ICSharpCode.ILSpy.Options
 				{
 					MessageBox.Show(ex.ToString());
 				}
-			});
+			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
 		public string Title => Properties.Resources.Display;

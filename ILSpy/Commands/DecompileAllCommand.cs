@@ -47,7 +47,7 @@ namespace ICSharpCode.ILSpy
 
 		public override void Execute(object parameter)
 		{
-			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task.Run(() => {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
 				Parallel.ForEach(
 					Partitioner.Create(assemblyTreeModel.AssemblyList.GetAssemblies(), loadBalance: true),
@@ -99,7 +99,7 @@ namespace ICSharpCode.ILSpy
 			var language = languageService.Language;
 			var nodes = assemblyTreeModel.SelectedNodes.ToArray();
 			var options = dockWorkspace.ActiveTabPage.CreateDecompilationOptions();
-			dockWorkspace.RunWithCancellationAsync(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
+			dockWorkspace.RunWithCancellationAsync(ct => Task.Run(() => {
 				options.CancellationToken = ct;
 				Stopwatch w = Stopwatch.StartNew();
 				for (int i = 0; i < numRuns; ++i)

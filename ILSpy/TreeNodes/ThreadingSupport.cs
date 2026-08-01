@@ -117,7 +117,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 								}
 							}
 						}));
-				});
+				}, TaskScheduler.Default);
 
 			// Give the task a bit time to complete before we return to WPF - this keeps "Loading..."
 			// from showing up for very short waits.

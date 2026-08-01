@@ -77,7 +77,7 @@ namespace ICSharpCode.ILSpy.Xaml
 			IHighlightingDefinition highlighting = null;
 
 			tabPage.ShowTextView(textView => textView.RunWithCancellationAsync(
-				token => Task.Factory.StartNew(
+				token => Task.Run(
 					() => {
 						try
 						{

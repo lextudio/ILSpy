@@ -670,7 +670,7 @@ namespace ICSharpCode.ILSpy.TextView
 					myCancellationTokenSource.Dispose();
 				}
 			};
-			task.ContinueWith(delegate { Dispatcher.BeginInvoke(DispatcherPriority.Normal, continuation); });
+			task.ContinueWith(delegate { Dispatcher.BeginInvoke(DispatcherPriority.Normal, continuation); }, TaskScheduler.Default);
 			return tcs.Task;
 		}
 
@@ -846,7 +846,7 @@ namespace ICSharpCode.ILSpy.TextView
 						this.nextDecompilationRun = null;
 						if (context != null)
 							DoDecompileAsync(context, DefaultOutputLengthLimit)
-								.ContinueWith(t => context.TaskCompletionSource.SetFromTask(t)).HandleExceptions();
+								.ContinueWith(t => context.TaskCompletionSource.SetFromTask(t), TaskScheduler.Default).HandleExceptions();
 					}
 				));
 			}
