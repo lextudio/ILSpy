@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <RoslynVersion>5.7.0-1.26230.115</RoslynVersion>
-    <NetPackageVersion>10.0.8</NetPackageVersion>
+    <NetPackageVersion>10.0.10</NetPackageVersion>
     <TomsToolboxVersion>2.24.0</TomsToolboxVersion>
   </PropertyGroup>
   <ItemGroup>
