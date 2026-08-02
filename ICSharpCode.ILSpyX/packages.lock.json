@@ -33,15 +33,15 @@
       },
       "System.Composition.AttributedModel": {
         "type": "Direct",
-        "requested": "[10.0.8, )",
-        "resolved": "10.0.8",
-        "contentHash": "qkcb2x773qUgOcrNk+AENDEtkYobPEM46jyYelB/Va3hWWeuSIFXHD7NdvP/L+H6OmexwV06T1OKr3ONl04kZw=="
+        "requested": "[10.0.10, )",
+        "resolved": "10.0.10",
+        "contentHash": "alK+Ew7XBsxHgwmSmiZzg7x4sLpNIaQ3QVJUkJ/issHZY0L+RHceqO27pDp0J0sDnSf8g6yJNpDnWSKL5sAa/g=="
       },
       "System.Reflection.Metadata": {
         "type": "Direct",
-        "requested": "[10.0.8, )",
-        "resolved": "10.0.8",
-        "contentHash": "Ap8JPUYLRnwQPk/rpyhxSoD+55/a7zJfZsmSD0maudVJT9p/xR+xegyT8gQIwh1XMC/lRowQJM06EdQ0dfiMkA=="
+        "requested": "[10.0.10, )",
+        "resolved": "10.0.10",
+        "contentHash": "NZIS6/IUBh70nJfVvE577oDc81y5GfYRgjWssC8AGpSlVzSu5YfbHXEtHXyLeEY7gqqbAaASwJEP0Oy3Q54Jfw=="
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Direct",
