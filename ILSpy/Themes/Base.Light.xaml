@@ -2,9 +2,17 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:styles="urn:TomsToolbox.Wpf.Styles"
                     xmlns:themes="clr-namespace:ICSharpCode.ILSpy.Themes">
-	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="/AvalonDock.Themes.VS2013;component/lighttheme.xaml" />
-	</ResourceDictionary.MergedDictionaries>
+	<!-- The merge previously here (/AvalonDock.Themes.VS2013;component/lighttheme.xaml) targeted
+	     the upstream Dirkster.AvalonDock.Themes.VS2013 package's static XAML resource layout.
+	     OpenDevelop's own vendored AvalonDock fork (src/Libraries/AvalonDock) modernized VS2013
+	     theme construction to build its ResourceDictionary programmatically at runtime from a
+	     GZIP-compressed .vstheme palette (see Vs2013LightTheme.cs/VsThemePaletteFactory.cs) rather
+	     than shipping a matching static "lighttheme.xaml" resource - so the merge always threw
+	     IOException at runtime in this hosting scenario. Removed rather than ported: every color/
+	     brush key this file's own controls actually need is already defined standalone below
+	     (SystemColors.*, ICSharpCode.ILSpy.Themes.ResourceKeys.*, TomsToolbox styles:ResourceKeys.*)
+	     - nothing here was observed to depend on a key that only the removed merge would have
+	     supplied. -->
 
 	<SolidColorBrush x:Key="{x:Static themes:ResourceKeys.TextBackgroundBrush}" Color="White" />
 	<SolidColorBrush x:Key="{x:Static themes:ResourceKeys.TextForegroundBrush}" Color="Black" />

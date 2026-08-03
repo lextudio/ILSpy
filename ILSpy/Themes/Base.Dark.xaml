@@ -2,9 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:styles="urn:TomsToolbox.Wpf.Styles"
                     xmlns:themes="clr-namespace:ICSharpCode.ILSpy.Themes">
-	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="/AvalonDock.Themes.VS2013;component/darktheme.xaml" />
-	</ResourceDictionary.MergedDictionaries>
+	<!-- See Base.Light.xaml for why the merge previously here
+	     (/AvalonDock.Themes.VS2013;component/darktheme.xaml) was removed rather than ported. -->
 
 	<SolidColorBrush x:Key="{x:Static themes:ResourceKeys.TextBackgroundBrush}" Color="Black" />
 	<SolidColorBrush x:Key="{x:Static themes:ResourceKeys.TextForegroundBrush}" Color="White" />

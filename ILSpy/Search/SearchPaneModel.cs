@@ -20,7 +20,6 @@ using System.Composition;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpyX.Search;
 
 namespace ICSharpCode.ILSpy.Search
@@ -32,9 +31,23 @@ namespace ICSharpCode.ILSpy.Search
 		public ImageSource Image { get; init; }
 	}
 
-	[ExportToolPane]
+	// SharpTreeView duplicate resolution / host-neutral pane model vertical slice
+	// (doc/technotes/ilspy.md "Immediate next actions" #3, 2026-08-02): derives directly from
+	// OpenDevelop's ICSharpCode.SharpDevelop.ViewModels.ToolPaneModel instead of ILSpy's own
+	// ICSharpCode.ILSpy.ViewModels.ToolPaneModel, so IlSpyWorkspaceHost can register it with
+	// OpenDevelop's DockWorkspace directly (DockWorkspaceExtensibility.AddToolPane) instead of
+	// wrapping it in the property-mirroring IlSpyToolPaneAdapter - proving the doc's target
+	// contract (one shared PaneModel/ToolPaneModel hierarchy) works for a real ILSpy pane, not
+	// just the built-in ProjectBrowserViewModel side of this same vertical slice. This is why
+	// [ExportToolPane] (contract type ICSharpCode.ILSpy.ViewModels.ToolPaneModel, see
+	// Commands/ExportCommandAttribute.cs) becomes a plain [Export(typeof(SearchPaneModel))]:
+	// the only consumer of the "ToolPane" contract enumeration is ILSpy's own (unused here)
+	// Docking/DockWorkspace.cs ToolPanes property, and IlSpyWorkspaceHost already fetches this
+	// pane by its concrete type (`exportProvider.GetExportedValue<SearchPaneModel>()`), not by
+	// that contract.
+	[Export(typeof(SearchPaneModel))]
 	[Shared]
-	public partial class SearchPaneModel : ToolPaneModel
+	public partial class SearchPaneModel : ICSharpCode.SharpDevelop.ViewModels.ToolPaneModel
 	{
 		public const string PaneContentId = "searchPane";
 
@@ -49,6 +62,12 @@ namespace ICSharpCode.ILSpy.Search
 			Icon = "Images/Search";
 			ShortcutKey = new(Key.F, ModifierKeys.Control | ModifierKeys.Shift);
 			IsCloseable = true;
+			// OpenDevelop's ToolPaneModel renders Content via WPF's implicit DataTemplate lookup
+			// on its runtime type (AvalonDock's anchorable style binds a ContentPresenter to it) -
+			// matching what IlSpyToolPaneAdapter used to do (`Content = the raw view-model`) so the
+			// existing [DataTemplate(typeof(SearchPaneModel))] registration (SearchPane.xaml.cs)
+			// still resolves the view the same way.
+			Content = this;
 
 			MessageBus<ShowSearchPageEventArgs>.Subscribers += (_, e) => {
 				SearchTerm = e.SearchTerm;

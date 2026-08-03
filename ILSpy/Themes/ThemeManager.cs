@@ -124,8 +124,18 @@ namespace ICSharpCode.ILSpy.Themes
 			_themeDictionaryContainer.MergedDictionaries.Clear();
 			_syntaxColors.Clear();
 
-			// Load SyntaxColor info from theme XAML
-			var resourceDictionary = new ResourceDictionary { Source = new Uri($"/themes/Theme.{themeFileName}.xaml", UriKind.Relative) };
+			// Load SyntaxColor info from theme XAML. A bare relative pack URI ("/themes/Theme.
+			// {name}.xaml", no ";component/" authority segment) resolves against
+			// Application.ResourceAssembly, which defaults to the process's entry assembly - fine
+			// for standalone ILSpy.exe (where that IS this assembly), but wrong whenever ILSpy is
+			// embedded in a different host process (e.g. OpenDevelop's ILSpyAddIn), where it always
+			// throws IOException: Cannot locate resource 'themes/theme.*.xaml', since
+			// Application.ResourceAssembly can only be set once globally and the host has already
+			// set it to itself before this ever runs. Qualify the URI with this type's own
+			// assembly name instead, so it resolves unambiguously regardless of which process/
+			// assembly is hosting ThemeManager.
+			var themeAssemblyName = typeof(ThemeManager).Assembly.GetName().Name;
+			var resourceDictionary = new ResourceDictionary { Source = new Uri($"/{themeAssemblyName};component/themes/Theme.{themeFileName}.xaml", UriKind.Relative) };
 			_themeDictionaryContainer.MergedDictionaries.Add(resourceDictionary);
 
 			IsDarkTheme = resourceDictionary[ResourceKeys.TextBackgroundBrush] is SolidColorBrush { Color: { R: < 128, G: < 128, B: < 128 } };

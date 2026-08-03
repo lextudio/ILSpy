@@ -42,6 +42,10 @@ using ICSharpCode.ILSpy.Properties;
 using ICSharpCode.ILSpy.TextView;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy.Updates;
+// Still needed for TabPageModel/TabPageModelExtensions (CreateDecompilationOptions/
+// ShowTextViewAsync) - only the bare `ToolPaneModel` base-type reference below is now fully
+// qualified (ICSharpCode.SharpDevelop.ViewModels.ToolPaneModel), so this using no longer creates
+// any ambiguity with that switch.
 using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpyX;
 using ICSharpCode.ILSpyX.TreeView;
@@ -54,11 +58,29 @@ using TomsToolbox.Wpf;
 
 namespace ICSharpCode.ILSpy.AssemblyTree
 {
-	[ExportToolPane]
+	// SharpTreeView duplicate resolution / host-neutral pane model vertical slice
+	// (doc/technotes/ilspy.md "Immediate next actions" #3, 2026-08-02): derives directly from
+	// OpenDevelop's ICSharpCode.SharpDevelop.ViewModels.ToolPaneModel now too, same as
+	// SearchPaneModel/AnalyzerTreeViewModel before it. [ExportToolPane] (contract type
+	// ICSharpCode.ILSpy.ViewModels.ToolPaneModel) becomes a plain [Export(typeof(AssemblyTreeModel))]
+	// for the same reason as those two - the only consumer of the "ToolPane" contract enumeration
+	// is ILSpy's own unused Docking/DockWorkspace.cs, and IlSpyWorkspaceHost already resolves this
+	// pane by concrete type. Unlike those two panes, this class's own code (not just its base
+	// class) uses ILSpy's `DockWorkspace` (via the base's `protected static DockWorkspace
+	// DockWorkspace => App.ExportProvider.GetExportedValue<DockWorkspace>()`, ViewModels/
+	// PaneModel.cs:33) at ~18 call sites for decompiler-tab/navigation state - losing that base
+	// member is why this migration was deferred longer than the other two panes. Fixed by adding
+	// an equivalent DockWorkspace accessor directly below, using the exportProvider field this
+	// class already carries (injected via its own constructor) instead of ILSpy's static
+	// App.ExportProvider - every one of those 18 call sites keeps its exact existing behavior
+	// unchanged, since only where the property comes from changed, not what it returns.
+	[Export(typeof(AssemblyTreeModel))]
 	[Shared]
-	public partial class AssemblyTreeModel : ToolPaneModel
+	public partial class AssemblyTreeModel : ICSharpCode.SharpDevelop.ViewModels.ToolPaneModel
 	{
 		public const string PaneContentId = "assemblyListPane";
+
+		ICSharpCode.ILSpy.Docking.DockWorkspace DockWorkspace => exportProvider.GetExportedValue<ICSharpCode.ILSpy.Docking.DockWorkspace>();
 
 		private AssemblyListPane? activeView;
 		private AssemblyListTreeNode? assemblyListTreeNode;

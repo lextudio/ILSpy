@@ -42,6 +42,11 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			ContentId = PaneContentId;
 			IsCloseable = false;
 			ShortcutKey = new KeyGesture(Key.F6);
+			// OpenDevelop's ToolPaneModel renders Content via implicit DataTemplate lookup on its
+			// runtime type - IlSpyToolPaneAdapter used to set this (Content = the raw view-model);
+			// setting it directly here now that this class IS the OpenDevelop ToolPaneModel (see
+			// AssemblyTreeModel.cs's class-declaration comment).
+			Content = this;
 
 			MessageBus<NavigateToReferenceEventArgs>.Subscribers += JumpToReference;
 			MessageBus<SettingsChangedEventArgs>.Subscribers += (sender, e) => Settings_PropertyChanged(sender, e);

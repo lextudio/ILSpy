@@ -26,17 +26,23 @@ using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.Analyzers.TreeNodes;
 using ICSharpCode.ILSpy.AssemblyTree;
 using ICSharpCode.ILSpy.TreeNodes;
-using ICSharpCode.ILSpy.ViewModels;
 using ICSharpCode.ILSpyX.TreeView;
 
 using TomsToolbox.Wpf;
 
 namespace ICSharpCode.ILSpy.Analyzers
 {
-	[ExportToolPane]
+	// SharpTreeView duplicate resolution / host-neutral pane model vertical slice
+	// (doc/technotes/ilspy.md "Immediate next actions" #3, 2026-08-02): derives directly from
+	// OpenDevelop's ICSharpCode.SharpDevelop.ViewModels.ToolPaneModel instead of ILSpy's own
+	// ICSharpCode.ILSpy.ViewModels.ToolPaneModel, mirroring the SearchPaneModel migration earlier
+	// in this pass. [ExportToolPane] (contract type ICSharpCode.ILSpy.ViewModels.ToolPaneModel)
+	// is dropped since the bare [Export] already exports this concrete type - IlSpyWorkspaceHost
+	// resolves it via exportProvider.GetExportedValue<AnalyzerTreeViewModel>(), not the "ToolPane"
+	// contract (whose only consumer is ILSpy's own unused Docking/DockWorkspace.cs).
 	[Shared]
 	[Export]
-	public class AnalyzerTreeViewModel : ToolPaneModel
+	public class AnalyzerTreeViewModel : ICSharpCode.SharpDevelop.ViewModels.ToolPaneModel
 	{
 		public const string PaneContentId = "analyzerPane";
 
@@ -46,6 +52,10 @@ namespace ICSharpCode.ILSpy.Analyzers
 			Title = Properties.Resources.Analyze;
 			ShortcutKey = new(Key.R, ModifierKeys.Control);
 			AssociatedCommand = new AnalyzeCommand(assemblyTreeModel, this);
+			// OpenDevelop's ToolPaneModel renders Content via implicit DataTemplate lookup on its
+			// runtime type - IlSpyToolPaneAdapter used to set this (Content = the raw view-model);
+			// setting it directly here now that this class IS the OpenDevelop ToolPaneModel.
+			Content = this;
 		}
 
 		public AnalyzerRootNode Root { get; } = new();
