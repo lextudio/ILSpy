@@ -5,7 +5,10 @@
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="../Controls/SearchBoxStyle.xaml" />
 		<ResourceDictionary Source="../Controls/ZoomScrollViewer.xaml" />
-		<ResourceDictionary Source="../Controls/TreeView/SharpTreeView.xaml" />
+		<!-- SharpTreeView.xaml is NOT merged here in the hosted build: the tree controls now
+		     compile once, into the shared ICSharpCode.TreeView assembly (whose own theme
+		     dictionary carries the tree templates), so a relative merge target would point at a
+		     resource this assembly no longer contains and fail the whole dictionary load. -->
 	</ResourceDictionary.MergedDictionaries>
 
 	<!-- SortableGridViewColumn.

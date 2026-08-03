@@ -457,6 +457,15 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 			if (mainWindow == null)
 				return;
 
+#if OPOPENDEVELOP
+			// OpenDevelop hosts ILSpy's panes inside its own main window; the window title belongs
+			// to the OpenDevelop workbench (WpfWorkbench.SetProjectTitle), so the "ILSpy {version}"
+			// rename below must not leak into the hosted build. ILSpy's own builds don't define
+			// OPOPENDEVELOP and keep the original behavior.
+			_ = mainWindow;
+			_ = assemblyList;
+			_ = settingsService;
+#else
 			if (assemblyList.ListName == AssemblyListManager.DefaultListName)
 #if DEBUG
 				mainWindow.Title = $"ILSpy {DecompilerVersionInfo.FullVersion}";
@@ -468,6 +477,7 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 				mainWindow.Title = string.Format(settingsService.MiscSettings.AllowMultipleInstances ? "{1} - {0}" : "{0} - {1}", $"ILSpy {DecompilerVersionInfo.FullVersion}", assemblyList.ListName);
 #else
 				mainWindow.Title = string.Format(settingsService.MiscSettings.AllowMultipleInstances ? "{1} - {0}" : "{0} - {1}", "ILSpy", assemblyList.ListName);
+#endif
 #endif
 		}
 

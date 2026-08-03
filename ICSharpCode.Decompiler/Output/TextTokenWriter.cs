@@ -101,7 +101,14 @@ namespace ICSharpCode.Decompiler
 
 			if (firstUsingDeclaration && !lastUsingDeclaration)
 			{
-				output.MarkFoldStart(defaultCollapsed: !settings.ExpandUsingDeclarations);
+				// Upstream previously used the default "..." collapsedText here, which is
+				// indistinguishable from any other collapsed region (method bodies, folded braces
+				// at TextTokenWriter.cs:275 use the same default) - a folded using-block gave no
+				// hint of what was hidden. Labelling it "using ...;" matches the label
+				// CSharpBinding's own FoldingVisitor already uses for its own C# editor folding
+				// (src/AddIns/BackendBindings/CSharpBinding/.../FoldingVisitor.cs: folding.Name =
+				// "using...") so both editors show a consistent, meaningful placeholder.
+				output.MarkFoldStart("using ...;", defaultCollapsed: !settings.ExpandUsingDeclarations);
 				firstUsingDeclaration = false;
 			}
 

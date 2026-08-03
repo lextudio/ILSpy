@@ -2,7 +2,11 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:ICSharpCode.ILSpy.Controls">
 	
-	<Style x:Key="{x:Type local:SearchBox}" TargetType="{x:Type local:SearchBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+	<!-- BasedOn="{StaticResource {x:Type TextBox}}" was removed for the hosted build: the
+	     implicit TextBox theme style isn't resolvable from within a theme-dictionary load in this
+	     host (LibreWPF), which failed the whole style and left the SearchBox template-less. The
+	     template below is fully self-contained, so the base style contributed nothing here. -->
+	<Style x:Key="{x:Type local:SearchBox}" TargetType="{x:Type local:SearchBox}">
 		<Setter Property="BorderThickness" Value="1" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
