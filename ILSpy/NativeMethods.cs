@@ -40,7 +40,10 @@ namespace ICSharpCode.ILSpy
 		}
 	}
 
-	public enum DwmWindowAttribute : uint
+	// internal (not public) for the hosted build: this file compiles into BOTH ILSpyAddIn.dll and
+	// the shared ICSharpCode.TreeView.dll, and a public enum of the same name in the same
+	// namespace exported by two assemblies trips CS0436 in every project referencing both.
+	internal enum DwmWindowAttribute : uint
 	{
 		NCRenderingEnabled = 1,
 		NCRenderingPolicy,
