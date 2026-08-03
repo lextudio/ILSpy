@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Extracted from ICSharpCode.ILSpyX.csproj (2026-08-02, OpenDevelop doc/technotes/ilspy.md
+    "SharpTreeView duplicate resolution") so the tree node model can be shared with OpenDevelop's
+    own tree-hosting AddIns/pads without pulling in ICSharpCode.Decompiler/Mono.Cecil/K4os
+    (ILSpyX's own heavy dependencies, irrelevant to a generic tree data structure). This project
+    intentionally has no WPF/UI dependency of its own - the files here are the platform-neutral
+    node/collection/flattener/traversal model plus the small platform-abstraction interfaces that
+    let a WPF (or other) control layer bind to it.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\ICSharpCode.Decompiler\ICSharpCode.Decompiler.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+</Project>

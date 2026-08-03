@@ -3,7 +3,7 @@
 						xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-						xmlns:treeView="clr-namespace:ICSharpCode.ILSpy.Controls.TreeView"
+						xmlns:treeView="clr-namespace:ICSharpCode.ILSpy.Controls.TreeView;assembly=ICSharpCode.TreeView"
 						xmlns:treeNodes="clr-namespace:ICSharpCode.ILSpy.TreeNodes"
 						xmlns:assemblyTree="clr-namespace:ICSharpCode.ILSpy.AssemblyTree"
 						xmlns:toms="urn:TomsToolbox"

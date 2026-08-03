@@ -75,6 +75,9 @@
       },
       "icsharpcode.decompiler": {
         "type": "Project"
+      },
+      "icsharpcode.ilspyx.treeview": {
+        "type": "Project"
       }
     }
   }
