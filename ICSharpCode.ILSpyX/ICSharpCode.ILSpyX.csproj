@@ -58,6 +58,10 @@
 
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.template.cs" />
+    <!-- TreeView/ is now its own project (ICSharpCode.ILSpyX.TreeView.csproj, 2026-08-02) so it can
+         be shared with OpenDevelop's tree-hosting AddIns/pads without pulling in this project's
+         Decompiler/Mono.Cecil/K4os dependencies. Referenced below instead of compiled in-place. -->
+    <Compile Remove="TreeView\**\*.cs" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
@@ -107,6 +111,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj" />
+    <ProjectReference Include="TreeView\ICSharpCode.ILSpyX.TreeView.csproj" />
   </ItemGroup>
 
   <Target Name="ILSpyUpdateAssemblyInfo" AfterTargets="ResolveProjectReferences">
