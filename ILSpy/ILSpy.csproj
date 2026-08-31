@@ -48,6 +48,8 @@
     <PackageReference Include="TomsToolbox.Composition.MicrosoftExtensions" />
     <PackageReference Include="TomsToolbox.Wpf.Composition.AttributedModel" />
     <PackageReference Include="TomsToolbox.Wpf.Styles" />
+    <PackageReference Include="NuGet.Frameworks" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
   </ItemGroup>
 
   <ItemGroup>
