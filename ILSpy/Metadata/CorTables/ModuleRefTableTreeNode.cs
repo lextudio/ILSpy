@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -22,13 +22,9 @@ using System.Reflection.Metadata.Ecma335;
 
 using ICSharpCode.Decompiler.Metadata;
 
-namespace ICSharpCode.ILSpy.Metadata.CorTables
+namespace ICSharpCode.ILSpy.Metadata
 {
-	/// <summary>
-	/// View of the ModuleRef table — every external .netmodule the assembly P/Invokes into
-	/// or otherwise references by name. Carries just the module's name string handle.
-	/// </summary>
-	public sealed class ModuleRefTableTreeNode : MetadataTableTreeNode<ModuleRefTableTreeNode.ModuleRefEntry>
+	internal class ModuleRefTableTreeNode : MetadataTableTreeNode<ModuleRefTableTreeNode.ModuleRefEntry>
 	{
 		public ModuleRefTableTreeNode(MetadataFile metadataFile)
 			: base(TableIndex.ModuleRef, metadataFile)
@@ -39,11 +35,13 @@ namespace ICSharpCode.ILSpy.Metadata.CorTables
 		{
 			var list = new List<ModuleRefEntry>();
 			foreach (var row in metadataFile.Metadata.GetModuleReferences())
+			{
 				list.Add(new ModuleRefEntry(metadataFile, row));
+			}
 			return list;
 		}
 
-		public sealed class ModuleRefEntry
+		internal struct ModuleRefEntry
 		{
 			readonly MetadataFile metadataFile;
 			readonly ModuleReferenceHandle handle;
@@ -51,11 +49,11 @@ namespace ICSharpCode.ILSpy.Metadata.CorTables
 
 			public int RID => MetadataTokens.GetRowNumber(handle);
 
-			[ColumnInfo("X8")]
 			public int Token => MetadataTokens.GetToken(handle);
 
-			[ColumnInfo("X8")]
-			public int Offset => GetRowOffset(metadataFile, TableIndex.ModuleRef, RID);
+			public int Offset => metadataFile.MetadataOffset
+				+ metadataFile.Metadata.GetTableMetadataOffset(TableIndex.ModuleRef)
+				+ metadataFile.Metadata.GetTableRowSize(TableIndex.ModuleRef) * (RID - 1);
 
 			public string Name => metadataFile.Metadata.GetString(moduleRef.Name);
 
@@ -65,7 +63,7 @@ namespace ICSharpCode.ILSpy.Metadata.CorTables
 			{
 				this.metadataFile = metadataFile;
 				this.handle = handle;
-				moduleRef = metadataFile.Metadata.GetModuleReference(handle);
+				this.moduleRef = metadataFile.Metadata.GetModuleReference(handle);
 			}
 		}
 	}

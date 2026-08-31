@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -16,23 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Linq;
-using System.Threading.Tasks;
-
-using Avalonia.Threading;
+using System.Windows.Threading;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Metadata;
+using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.Properties;
-
-using ICSharpCode.ILSpy.Languages;
-using ICSharpCode.ILSpyX;
 
 namespace ICSharpCode.ILSpy.TreeNodes
 {
 	/// <summary>
-	/// References folder under an assembly node. Children are one
-	/// <see cref="AssemblyReferenceTreeNode"/> per metadata <c>AssemblyRef</c>.
+	/// References folder.
 	/// </summary>
 	sealed class ReferenceFolderTreeNode : ILSpyTreeNode
 	{
@@ -43,43 +39,45 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		{
 			this.module = module;
 			this.parentAssembly = parentAssembly;
-			LazyLoading = true;
+			this.LazyLoading = true;
 		}
 
 		public override object Text => Resources.References;
 
-		public override object? NavigationText => $"{Text} ({module.Name})";
+		public override object NavigationText => $"{Text} ({module.Name})";
 
 		public override object Icon => Images.ReferenceFolder;
 
 		protected override void LoadChildren()
 		{
-			foreach (var r in module.AssemblyReferences.OrderBy(r => r.Name))
-				Children.Add(new AssemblyReferenceTreeNode(r, parentAssembly));
 			var metadata = module.Metadata;
+			var metadataModule = (MetadataModule)module.GetTypeSystemWithCurrentOptionsOrNull(SettingsService, AssemblyTreeModel.CurrentLanguageVersion)?.MainModule;
+			foreach (var r in module.AssemblyReferences.OrderBy(r => r.Name))
+				this.Children.Add(new AssemblyReferenceTreeNode(metadataModule, r, parentAssembly));
 			foreach (var r in metadata.GetModuleReferences().OrderBy(r => metadata.GetString(metadata.GetModuleReference(r).Name)))
-				Children.Add(new ModuleReferenceTreeNode(parentAssembly, r, module));
+				this.Children.Add(new ModuleReferenceTreeNode(parentAssembly, r, module));
 		}
 
 		public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
 		{
-			var loadedAssembly = parentAssembly.LoadedAssembly;
-			var (detectedTargetFramework, effectiveTargetFramework, runtimePack) = GetFrameworkInfoAsync(loadedAssembly).GetAwaiter().GetResult();
-			output.WriteLine($"Detected TargetFramework-Id: {detectedTargetFramework}");
-			output.WriteLine($"Effective TargetFramework-Id: {effectiveTargetFramework}");
+			string targetFramework = parentAssembly.LoadedAssembly.GetTargetFrameworkIdAsync().GetAwaiter().GetResult();
+			string runtimePack = parentAssembly.LoadedAssembly.GetRuntimePackAsync().GetAwaiter().GetResult();
+			output.WriteLine($"Detected TargetFramework-Id: {targetFramework}");
 			output.WriteLine($"Detected RuntimePack: {runtimePack}");
 
-			// Children realise lazily on the UI thread; we may run from a background decompile.
-			Dispatcher.UIThread.Invoke(EnsureLazyChildren);
+			App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(EnsureLazyChildren));
 			output.WriteLine();
 			output.WriteLine("Referenced assemblies (in metadata order):");
-			foreach (var node in Children.OfType<ILSpyTreeNode>())
+			// Show metadata order of references
+			foreach (var node in this.Children.OfType<ILSpyTreeNode>())
 				node.Decompile(language, output, options);
 
 			output.WriteLine();
 			output.WriteLine();
+			// Show full assembly load log:
 			output.WriteLine("Assembly load log including transitive references:");
 			var info = parentAssembly.LoadedAssembly.LoadedAssemblyReferencesInfo;
+
 			foreach (var asm in info.Entries)
 			{
 				output.WriteLine(asm.FullName);
@@ -88,17 +86,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				output.Unindent();
 				output.WriteLine();
 			}
-		}
-
-		// One await chain instead of three separate blocking GetResult() calls: each blocked wait
-		// can park a thread-pool thread, so resolving all three framework values in a single async
-		// method and blocking once is cheaper.
-		static async Task<(string Detected, string Effective, string RuntimePack)> GetFrameworkInfoAsync(LoadedAssembly loadedAssembly)
-		{
-			var detected = await loadedAssembly.GetDetectedTargetFrameworkIdAsync().ConfigureAwait(false);
-			var effective = await loadedAssembly.GetTargetFrameworkIdAsync().ConfigureAwait(false);
-			var runtimePack = await loadedAssembly.GetRuntimePackAsync().ConfigureAwait(false);
-			return (detected, effective, runtimePack);
 		}
 	}
 }

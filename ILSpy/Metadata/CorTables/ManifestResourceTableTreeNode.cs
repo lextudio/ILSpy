@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -23,15 +23,9 @@ using System.Reflection.Metadata.Ecma335;
 
 using ICSharpCode.Decompiler.Metadata;
 
-namespace ICSharpCode.ILSpy.Metadata.CorTables
+namespace ICSharpCode.ILSpy.Metadata
 {
-	/// <summary>
-	/// View of the ManifestResource table — every embedded or linked resource the assembly
-	/// manifest publishes. Implementation is an Implementation coded token: nil for embedded
-	/// resources (data lives at .text+offset), otherwise an AssemblyFile or AssemblyRef
-	/// pointing at the holder of the resource bytes.
-	/// </summary>
-	public sealed class ManifestResourceTableTreeNode : MetadataTableTreeNode<ManifestResourceTableTreeNode.ManifestResourceEntry>
+	class ManifestResourceTableTreeNode : MetadataTableTreeNode<ManifestResourceTableTreeNode.ManifestResourceEntry>
 	{
 		public ManifestResourceTableTreeNode(MetadataFile metadataFile)
 			: base(TableIndex.ManifestResource, metadataFile)
@@ -41,12 +35,15 @@ namespace ICSharpCode.ILSpy.Metadata.CorTables
 		protected override IReadOnlyList<ManifestResourceEntry> LoadTable()
 		{
 			var list = new List<ManifestResourceEntry>();
-			foreach (var row in metadataFile.Metadata.ManifestResources)
+			var metadata = metadataFile.Metadata;
+			foreach (var row in metadata.ManifestResources)
+			{
 				list.Add(new ManifestResourceEntry(metadataFile, row));
+			}
 			return list;
 		}
 
-		public sealed class ManifestResourceEntry
+		internal struct ManifestResourceEntry
 		{
 			readonly MetadataFile metadataFile;
 			readonly ManifestResourceHandle handle;
@@ -54,13 +51,13 @@ namespace ICSharpCode.ILSpy.Metadata.CorTables
 
 			public int RID => MetadataTokens.GetRowNumber(handle);
 
-			[ColumnInfo("X8")]
 			public int Token => MetadataTokens.GetToken(handle);
 
-			[ColumnInfo("X8")]
-			public int Offset => GetRowOffset(metadataFile, TableIndex.ManifestResource, RID);
+			public int Offset => metadataFile.MetadataOffset
+				+ metadataFile.Metadata.GetTableMetadataOffset(TableIndex.ManifestResource)
+				+ metadataFile.Metadata.GetTableRowSize(TableIndex.ManifestResource) * (RID - 1);
 
-			[ColumnInfo("X8")]
+			[ColumnInfo("X8", Kind = ColumnKind.Other)]
 			public ManifestResourceAttributes Attributes => manifestResource.Attributes;
 
 			public object AttributesTooltip => manifestResource.Attributes.ToString();
@@ -72,14 +69,20 @@ namespace ICSharpCode.ILSpy.Metadata.CorTables
 			[ColumnInfo("X8", Kind = ColumnKind.Token)]
 			public int Implementation => MetadataTokens.GetToken(manifestResource.Implementation);
 
-			string? implementationTooltip;
-			public string? ImplementationTooltip => GenerateTooltip(ref implementationTooltip, metadataFile, manifestResource.Implementation);
+			public void OnImplementationClick()
+			{
+				MessageBus.Send(this, new NavigateToReferenceEventArgs(new EntityReference(metadataFile, manifestResource.Implementation, protocol: "metadata")));
+			}
+
+			string implementationTooltip;
+			public string ImplementationTooltip => GenerateTooltip(ref implementationTooltip, metadataFile, manifestResource.Implementation);
 
 			public ManifestResourceEntry(MetadataFile metadataFile, ManifestResourceHandle handle)
 			{
 				this.metadataFile = metadataFile;
 				this.handle = handle;
-				manifestResource = metadataFile.Metadata.GetManifestResource(handle);
+				this.manifestResource = metadataFile.Metadata.GetManifestResource(handle);
+				this.implementationTooltip = null;
 			}
 		}
 	}

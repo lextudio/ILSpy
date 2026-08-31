@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2018 Siegfried Pammer
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -20,48 +20,45 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using AvaloniaEdit.Document;
-
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.ILSpy.TextView;
 
-namespace ICSharpCode.ILSpy.Languages
+namespace ICSharpCode.ILSpy
 {
 	/// <summary>
-	/// Matches <c>(...)</c>, <c>[...]</c>, and <c>{...}</c> in a C# document, skipping
-	/// brackets inside strings, char literals, and comments (line + block). The "quick"
-	/// search runs first; when it fails (a string / comment intervenes) the slow
-	/// stateful parse re-reads from the line start so verbatim strings and escape
-	/// sequences are honoured.
+	/// Searches matching brackets for C#.
 	/// </summary>
-	sealed class CSharpBracketSearcher : IBracketSearcher
+	class CSharpBracketSearcher : IBracketSearcher
 	{
-		const string OpeningBrackets = "([{";
-		const string ClosingBrackets = ")]}";
+		string openingBrackets = "([{";
+		string closingBrackets = ")]}";
 
-		public BracketSearchResult? SearchBracket(IDocument document, int offset)
+		public BracketSearchResult SearchBracket(IDocument document, int offset)
 		{
 			if (offset > 0)
 			{
 				char c = document.GetCharAt(offset - 1);
-				int index = OpeningBrackets.IndexOf(c);
+				int index = openingBrackets.IndexOf(c);
 				int otherOffset = -1;
 				if (index > -1)
-					otherOffset = SearchBracketForward(document, offset, OpeningBrackets[index], ClosingBrackets[index]);
+					otherOffset = SearchBracketForward(document, offset, openingBrackets[index], closingBrackets[index]);
 
-				index = ClosingBrackets.IndexOf(c);
+				index = closingBrackets.IndexOf(c);
 				if (index > -1)
-					otherOffset = SearchBracketBackward(document, offset - 2, OpeningBrackets[index], ClosingBrackets[index]);
+					otherOffset = SearchBracketBackward(document, offset - 2, openingBrackets[index], closingBrackets[index]);
 
 				if (otherOffset > -1)
 				{
-					return new BracketSearchResult(
-						Math.Min(offset - 1, otherOffset), 1,
-						Math.Max(offset - 1, otherOffset), 1);
+					var result = new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
+														 Math.Max(offset - 1, otherOffset), 1);
+					return result;
 				}
 			}
+
 			return null;
 		}
 
+		#region SearchBracket helper functions
 		static int ScanLineStart(IDocument document, int offset)
 		{
 			for (int i = offset - 1; i > 0; --i)
@@ -73,10 +70,11 @@ namespace ICSharpCode.ILSpy.Languages
 		}
 
 		/// <summary>
-		/// Type of code at offset: 0 = code, 1 = line comment, 2 = string / char literal.
-		/// Walks from <paramref name="linestart"/> to <paramref name="offset"/> tracking
-		/// inString / inChar / verbatim flags. Block comments and multi-line strings
-		/// aren't tracked (they get re-parsed by the slow searcher when needed).
+		/// Gets the type of code at offset.<br/>
+		/// 0 = Code,<br/>
+		/// 1 = Comment,<br/>
+		/// 2 = String<br/>
+		/// Block comments and multiline strings are not supported.
 		/// </summary>
 		static int GetStartType(IDocument document, int linestart, int offset)
 		{
@@ -92,7 +90,9 @@ namespace ICSharpCode.ILSpy.Languages
 						if (!inString && !inChar && i + 1 < document.TextLength)
 						{
 							if (document.GetCharAt(i + 1) == '/')
+							{
 								result = 1;
+							}
 						}
 						break;
 					case '"':
@@ -127,27 +127,37 @@ namespace ICSharpCode.ILSpy.Languages
 						break;
 				}
 			}
+
 			return (inString || inChar) ? 2 : result;
 		}
+		#endregion
 
+		#region SearchBracketBackward
 		int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			if (offset + 1 >= document.TextLength)
 				return -1;
+			// this method parses a c# document backwards to find the matching bracket
 
-			// First try "quick find" — find the matching bracket if no string/comment is in the way.
+			// first try "quick find" - find the matching bracket if there is no string/comment in the way
 			int quickResult = QuickSearchBracketBackward(document, offset, openBracket, closingBracket);
 			if (quickResult >= 0)
 				return quickResult;
 
+			// we need to parse the line from the beginning, so get the line start position
 			int linestart = ScanLineStart(document, offset + 1);
+
+			// we need to know where offset is - in a string/comment or in normal code?
+			// ignore cases where offset is in a block comment
 			int starttype = GetStartType(document, linestart, offset + 1);
 			if (starttype == 1)
+			{
 				return -1; // start position is in a comment
+			}
 
-			// Parse forward, pushing every open-bracket position on a stack so backward
-			// search lands on the matching one when the closer is the offset we started at.
-			Stack<int> bracketStack = new();
+			// I don't see any possibility to parse a C# document backwards...
+			// We have to do it forwards and push all bracket positions on a stack.
+			Stack<int> bracketStack = new Stack<int>();
 			bool blockComment = false;
 			bool lineComment = false;
 			bool inChar = false;
@@ -171,14 +181,20 @@ namespace ICSharpCode.ILSpy.Languages
 						{
 							Debug.Assert(i > 0);
 							if (document.GetCharAt(i - 1) == '*')
+							{
 								blockComment = false;
+							}
 						}
 						if (!inString && !inChar && i + 1 < document.TextLength)
 						{
 							if (!blockComment && document.GetCharAt(i + 1) == '/')
+							{
 								lineComment = true;
+							}
 							if (!lineComment && document.GetCharAt(i + 1) == '*')
+							{
 								blockComment = true;
+							}
 						}
 						break;
 					case '"':
@@ -205,7 +221,9 @@ namespace ICSharpCode.ILSpy.Languages
 						break;
 					case '\'':
 						if (!(inString || lineComment || blockComment))
+						{
 							inChar = !inChar;
+						}
 						break;
 					case '\\':
 						if ((inString && !verbatim) || inChar)
@@ -215,7 +233,9 @@ namespace ICSharpCode.ILSpy.Languages
 						if (ch == openBracket)
 						{
 							if (!(inString || inChar || lineComment || blockComment))
+							{
 								bracketStack.Push(i);
+							}
 						}
 						else if (ch == closingBracket)
 						{
@@ -229,31 +249,40 @@ namespace ICSharpCode.ILSpy.Languages
 				}
 			}
 			if (bracketStack.Count > 0)
-				return bracketStack.Pop();
+				return (int)bracketStack.Pop();
 			return -1;
 		}
+		#endregion
 
+		#region SearchBracketForward
 		int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool inString = false;
 			bool inChar = false;
 			bool verbatim = false;
+
 			bool lineComment = false;
 			bool blockComment = false;
 
 			if (offset < 0)
 				return -1;
 
+			// first try "quick find" - find the matching bracket if there is no string/comment in the way
 			int quickResult = QuickSearchBracketForward(document, offset, openBracket, closingBracket);
 			if (quickResult >= 0)
 				return quickResult;
 
+			// we need to parse the line from the beginning, so get the line start position
 			int linestart = ScanLineStart(document, offset);
+
+			// we need to know where offset is - in a string/comment or in normal code?
+			// ignore cases where offset is in a block comment
 			int starttype = GetStartType(document, linestart, offset);
 			if (starttype != 0)
 				return -1; // start position is in a comment/string
 
 			int brackets = 1;
+
 			while (offset < document.TextLength)
 			{
 				char ch = document.GetCharAt(offset);
@@ -271,14 +300,20 @@ namespace ICSharpCode.ILSpy.Languages
 						{
 							Debug.Assert(offset > 0);
 							if (document.GetCharAt(offset - 1) == '*')
+							{
 								blockComment = false;
+							}
 						}
 						if (!inString && !inChar && offset + 1 < document.TextLength)
 						{
 							if (!blockComment && document.GetCharAt(offset + 1) == '/')
+							{
 								lineComment = true;
+							}
 							if (!lineComment && document.GetCharAt(offset + 1) == '*')
+							{
 								blockComment = true;
+							}
 						}
 						break;
 					case '"':
@@ -305,7 +340,9 @@ namespace ICSharpCode.ILSpy.Languages
 						break;
 					case '\'':
 						if (!(inString || lineComment || blockComment))
+						{
 							inChar = !inChar;
+						}
 						break;
 					case '\\':
 						if ((inString && !verbatim) || inChar)
@@ -315,7 +352,9 @@ namespace ICSharpCode.ILSpy.Languages
 						if (ch == openBracket)
 						{
 							if (!(inString || inChar || lineComment || blockComment))
+							{
 								++brackets;
+							}
 						}
 						else if (ch == closingBracket)
 						{
@@ -323,7 +362,9 @@ namespace ICSharpCode.ILSpy.Languages
 							{
 								--brackets;
 								if (brackets == 0)
+								{
 									return offset;
+								}
 							}
 						}
 						break;
@@ -332,10 +373,12 @@ namespace ICSharpCode.ILSpy.Languages
 			}
 			return -1;
 		}
+		#endregion
 
-		static int QuickSearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
+		int QuickSearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			int brackets = -1;
+			// first try "quick find" - find the matching bracket if there is no string/comment in the way
 			for (int i = offset; i >= 0; --i)
 			{
 				char ch = document.GetCharAt(i);
@@ -349,22 +392,29 @@ namespace ICSharpCode.ILSpy.Languages
 				{
 					--brackets;
 				}
-				else if (ch == '"' || ch == '\'')
+				else if (ch == '"')
+				{
+					break;
+				}
+				else if (ch == '\'')
 				{
 					break;
 				}
 				else if (ch == '/' && i > 0)
 				{
-					if (document.GetCharAt(i - 1) == '/' || document.GetCharAt(i - 1) == '*')
+					if (document.GetCharAt(i - 1) == '/')
+						break;
+					if (document.GetCharAt(i - 1) == '*')
 						break;
 				}
 			}
 			return -1;
 		}
 
-		static int QuickSearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
+		int QuickSearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			int brackets = 1;
+			// try "quick find" - find the matching bracket if there is no string/comment in the way
 			for (int i = offset; i < document.TextLength; ++i)
 			{
 				char ch = document.GetCharAt(i);
@@ -378,7 +428,11 @@ namespace ICSharpCode.ILSpy.Languages
 					if (brackets == 0)
 						return i;
 				}
-				else if (ch == '"' || ch == '\'')
+				else if (ch == '"')
+				{
+					break;
+				}
+				else if (ch == '\'')
 				{
 					break;
 				}

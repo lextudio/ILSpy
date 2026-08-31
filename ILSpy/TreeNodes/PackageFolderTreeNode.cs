@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -24,64 +24,46 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpyX;
 using ICSharpCode.ILSpyX.TreeView;
 
-using ICSharpCode.ILSpy.Languages;
-
 namespace ICSharpCode.ILSpy.TreeNodes
 {
 	/// <summary>
-	/// Folder inside a <see cref="LoadedPackage"/> (zip / .NET bundle). Lazy-loads to a mix
-	/// of nested <see cref="PackageFolderTreeNode"/>s, <see cref="AssemblyTreeNode"/>s for
-	/// embedded .dll/.exe entries that the package can resolve, and
-	/// <see cref="ResourceTreeNode"/>s for everything else.
+	/// Lists the embedded resources in an assembly.
 	/// </summary>
 	sealed class PackageFolderTreeNode : ILSpyTreeNode
 	{
-		readonly object text;
-
 		public PackageFolder Folder { get; }
 
-		public PackageFolderTreeNode(PackageFolder folder, string? text = null)
+		public PackageFolderTreeNode(PackageFolder folder, string text = null)
 		{
-			Folder = folder ?? throw new ArgumentNullException(nameof(folder));
-			this.text = text ?? folder.Name;
-			LazyLoading = true;
+			this.Folder = folder;
+			this.Text = text ?? folder.Name;
+			this.LazyLoading = true;
 		}
 
-		public override object Text => text;
+		public override object Text { get; }
 
-		public override object Icon => IsExpanded ? Images.FolderOpen : Images.FolderClosed;
+		public override object Icon => Images.FolderClosed;
 
-		protected override void OnExpanding()
-		{
-			base.OnExpanding();
-			RaisePropertyChanged(nameof(Icon));
-		}
-
-		protected override void OnCollapsing()
-		{
-			base.OnCollapsing();
-			RaisePropertyChanged(nameof(Icon));
-		}
+		public override object ExpandedIcon => Images.FolderOpen;
 
 		protected override void LoadChildren()
 		{
-			foreach (var child in LoadChildrenForFolder(Folder))
-				Children.Add(child);
+			this.Children.AddRange(LoadChildrenForFolder(Folder));
 		}
 
 		internal static IEnumerable<SharpTreeNode> LoadChildrenForFolder(PackageFolder root)
 		{
 			foreach (var folder in root.Folders.OrderBy(f => f.Name))
 			{
-				var name = folder.Name;
-				var sub = folder;
-				while (sub.Folders.Count == 1 && sub.Entries.Count == 0)
+				string newName = folder.Name;
+				var subfolder = folder;
+				while (subfolder.Folders.Count == 1 && subfolder.Entries.Count == 0)
 				{
-					// Collapse single-child folder chains (a/b/c) into one display name.
-					sub = sub.Folders[0];
-					name = $"{name}/{sub.Name}";
+					// special case: a folder that only contains a single sub-folder
+					subfolder = subfolder.Folders[0];
+					newName = $"{newName}/{subfolder.Name}";
 				}
-				yield return new PackageFolderTreeNode(sub, name);
+				yield return new PackageFolderTreeNode(subfolder, newName);
 			}
 			foreach (var entry in root.Entries.OrderBy(e => e.Name))
 			{
@@ -92,10 +74,16 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					if (asm != null)
 					{
 						yield return new AssemblyTreeNode(asm, entry);
-						continue;
+					}
+					else
+					{
+						yield return ResourceTreeNode.Create(entry);
 					}
 				}
-				yield return ResourceTreeNode.Create(entry);
+				else
+				{
+					yield return ResourceTreeNode.Create(entry);
+				}
 			}
 		}
 

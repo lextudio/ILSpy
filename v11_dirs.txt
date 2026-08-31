@@ -1,0 +1,6 @@
+BuildTools
+doc
+ILSpy
+ILSpy-tests
+LICENSE
+TestPlugin

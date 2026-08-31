@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -16,19 +16,17 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 
 using ICSharpCode.Decompiler.Metadata;
 
-namespace ICSharpCode.ILSpy.Metadata.CorTables
+namespace ICSharpCode.ILSpy.Metadata
 {
-	/// <summary>
-	/// View of the FieldLayout table — explicit per-field byte offsets for fields whose
-	/// owning TypeDef has <see cref="System.Reflection.TypeAttributes.ExplicitLayout"/> set.
-	/// </summary>
-	public sealed class FieldLayoutTableTreeNode : MetadataTableTreeNode<FieldLayoutTableTreeNode.FieldLayoutEntry>
+	internal class FieldLayoutTableTreeNode : MetadataTableTreeNode<FieldLayoutTableTreeNode.FieldLayoutEntry>
 	{
 		public FieldLayoutTableTreeNode(MetadataFile metadataFile)
 			: base(TableIndex.FieldLayout, metadataFile)
@@ -38,48 +36,62 @@ namespace ICSharpCode.ILSpy.Metadata.CorTables
 		protected override IReadOnlyList<FieldLayoutEntry> LoadTable()
 		{
 			var list = new List<FieldLayoutEntry>();
+
 			var metadata = metadataFile.Metadata;
 			var length = metadata.GetTableRowCount(TableIndex.FieldLayout);
-			var reader = metadata.AsBlobReader();
-			reader.Offset = metadata.GetTableMetadataOffset(TableIndex.FieldLayout);
+			ReadOnlySpan<byte> ptr = metadata.AsReadOnlySpan();
 			int fieldDefSize = metadata.GetTableRowCount(TableIndex.Field) < ushort.MaxValue ? 2 : 4;
 			for (int rid = 1; rid <= length; rid++)
 			{
-				int offset = reader.ReadInt32();
-				int fieldRow = fieldDefSize == 2 ? reader.ReadUInt16() : reader.ReadInt32();
-				list.Add(new FieldLayoutEntry(metadataFile, rid, offset, MetadataTokens.FieldDefinitionHandle(fieldRow)));
+				list.Add(new FieldLayoutEntry(metadataFile, ptr, rid, fieldDefSize));
 			}
 			return list;
 		}
 
-		public sealed class FieldLayoutEntry
+		readonly struct FieldLayout
 		{
-			// Use a verbatim fieldHandle local because C# 14 made `field` contextual inside property
-			// accessors — referencing it without `@` would name the auto-property's hidden
-			// backing field instead of this member.
+			public readonly int Offset;
+			public readonly FieldDefinitionHandle Field;
+
+			public FieldLayout(ReadOnlySpan<byte> ptr, int fieldDefSize)
+			{
+				Offset = BinaryPrimitives.ReadInt32LittleEndian(ptr);
+				Field = MetadataTokens.FieldDefinitionHandle(Helpers.GetValueLittleEndian(ptr.Slice(4, fieldDefSize)));
+			}
+		}
+
+		internal struct FieldLayoutEntry
+		{
 			readonly MetadataFile metadataFile;
-			readonly FieldDefinitionHandle fieldHandle;
+			readonly FieldLayout fieldLayout;
 
 			public int RID { get; }
-
-			[ColumnInfo("X8")]
 			public int Token => 0x10000000 | RID;
+			public int Offset { get; }
 
 			[ColumnInfo("X8", Kind = ColumnKind.Token)]
-			public int Field => MetadataTokens.GetToken(fieldHandle);
+			public int Field => MetadataTokens.GetToken(fieldLayout.Field);
 
-			string? fieldTooltip;
-			public string? FieldTooltip => GenerateTooltip(ref fieldTooltip, metadataFile, fieldHandle);
+			public void OnFieldClick()
+			{
+				MessageBus.Send(this, new NavigateToReferenceEventArgs(new EntityReference(metadataFile, fieldLayout.Field, protocol: "metadata")));
+			}
 
-			[ColumnInfo("X8")]
-			public int FieldOffset { get; }
+			string fieldTooltip;
+			public string FieldTooltip => GenerateTooltip(ref fieldTooltip, metadataFile, fieldLayout.Field);
 
-			public FieldLayoutEntry(MetadataFile metadataFile, int rid, int fieldOffset, FieldDefinitionHandle field)
+			[ColumnInfo("X8", Kind = ColumnKind.Other)]
+			public int FieldOffset => fieldLayout.Offset;
+
+			public FieldLayoutEntry(MetadataFile metadataFile, ReadOnlySpan<byte> ptr, int row, int fieldDefSize)
 			{
 				this.metadataFile = metadataFile;
-				RID = rid;
-				FieldOffset = fieldOffset;
-				fieldHandle = field;
+				this.RID = row;
+				var rowOffset = metadataFile.Metadata.GetTableMetadataOffset(TableIndex.FieldLayout)
+					+ metadataFile.Metadata.GetTableRowSize(TableIndex.FieldLayout) * (row - 1);
+				this.Offset = metadataFile.MetadataOffset + rowOffset;
+				this.fieldLayout = new FieldLayout(ptr.Slice(rowOffset), fieldDefSize);
+				this.fieldTooltip = null;
 			}
 		}
 	}

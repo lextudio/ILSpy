@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -18,86 +18,57 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
 
-using Avalonia.Controls;
-
-using AvaloniaEdit.Rendering;
+using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.ILSpy.TextView
 {
-	using Pair = KeyValuePair<int, Func<Control>>;
+	using Pair = KeyValuePair<int, Lazy<UIElement>>;
 
 	/// <summary>
-	/// Embeds inline UI elements produced by <see cref="ISmartTextOutput.AddUIElement"/> in
-	/// the rendered text. Each element is stored as a factory; this generator builds and caches
-	/// one control instance per offset locally, so the control belongs to a single editor. The
-	/// model only carries the factory, never a shared control -- otherwise a reused or reopened
-	/// tab rendering into a different TextView would hit AvaloniaEdit's "already has a visual
-	/// parent" guard.
+	/// Embeds UIElements in the text output.
 	/// </summary>
 	sealed class UIElementGenerator : VisualLineElementGenerator, IComparer<Pair>
 	{
-		// Controls realised so far, keyed by document offset, so re-laying out the same line in
-		// THIS editor reuses the instance (preserving its state, and letting AvaloniaEdit's
-		// per-TextView dedup handle it) rather than building a fresh one each time.
-		readonly Dictionary<int, Control> realised = new();
-
-		IReadOnlyList<Pair>? uiElements;
-
-		public IReadOnlyList<Pair>? UIElements {
-			get => uiElements;
-			set {
-				// Rebinding to a new document: drop controls built for the previous one so they
-				// are rebuilt from the new model's factories.
-				realised.Clear();
-				uiElements = value;
-			}
-		}
+		/// <summary>
+		/// The list of embedded UI elements to be displayed.
+		/// We store this as a sorted list of (offset, Lazy&lt;UIElement&gt;) pairs.
+		/// The "Lazy" part is used to create UIElements on demand (and thus on the UI thread, not on the decompiler thread).
+		/// </summary>
+		public List<Pair> UIElements;
 
 		public override int GetFirstInterestedOffset(int startOffset)
 		{
-			if (uiElements == null)
+			if (this.UIElements == null)
 				return -1;
-			int r = BinarySearch(uiElements, new Pair(startOffset, null!));
+			int r = this.UIElements.BinarySearch(new Pair(startOffset, null), this);
+			// If the element isn't found, BinarySearch returns the complement of "insertion position".
+			// We use this to find the next element (if there wasn't any exact match).
 			if (r < 0)
 				r = ~r;
-			return r < uiElements.Count ? uiElements[r].Key : -1;
+			if (r < this.UIElements.Count)
+				return this.UIElements[r].Key;
+			else
+				return -1;
 		}
 
-		public override VisualLineElement? ConstructElement(int offset)
+		public override VisualLineElement ConstructElement(int offset)
 		{
-			if (uiElements == null)
+			if (this.UIElements == null)
 				return null;
-			int r = BinarySearch(uiElements, new Pair(offset, null!));
-			if (r < 0)
+			int r = UIElements.BinarySearch(new Pair(offset, null), this);
+			if (r >= 0)
+				return new InlineObjectElement(0, this.UIElements[r].Value.Value);
+			else
 				return null;
-			if (!realised.TryGetValue(offset, out var control))
-			{
-				control = uiElements[r].Value();
-				realised[offset] = control;
-			}
-			return new InlineObjectElement(0, control);
 		}
 
-		int IComparer<Pair>.Compare(Pair x, Pair y) => x.Key.CompareTo(y.Key);
-
-		// IReadOnlyList has no BinarySearch. Hand-rolled — list is offset-sorted by
-		// AvaloniaEditTextOutput.AddUIElement.
-		int BinarySearch(IReadOnlyList<Pair> list, Pair value)
+		int IComparer<Pair>.Compare(Pair x, Pair y)
 		{
-			int lo = 0, hi = list.Count - 1;
-			while (lo <= hi)
-			{
-				int mid = lo + ((hi - lo) >> 1);
-				int cmp = ((IComparer<Pair>)this).Compare(list[mid], value);
-				if (cmp == 0)
-					return mid;
-				if (cmp < 0)
-					lo = mid + 1;
-				else
-					hi = mid - 1;
-			}
-			return ~lo;
+			// Compare (offset,Lazy<UIElement>) pairs by the offset.
+			// Used in BinarySearch()
+			return x.Key.CompareTo(y.Key);
 		}
 	}
 }

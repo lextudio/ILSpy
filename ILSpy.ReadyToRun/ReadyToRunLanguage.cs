@@ -30,20 +30,18 @@ using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-using AvaloniaEdit.Highlighting;
-
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.Decompiler.Metadata;
-using ICSharpCode.Decompiler.Output;
 using ICSharpCode.Decompiler.Solution;
 using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.ILSpy.Util;
 using ICSharpCode.ILSpyX;
 
 using ILCompiler.Reflection.ReadyToRun;
 
-using ICSharpCode.ILSpy;
-using ICSharpCode.ILSpy.Languages;
+using TomsToolbox.Composition;
 
 using MetadataReader = System.Reflection.Metadata.MetadataReader;
 
@@ -82,7 +80,7 @@ namespace ICSharpCode.ILSpy.ReadyToRun
 		{
 		}
 
-		public void WriteLocalReference(string text, object reference, bool isDefinition = false, bool isHoverOnly = false)
+		public void WriteLocalReference(string text, object reference, bool isDefinition = false)
 		{
 		}
 
@@ -110,10 +108,7 @@ namespace ICSharpCode.ILSpy.ReadyToRun
 
 	[Export(typeof(Language))]
 	[Shared]
-	[method: ImportingConstructor]
-	// LanguageService is taken Lazy because it imports Language[] -- a direct LanguageService
-	// dependency creates a constructor-injection cycle that System.Composition refuses.
-	internal class ReadyToRunLanguage(SettingsService settingsService, Lazy<LanguageService> languageService) : Language
+	internal class ReadyToRunLanguage(SettingsService settingsService, IExportProvider exportProvider) : Language
 	{
 		private static readonly ConditionalWeakTable<MetadataFile, ReadyToRunReaderCacheEntry> readyToRunReaders = new ConditionalWeakTable<MetadataFile, ReadyToRunReaderCacheEntry>();
 
@@ -232,9 +227,9 @@ namespace ICSharpCode.ILSpy.ReadyToRun
 			}
 		}
 
-		public override RichText GetRichText(IEntity entity, ConversionFlags conversionFlags, bool boldTypeNames = false)
+		public override RichText GetRichTextTooltip(IEntity entity)
 		{
-			return languageService.Value.GetLanguage("IL").GetRichText(entity, conversionFlags, boldTypeNames);
+			return exportProvider.GetExportedValue<LanguageService>().ILLanguage.GetRichTextTooltip(entity);
 		}
 
 		private ReadyToRunReaderCacheEntry GetReader(LoadedAssembly assembly, MetadataFile file)

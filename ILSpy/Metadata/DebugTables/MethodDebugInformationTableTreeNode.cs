@@ -1,14 +1,14 @@
-// Copyright (c) 2026 AlphaSierraPapa for the SharpDevelop Team
-//
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -25,14 +25,9 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.Decompiler.Metadata;
 
-namespace ICSharpCode.ILSpy.Metadata.DebugTables
+namespace ICSharpCode.ILSpy.Metadata
 {
-	/// <summary>
-	/// View of the MethodDebugInformation table — sequence-point and local-signature data
-	/// per method body. Each row links a MethodDef token to the document containing its
-	/// source and the blob holding its sequence-points list.
-	/// </summary>
-	public sealed class MethodDebugInformationTableTreeNode : MetadataTableTreeNode<MethodDebugInformationTableTreeNode.MethodDebugInformationEntry>
+	internal class MethodDebugInformationTableTreeNode : DebugMetadataTableTreeNode<MethodDebugInformationTableTreeNode.MethodDebugInformationEntry>
 	{
 		public MethodDebugInformationTableTreeNode(MetadataFile metadataFile)
 			: base(TableIndex.MethodDebugInformation, metadataFile)
@@ -42,26 +37,36 @@ namespace ICSharpCode.ILSpy.Metadata.DebugTables
 		protected override IReadOnlyList<MethodDebugInformationEntry> LoadTable()
 		{
 			var list = new List<MethodDebugInformationEntry>();
+
 			foreach (var row in metadataFile.Metadata.MethodDebugInformation)
+			{
 				list.Add(new MethodDebugInformationEntry(metadataFile, row));
+			}
 			return list;
 		}
 
-		public sealed class MethodDebugInformationEntry
+		internal struct MethodDebugInformationEntry
 		{
+			readonly int? offset;
 			readonly MetadataFile metadataFile;
 			readonly MethodDebugInformationHandle handle;
 			readonly MethodDebugInformation debugInfo;
 
 			public int RID => MetadataTokens.GetRowNumber(handle);
 
-			[ColumnInfo("X8")]
 			public int Token => MetadataTokens.GetToken(handle);
+
+			public object Offset => offset == null ? "n/a" : (object)offset;
 
 			[ColumnInfo("X8", Kind = ColumnKind.Token)]
 			public int Document => MetadataTokens.GetToken(debugInfo.Document);
 
-			public string? DocumentTooltip {
+			public void OnDocumentClick()
+			{
+				MessageBus.Send(this, new NavigateToReferenceEventArgs(new EntityReference(metadataFile, debugInfo.Document, protocol: "metadata")));
+			}
+
+			public string DocumentTooltip {
 				get {
 					if (debugInfo.Document.IsNil)
 						return null;
@@ -73,7 +78,7 @@ namespace ICSharpCode.ILSpy.Metadata.DebugTables
 			[ColumnInfo("X8", Kind = ColumnKind.HeapOffset)]
 			public int SequencePoints => MetadataTokens.GetHeapOffset(debugInfo.SequencePointsBlob);
 
-			public string? SequencePointsTooltip {
+			public string SequencePointsTooltip {
 				get {
 					if (debugInfo.SequencePointsBlob.IsNil)
 						return null;
@@ -89,7 +94,12 @@ namespace ICSharpCode.ILSpy.Metadata.DebugTables
 			[ColumnInfo("X8", Kind = ColumnKind.Token)]
 			public int LocalSignature => MetadataTokens.GetToken(debugInfo.LocalSignature);
 
-			public string? LocalSignatureTooltip {
+			public void OnLocalSignatureClick()
+			{
+				MessageBus.Send(this, new NavigateToReferenceEventArgs(new EntityReference(metadataFile, debugInfo.LocalSignature, protocol: "metadata")));
+			}
+
+			public string LocalSignatureTooltip {
 				get {
 					if (debugInfo.LocalSignature.IsNil)
 						return null;
@@ -113,8 +123,10 @@ namespace ICSharpCode.ILSpy.Metadata.DebugTables
 			public MethodDebugInformationEntry(MetadataFile metadataFile, MethodDebugInformationHandle handle)
 			{
 				this.metadataFile = metadataFile;
+				this.offset = metadataFile.IsEmbedded ? null : (int?)metadataFile.Metadata.GetTableMetadataOffset(TableIndex.MethodDebugInformation)
+					+ metadataFile.Metadata.GetTableRowSize(TableIndex.MethodDebugInformation) * (MetadataTokens.GetRowNumber(handle) - 1);
 				this.handle = handle;
-				debugInfo = metadataFile.Metadata.GetMethodDebugInformation(handle);
+				this.debugInfo = metadataFile.Metadata.GetMethodDebugInformation(handle);
 			}
 		}
 	}
