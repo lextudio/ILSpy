@@ -37,6 +37,7 @@ using ICSharpCode.Decompiler.Documentation;
 using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.ILSpy.AppEnv;
+using ICSharpCode.ILSpy.Docking;
 using ICSharpCode.ILSpy.Properties;
 using ICSharpCode.ILSpy.TextView;
 using ICSharpCode.ILSpy.TreeNodes;
@@ -57,6 +58,8 @@ namespace ICSharpCode.ILSpy.AssemblyTree
 	[Shared]
 	public partial class AssemblyTreeModel : ToolPaneModel
 	{
+		static DockWorkspace DockWorkspace => App.ExportProvider.GetExportedValue<DockWorkspace>();
+
 		public const string PaneContentId = "assemblyListPane";
 
 		private AssemblyListPane? activeView;

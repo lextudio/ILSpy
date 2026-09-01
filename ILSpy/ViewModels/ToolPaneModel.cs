@@ -20,6 +20,28 @@ using System.Windows.Input;
 
 namespace ICSharpCode.ILSpy.ViewModels
 {
+	/// <summary>
+	/// Host-neutral layout hint for which side of the workbench a pane prefers to dock to.
+	/// </summary>
+	public enum PreferredDockSide
+	{
+		Left,
+		Right,
+		Top,
+		Bottom,
+	}
+
+	/// <summary>
+	/// Service interface for close dispatch — avoids coupling PaneModel to a specific
+	/// DockWorkspace. Registered by the hosting shell via
+	/// <c>SD.Services.AddService(typeof(IPaneModelHost), this)</c>.
+	/// </summary>
+	public interface IPaneModelHost
+	{
+		void Remove(PaneModel model);
+		void Add(ToolPaneModel model);
+	}
+
 #if CROSS_PLATFORM
 	public abstract class ToolPaneModel : Dock.Model.TomsToolbox.Controls.Tool
 	{
@@ -42,5 +64,23 @@ namespace ICSharpCode.ILSpy.ViewModels
 		public string Icon { get; protected set; }
 
 		public ICommand AssociatedCommand { get; set; }
+
+		public object Content { get; protected set; }
+
+		/// <summary>
+		/// Preferred initial docked size in DIPs along the pane's docking axis.
+		/// Null means "no preference, let the layout default apply".
+		/// </summary>
+		public double? PreferredDockSize { get; protected set; }
+
+		/// <summary>
+		/// Preferred side of the workbench to dock to.
+		/// </summary>
+		public PreferredDockSide? PreferredDockSide { get; protected set; }
+
+		/// <summary>
+		/// Fully-qualified class name of the legacy AddInTree &lt;Pad&gt; this model replaces, if any.
+		/// </summary>
+		public string LegacyPadClass { get; protected set; }
 	}
 }

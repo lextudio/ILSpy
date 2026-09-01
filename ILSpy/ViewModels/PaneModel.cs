@@ -16,21 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.ComponentModel;
-using System.Windows.Input;
+	using System;
+	using System.ComponentModel;
+	using System.Windows.Input;
 
-using ICSharpCode.ILSpy.Docking;
+	using ICSharpCode.SharpDevelop;
 
-using TomsToolbox.Wpf;
+	using TomsToolbox.Wpf;
 
-namespace ICSharpCode.ILSpy.ViewModels
-{
-	public abstract class PaneModel : ObservableObjectBase
+	namespace ICSharpCode.ILSpy.ViewModels
 	{
-		private readonly Throttle titleChangeThrottle;
-
-		protected static DockWorkspace DockWorkspace => App.ExportProvider.GetExportedValue<DockWorkspace>();
+		public abstract class PaneModel : ObservableObjectBase
+		{
+			private readonly Throttle titleChangeThrottle;
 
 		protected PaneModel()
 		{
@@ -64,7 +62,8 @@ namespace ICSharpCode.ILSpy.ViewModels
 
 			public void Execute(object parameter)
 			{
-				DockWorkspace.Remove(model);
+				var host = ICSharpCode.SharpDevelop.SD.Services.GetService(typeof(IPaneModelHost)) as IPaneModelHost;
+				host?.Remove(model);
 			}
 		}
 
